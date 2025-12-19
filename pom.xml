@@ -73,6 +73,29 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fontawesome5-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
+
+        <!-- Material Design 图标包（可选） -->
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-materialdesign2-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fontawesome-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
+        <!-- Ikonli 核心 -->
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-core</artifactId>
+            <version>12.3.1</version>
+        </dependency>
 
     </dependencies>
 

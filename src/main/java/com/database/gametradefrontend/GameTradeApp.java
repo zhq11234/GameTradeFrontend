@@ -3,10 +3,10 @@ package com.database.gametradefrontend;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.Objects;
 
 public class GameTradeApp extends Application {
 
@@ -14,13 +14,14 @@ public class GameTradeApp extends Application {
     public void start(Stage primaryStage){
         try {
             FXMLLoader loader = new FXMLLoader(
-                    GameTradeApp.class.getResource("view/login.fxml")
+                    GameTradeApp.class.getResource("view/material-login.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 400, 300);
-
+            Scene scene = new Scene(loader.load(), 400, 600);
             primaryStage.setTitle("GameTrade - 登录");
             primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
+            primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
             primaryStage.show();
 
             // 测试后端连接
@@ -78,5 +79,4 @@ public class GameTradeApp extends Application {
 
         launch(args);
     }
-
 }
