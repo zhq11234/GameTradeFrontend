@@ -51,12 +51,10 @@ public class GameTradeApp extends Application {
                 }
             } catch (Exception e) {
                 System.err.println("❌ 后端连接失败: " + e.getMessage());
-                javafx.application.Platform.runLater(() -> {
-                    showErrorDialog("连接失败",
-                            "无法连接到Spring Boot后端\n" +
-                                    "请确保后端服务已启动: http://localhost:8080\n" +
-                                    "错误: " + e.getMessage());
-                });
+                javafx.application.Platform.runLater(() -> showErrorDialog("连接失败",
+                        "无法连接到Spring Boot后端\n" +
+                                "请确保后端服务已启动: http://localhost:8080\n" +
+                                "错误: " + e.getMessage()));
             }
         }).start();
     }

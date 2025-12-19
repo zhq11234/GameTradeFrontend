@@ -23,7 +23,7 @@ public class LoginController {
     @FXML
     private Label errorLabel;
     
-    private UserService userService;
+    private final UserService userService;
     
     public LoginController() {
         this.userService = new UserService();
@@ -37,17 +37,13 @@ public class LoginController {
     
     private void setupEventHandlers() {
         // 为登录按钮添加样式变化效果
-        loginButton.setOnMouseEntered(e -> {
-            loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #5a6fd8 0%, #6a42a0 100%); " +
-                               "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
-                               "-fx-font-size: 14; -fx-cursor: hand;");
-        });
+        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #5a6fd8 0%, #6a42a0 100%); " +
+                           "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
+                           "-fx-font-size: 14; -fx-cursor: hand;"));
         
-        loginButton.setOnMouseExited(e -> {
-            loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%); " +
-                               "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
-                               "-fx-font-size: 14; -fx-cursor: hand;");
-        });
+        loginButton.setOnMouseExited(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%); " +
+                           "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
+                           "-fx-font-size: 14; -fx-cursor: hand;"));
         
         // 输入框获得焦点时的样式变化
         usernameField.focusedProperty().addListener((obs, oldVal, newVal) -> {
@@ -104,9 +100,7 @@ public class LoginController {
                 });
             } catch (Exception e) {
                 // 网络错误或其他异常
-                javafx.application.Platform.runLater(() -> {
-                    onLoginFailure("登录失败: " + e.getMessage());
-                });
+                javafx.application.Platform.runLater(() -> onLoginFailure("登录失败: " + e.getMessage()));
             }
         }).start();
     }
