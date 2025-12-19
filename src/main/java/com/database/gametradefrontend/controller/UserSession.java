@@ -7,7 +7,7 @@ import com.database.gametradefrontend.model.User;
  * 用于管理当前登录用户的状态
  */
 public class UserSession {
-    private static UserSession instance;
+    private static volatile UserSession instance;
     private User currentUser;
     
     private UserSession() {
