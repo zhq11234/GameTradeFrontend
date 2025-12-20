@@ -18,21 +18,14 @@ import java.util.Random;
 
 public class WelcomeController {
     
-    @FXML private VBox rippleContainer;
     @FXML private Label welcomeText1, welcomeText2, welcomeText3, welcomeText4;
     @FXML private Label welcomeText5, welcomeText6, welcomeText7, welcomeText8;
     @FXML private Button loginButton, registerButton;
-    
-    private Timeline rippleTimeline;
-    private Random random = new Random();
     
     @FXML
     public void initialize() {
         // 初始化文字动画
         setupTextAnimations();
-        
-        // 初始化波纹效果
-        setupRippleEffect();
         
         // 初始化按钮动画
         setupButtonAnimations();
@@ -126,37 +119,7 @@ public class WelcomeController {
         gradientTimeline.play();
     }
     
-    private void setupRippleEffect() {
-        rippleTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> createRipple()));
-        rippleTimeline.setCycleCount(Timeline.INDEFINITE);
-        rippleTimeline.play();
-    }
-    
-    private void createRipple() {
-        Circle ripple = new Circle();
-        ripple.setFill(Color.rgb(255, 255, 255, 0.3));
-        ripple.setRadius(5);
-        
-        // 随机位置
-        double x = random.nextDouble() * 400;
-        double y = random.nextDouble() * 600;
-        ripple.setCenterX(x);
-        ripple.setCenterY(y);
-        
-        rippleContainer.getChildren().add(ripple);
-        
-        // 波纹动画
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(2), ripple);
-        scaleTransition.setToX(40);
-        scaleTransition.setToY(40);
-        
-        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(2), ripple);
-        fadeTransition.setToValue(0);
-        
-        ParallelTransition parallelTransition = new ParallelTransition(scaleTransition, fadeTransition);
-        parallelTransition.setOnFinished(e -> rippleContainer.getChildren().remove(ripple));
-        parallelTransition.play();
-    }
+
     
     private void setupButtonAnimations() {
         // 按钮进入动画
@@ -184,7 +147,7 @@ public class WelcomeController {
             Parent loginRoot = loader.load();
             
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(loginRoot, 400, 600));
+            stage.setScene(new Scene(loginRoot, 800, 600));
             stage.setTitle("GameTrade - 登录");
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,7 +162,7 @@ public class WelcomeController {
             Parent registerRoot = loader.load();
             
             Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(registerRoot, 400, 600));
+            stage.setScene(new Scene(registerRoot, 800, 600));
             stage.setTitle("GameTrade - 注册");
         } catch (Exception e) {
             e.printStackTrace();
