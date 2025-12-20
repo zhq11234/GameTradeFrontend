@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
     private Long id;
     private String username;
-    private String password;
+    private String password;  // 用于注册和登录请求，但不会被序列化到响应中
     private String email;
     private String phone;
     private String nickname;
@@ -13,7 +13,7 @@ public class User {
     // 默认构造函数（Jackson需要）
     public User() {}
     
-    // 带参数的构造函数
+    // 带参数的构造函数（用于注册）
     public User(Long id, String username, String password, String email, String phone, String nickname) {
         this.id = id;
         this.username = username;
@@ -43,6 +43,7 @@ public class User {
     }
     
     @JsonProperty("password")
+    @com.fasterxml.jackson.annotation.JsonIgnore  // 序列化时忽略密码，防止泄露
     public String getPassword() {
         return password;
     }

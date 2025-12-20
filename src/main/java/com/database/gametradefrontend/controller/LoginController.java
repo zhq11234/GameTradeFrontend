@@ -1,11 +1,15 @@
 package com.database.gametradefrontend.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.service.UserService;
 
@@ -19,6 +23,12 @@ public class LoginController {
     
     @FXML
     private Button loginButton;
+    
+    @FXML
+    private Button backButton;
+    
+    @FXML
+    private Button registerLink;
     
     @FXML
     private Label errorLabel;
@@ -139,5 +149,35 @@ public class LoginController {
         errorLabel.setText(message);
         errorLabel.setTextFill(Color.web("#00C851"));
         errorLabel.setVisible(true);
+    }
+    
+    @FXML
+    private void handleBack() {
+        try {
+            // 加载欢迎界面
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/welcome.fxml"));
+            Parent welcomeRoot = loader.load();
+            
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setScene(new Scene(welcomeRoot, 400, 600));
+            stage.setTitle("GameTrade - 欢迎");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void handleRegisterLink() {
+        try {
+            // 加载注册界面
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/register.fxml"));
+            Parent registerRoot = loader.load();
+            
+            Stage stage = (Stage) registerLink.getScene().getWindow();
+            stage.setScene(new Scene(registerRoot, 400, 600));
+            stage.setTitle("GameTrade - 注册");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

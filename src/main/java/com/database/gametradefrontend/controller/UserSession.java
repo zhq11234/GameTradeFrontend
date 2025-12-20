@@ -9,6 +9,8 @@ import com.database.gametradefrontend.model.User;
 public class UserSession {
     private static volatile UserSession instance;
     private User currentUser;
+    private long loginTime;
+    private static final long SESSION_TIMEOUT = 30 * 60 * 1000; // 30分钟超时
     
     private UserSession() {
         // 私有构造函数，防止外部实例化
@@ -33,6 +35,7 @@ public class UserSession {
      */
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        this.loginTime = System.currentTimeMillis();
     }
     
     /**
@@ -43,24 +46,46 @@ public class UserSession {
     }
     
     /**
-     * 检查用户是否已登录
+     * 检查用户是否已登录（包含会话过期检查）
      */
     public boolean isLoggedIn() {
-        return currentUser != null;
+        return currentUser != null && isSessionValid();
+    }
+    
+    /**
+     * 检查会话是否有效（未过期）
+     */
+    public boolean isSessionValid() {
+        if (currentUser == null) {
+            return false;
+        }
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - loginTime) < SESSION_TIMEOUT;
+    }
+    
+    /**
+     * 获取会话剩余时间（毫秒）
+     */
+    public long getRemainingSessionTime() {
+        if (!isSessionValid()) {
+            return 0;
+        }
+        long currentTime = System.currentTimeMillis();
+        return SESSION_TIMEOUT - (currentTime - loginTime);
     }
     
     /**
      * 获取当前用户的用户名
      */
     public String getUsername() {
-        return currentUser != null ? currentUser.getUsername() : null;
+        return isSessionValid() ? currentUser.getUsername() : null;
     }
     
     /**
      * 获取当前用户的ID
      */
     public Long getUserId() {
-        return currentUser != null ? currentUser.getId() : null;
+        return isSessionValid() ? currentUser.getId() : null;
     }
     
     /**
@@ -68,6 +93,7 @@ public class UserSession {
      */
     public void logout() {
         this.currentUser = null;
+        this.loginTime = 0;
     }
     
     /**
@@ -75,5 +101,14 @@ public class UserSession {
      */
     public static void clearSession() {
         instance = null;
+    }
+    
+    /**
+     * 刷新会话时间（延长会话有效期）
+     */
+    public void refreshSession() {
+        if (currentUser != null) {
+            this.loginTime = System.currentTimeMillis();
+        }
     }
 }

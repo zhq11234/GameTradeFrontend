@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #f093fb 0%, #f5576c 100%);"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.RegisterController">
+   
+   <stylesheets>
+      <URL value="@../view/styles/register.css" />
+   </stylesheets>
+   
+   <VBox alignment="CENTER" layoutX="50.0" layoutY="100.0" prefHeight="450.0"
+         prefWidth="300.0" spacing="20.0" style="-fx-background-color: white;
+         -fx-background-radius: 15;
+          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 8);">
+      <padding>
+         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+      </padding>
+      
+      <!-- 返回按钮 -->
+      <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 0 20 0;">
+         <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" 
+                 styleClass="back-button">
+            <graphic>
+               <Label text="⬅️" style="-fx-font-size: 16px;"/>
+            </graphic>
+         </Button>
+         <Label text="返回" style="-fx-text-fill: #666666; -fx-font-size: 14px;"/>
+      </HBox>
+      
+      <!-- 图标区域 -->
+      <VBox alignment="CENTER" spacing="10.0">
+         <Label text="📝" style="-fx-font-size: 48px; -fx-text-fill: #f5576c;"/>
+         <Label text="用户注册" textFill="#333333" style="-fx-font-weight: bold;">
+            <font>
+               <Font name="System Bold" size="24.0"/>
+            </font>
+         </Label>
+      </VBox>
+
+      <!-- 用户名输入区域 -->
+      <VBox spacing="8.0">
+         <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <Label text="👤" style="-fx-font-size: 16px; -fx-text-fill: #666666;"/>
+            <Label text="用户名" textFill="#666666" style="-fx-font-weight: 500;"/>
+         </HBox>
+         <TextField fx:id="usernameField" promptText="请输入用户名"
+                    styleClass="modern-input"/>
+      </VBox>
+
+      <!-- 密码输入区域 -->
+      <VBox spacing="8.0">
+         <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <Label text="🔒" style="-fx-font-size: 16px; -fx-text-fill: #666666;"/>
+            <Label text="密码" textFill="#666666" style="-fx-font-weight: 500;"/>
+         </HBox>
+         <PasswordField fx:id="passwordField"
+                        promptText="请输入密码" styleClass="modern-input"/>
+      </VBox>
+
+      <!-- 确认密码输入区域 -->
+      <VBox spacing="8.0">
+         <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <Label text="🔒" style="-fx-font-size: 16px; -fx-text-fill: #666666;"/>
+            <Label text="确认密码" textFill="#666666" style="-fx-font-weight: 500;"/>
+         </HBox>
+         <PasswordField fx:id="confirmPasswordField"
+                        promptText="请再次输入密码" styleClass="modern-input"/>
+      </VBox>
+
+      <!-- 邮箱输入区域 -->
+      <VBox spacing="8.0">
+         <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <Label text="📧" style="-fx-font-size: 16px; -fx-text-fill: #666666;"/>
+            <Label text="邮箱" textFill="#666666" style="-fx-font-weight: 500;"/>
+         </HBox>
+         <TextField fx:id="emailField" promptText="请输入邮箱地址"
+                    styleClass="modern-input"/>
+      </VBox>
+
+      <!-- 注册按钮 -->
+      <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister"
+              prefHeight="45.0" prefWidth="220.0" styleClass="modern-button register-button">
+         <graphic>
+            <Label text="✅" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+         </graphic>
+         <text>注册</text>
+      </Button>
+      
+      <!-- 登录链接 -->
+      <HBox alignment="CENTER" spacing="5.0">
+         <Label text="已有账号？" textFill="#666666" style="-fx-font-size: 12px;"/>
+         <Button fx:id="loginLink" mnemonicParsing="false" onAction="#handleLoginLink"
+                 styleClass="link-button">
+            <text>立即登录</text>
+         </Button>
+      </HBox>
+
+      <!-- 错误信息 -->
+      <Label fx:id="errorLabel" textFill="#ff4444" visible="false"
+             style="-fx-font-size: 12; -fx-text-alignment: center;" wrapText="true"/>
+   </VBox>
+</AnchorPane>

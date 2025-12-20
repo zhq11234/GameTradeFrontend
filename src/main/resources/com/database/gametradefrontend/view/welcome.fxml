@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 50%, #f093fb 100%);"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.WelcomeController">
+   
+	   <stylesheets>
+	      <URL value="@../view/styles/welcome.css" />
+	   </stylesheets>
+   
+   <!-- 波纹效果背景 -->
+   <VBox fx:id="rippleContainer" alignment="CENTER" spacing="30.0" 
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+      <!-- 欢迎文字 -->
+      <VBox alignment="CENTER" spacing="15.0">
+         <Label fx:id="welcomeText1" text="欢" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText2" text="迎" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText3" text="来" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText4" text="到" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText5" text="交" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText6" text="易" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText7" text="平" styleClass="welcome-text" visible="false"/>
+         <Label fx:id="welcomeText8" text="台" styleClass="welcome-text" visible="false"/>
+      </VBox>
+      
+      <!-- 按钮区域 -->
+      <VBox alignment="CENTER" spacing="15.0" style="-fx-padding: 40 0 0 0;">
+         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" 
+                 prefHeight="50.0" prefWidth="200.0" styleClass="modern-button login-button">
+            <graphic>
+               <Label text="🔐" style="-fx-font-size: 18px;"/>
+            </graphic>
+            <text>登录</text>
+         </Button>
+         
+         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister" 
+                 prefHeight="50.0" prefWidth="200.0" styleClass="modern-button register-button">
+            <graphic>
+               <Label text="📝" style="-fx-font-size: 18px;"/>
+            </graphic>
+            <text>注册</text>
+         </Button>
+      </VBox>
+   </VBox>
+</AnchorPane>

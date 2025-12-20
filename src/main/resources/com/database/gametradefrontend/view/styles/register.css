@@ -1,0 +1,122 @@
+/* 现代化输入框样式 */
+.modern-input {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 12;
+    -fx-font-size: 14;
+    -fx-background-color: #f8f9fa;
+    -fx-border-width: 1;
+    -fx-transition: all 0.3s ease;
+}
+
+.modern-input:focused {
+    -fx-border-color: #f5576c;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(245, 87, 108, 0.3), 10, 0, 0, 2);
+}
+
+/* 现代化按钮样式 */
+.modern-button {
+    -fx-background-radius: 25px;
+    -fx-border-radius: 25px;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
+    -fx-transition: all 0.3s ease;
+}
+
+.modern-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.modern-button:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* 注册按钮特定样式 */
+.register-button {
+    -fx-background-color: linear-gradient(to right, #f093fb, #f5576c);
+    -fx-text-fill: white;
+}
+
+.register-button:hover {
+    -fx-background-color: linear-gradient(to right, #e685f0, #e94b63);
+}
+
+/* 返回按钮样式 */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-padding: 5;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(245, 87, 108, 0.1);
+    -fx-text-fill: #f5576c;
+}
+
+/* 链接按钮样式 */
+.link-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #f5576c;
+    -fx-font-size: 12px;
+    -fx-padding: 0;
+    -fx-underline: true;
+}
+
+.link-button:hover {
+    -fx-text-fill: #e94b63;
+    -fx-background-color: transparent;
+}
+
+/* 输入框图标样式 */
+.input-icon {
+    -fx-font-size: 16px;
+    -fx-text-fill: #666666;
+}
+
+/* 标签样式 */
+.input-label {
+    -fx-text-fill: #666666;
+    -fx-font-weight: 500;
+    -fx-font-size: 14px;
+}
+
+/* 错误信息样式 */
+.error-label {
+    -fx-text-fill: #ff4444;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+/* 标题样式 */
+.title-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #333333;
+}
+
+/* 副标题样式 */
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+    -fx-text-alignment: center;
+}
+
+/* 成功信息样式 */
+.success-label {
+    -fx-text-fill: #00C851;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
