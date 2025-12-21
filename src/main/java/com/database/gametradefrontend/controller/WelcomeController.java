@@ -1,20 +1,15 @@
 package com.database.gametradefrontend.controller;
 
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.Random;
 
 public class WelcomeController {
     
@@ -89,35 +84,10 @@ public class WelcomeController {
             // 播放动画
             translateTransition.play();
             fadeTransition.play();
-            
-            // 为最后一个文字添加渐变闪烁效果
-            if (i == textLabels.length - 1) {
-                fadeTransition.setOnFinished(e -> startGradientAnimation(label));
-            }
         }
     }
     
-    private void startGradientAnimation(Label label) {
-        // 创建渐变颜色动画
-        Timeline gradientTimeline = new Timeline(
-            new KeyFrame(Duration.ZERO, 
-                new KeyValue(label.styleProperty(), 
-                    "-fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b, #4ecdc4);")),
-            new KeyFrame(Duration.seconds(1.5), 
-                new KeyValue(label.styleProperty(), 
-                    "-fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #4ecdc4, #45b7d1);")),
-            new KeyFrame(Duration.seconds(3), 
-                new KeyValue(label.styleProperty(), 
-                    "-fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #45b7d1, #96ceb4);")),
-            new KeyFrame(Duration.seconds(4.5), 
-                new KeyValue(label.styleProperty(), 
-                    "-fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #96ceb4, #feca57);"))
-        );
-        
-        gradientTimeline.setCycleCount(Timeline.INDEFINITE);
-        gradientTimeline.setAutoReverse(true);
-        gradientTimeline.play();
-    }
+
     
 
     
@@ -147,7 +117,7 @@ public class WelcomeController {
             Parent loginRoot = loader.load();
             
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(loginRoot, 800, 600));
+            stage.setScene(new Scene(loginRoot, 1000, 800));
             stage.setTitle("GameTrade - 登录");
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,7 +132,7 @@ public class WelcomeController {
             Parent registerRoot = loader.load();
             
             Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(registerRoot, 800, 600));
+            stage.setScene(new Scene(registerRoot, 1000, 800));
             stage.setTitle("GameTrade - 注册");
         } catch (Exception e) {
             e.printStackTrace();

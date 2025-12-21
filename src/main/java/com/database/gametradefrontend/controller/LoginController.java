@@ -1,5 +1,7 @@
 package com.database.gametradefrontend.controller;
 
+import com.database.gametradefrontend.model.User;
+import com.database.gametradefrontend.service.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,8 +12,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import com.database.gametradefrontend.model.User;
-import com.database.gametradefrontend.service.UserService;
 
 public class LoginController {
     
@@ -46,33 +46,24 @@ public class LoginController {
     }
     
     private void setupEventHandlers() {
-        // 为登录按钮添加样式变化效果
-        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #5a6fd8 0%, #6a42a0 100%); " +
-                           "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-font-size: 14; -fx-cursor: hand;"));
+        // 为登录按钮添加样式变化效果 - 使用CSS类
+        loginButton.setOnMouseEntered(e -> loginButton.getStyleClass().add("login-button-hover"));
+        loginButton.setOnMouseExited(e -> loginButton.getStyleClass().remove("login-button-hover"));
         
-        loginButton.setOnMouseExited(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%); " +
-                           "-fx-background-radius: 8; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-font-size: 14; -fx-cursor: hand;"));
-        
-        // 输入框获得焦点时的样式变化
+        // 输入框获得焦点时的样式变化 - 使用CSS类
         usernameField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                usernameField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                                     "-fx-border-color: #667eea; -fx-padding: 12; -fx-font-size: 14;");
+                usernameField.getStyleClass().add("modern-input-focused");
             } else {
-                usernameField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                                     "-fx-border-color: #e0e0e0; -fx-padding: 12; -fx-font-size: 14;");
+                usernameField.getStyleClass().remove("modern-input-focused");
             }
         });
         
         passwordField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                passwordField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                                     "-fx-border-color: #667eea; -fx-padding: 12; -fx-font-size: 14;");
+                passwordField.getStyleClass().add("modern-input-focused");
             } else {
-                passwordField.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                                     "-fx-border-color: #e0e0e0; -fx-padding: 12; -fx-font-size: 14;");
+                passwordField.getStyleClass().remove("modern-input-focused");
             }
         });
     }
@@ -122,11 +113,17 @@ public class LoginController {
         // 重置UI状态
         resetLoginButton();
         
-        // 显示成功消息（在实际应用中，这里应该跳转到主界面）
-        showSuccess("登录成功！欢迎 " + user.getUsername());
-        
-        // TODO: 跳转到主界面
-        System.out.println("登录成功，用户: " + user.getUsername());
+        // 跳转到主界面
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/main.fxml"));
+            Parent mainRoot = loader.load();
+            
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(mainRoot, 1000, 800));
+            stage.setTitle("GameTrade - 主界面");
+        } catch (Exception e) {
+            showErrorDialog("跳转失败", "无法加载主界面: " + e.getMessage());
+        }
     }
     
     private void onLoginFailure(String errorMessage) {
@@ -159,10 +156,10 @@ public class LoginController {
             Parent welcomeRoot = loader.load();
             
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(welcomeRoot, 400, 600));
+            stage.setScene(new Scene(welcomeRoot, 1000, 800));
             stage.setTitle("GameTrade - 欢迎");
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorDialog("界面切换失败", e.getMessage());
         }
     }
     
@@ -174,10 +171,20 @@ public class LoginController {
             Parent registerRoot = loader.load();
             
             Stage stage = (Stage) registerLink.getScene().getWindow();
-            stage.setScene(new Scene(registerRoot, 400, 600));
+            stage.setScene(new Scene(registerRoot, 1000, 800));
             stage.setTitle("GameTrade - 注册");
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorDialog("界面切换失败", e.getMessage());
         }
+    }
+    
+    private void showErrorDialog(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.ERROR
+        );
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

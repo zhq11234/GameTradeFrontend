@@ -17,7 +17,7 @@ public class GameTradeApp extends Application {
                     GameTradeApp.class.getResource("view/welcome.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 1000, 800);
             primaryStage.setTitle("GameTrade - 欢迎");
             primaryStage.setScene(scene);
 //            primaryStage.setResizable(false);

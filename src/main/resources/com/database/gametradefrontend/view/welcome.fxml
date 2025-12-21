@@ -1,59 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0"
-            style="-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 50%, #f093fb 100%);"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.database.gametradefrontend.controller.WelcomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0"
+			style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 50%, #f093fb 100%);"
+			xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+			fx:controller="com.database.gametradefrontend.controller.WelcomeController">
    
 		   <stylesheets>
 		      <URL value="@styles/welcome.css" />
 		   </stylesheets>
    
-	   <!-- 主容器 -->
-	   <VBox alignment="CENTER" spacing="80.0" 
-	         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
-	         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-	      
-			      <!-- 欢迎文字区域 - 主导位置 -->
-			      <VBox alignment="CENTER" style="-fx-padding: 120 0 0 0;">
-				      <!-- 欢迎文字 - 横向排列 -->
-				      <HBox alignment="CENTER" spacing="20.0">
-					         <Label fx:id="welcomeText1" text="欢" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText2" text="迎" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText3" text="来" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText4" text="到" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText5" text="交" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText6" text="易" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText7" text="平" styleClass="welcome-text welcome-text-glow" visible="false"/>
-					         <Label fx:id="welcomeText8" text="台" styleClass="welcome-text welcome-text-glow" visible="false"/>
-				      </HBox>
-			      </VBox>
-	      
-	      <!-- 按钮区域 - 放在同一行 -->
-	      <HBox alignment="CENTER" spacing="40.0" style="-fx-padding: 0 0 100 0;">
-	         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" 
-	                 prefHeight="60.0" prefWidth="180.0" styleClass="modern-button login-button">
-	            <graphic>
-	               <Label text="🔐" style="-fx-font-size: 20px;"/>
-	            </graphic>
-	            <text>登录</text>
-	         </Button>
-	         
-	         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister" 
-	                 prefHeight="60.0" prefWidth="180.0" styleClass="modern-button register-button">
-	            <graphic>
-	               <Label text="📝" style="-fx-font-size: 20px;"/>
-	            </graphic>
-	            <text>注册</text>
-	         </Button>
-	      </HBox>
-	   </VBox>
+			   <!-- 主容器 - 响应式布局 -->
+			   <VBox alignment="CENTER" spacing="20.0" 
+			         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+			         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		      
+				      <!-- 欢迎文字区域 - 主导位置 -->
+				      <VBox alignment="CENTER" style="-fx-padding: 15% 0 0 0;">
+						      <!-- 欢迎文字 - 横向排列 -->
+						      <HBox alignment="CENTER" spacing="10.0">
+						         <Label fx:id="welcomeText1" text="欢" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText2" text="迎" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText3" text="来" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText4" text="到" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText5" text="交" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText6" text="易" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText7" text="平" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+						         <Label fx:id="welcomeText8" text="台" styleClass="welcome-text, welcome-text-glow" visible="false"/>
+					      </HBox>
+				      </VBox>
+		      
+			      <!-- 按钮区域 - 放在同一行 -->
+			      <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 0 0 10% 0;">
+		         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" 
+		                 styleClass="modern-button, login-button, responsive-button">
+		            <graphic>
+		               <Label text="🔐" styleClass="button-icon"/>
+		            </graphic>
+		            <text>登录</text>
+		         </Button>
+		         
+		         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister" 
+		                 styleClass="modern-button, register-button, responsive-button">
+		            <graphic>
+		               <Label text="📝" styleClass="button-icon"/>
+		            </graphic>
+		            <text>注册</text>
+		         </Button>
+		      </HBox>
+		   </VBox>
 </AnchorPane>

@@ -1,5 +1,7 @@
 package com.database.gametradefrontend.controller;
 
+import com.database.gametradefrontend.model.User;
+import com.database.gametradefrontend.service.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,8 +12,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import com.database.gametradefrontend.model.User;
-import com.database.gametradefrontend.service.UserService;
 
 public class RegisterController {
     
@@ -52,16 +52,11 @@ public class RegisterController {
     }
     
     private void setupEventHandlers() {
-        // 为注册按钮添加样式变化效果
-        registerButton.setOnMouseEntered(e -> registerButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #e685f0 0%, #e94b63 100%); " +
-                               "-fx-background-radius: 25; -fx-text-fill: white; -fx-font-weight: bold; " +
-                               "-fx-font-size: 16; -fx-cursor: hand;"));
+        // 为注册按钮添加样式变化效果 - 使用CSS类
+        registerButton.setOnMouseEntered(e -> registerButton.getStyleClass().add("register-button-hover"));
+        registerButton.setOnMouseExited(e -> registerButton.getStyleClass().remove("register-button-hover"));
         
-        registerButton.setOnMouseExited(e -> registerButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #f093fb 0%, #f5576c 100%); " +
-                               "-fx-background-radius: 25; -fx-text-fill: white; -fx-font-weight: bold; " +
-                               "-fx-font-size: 16; -fx-cursor: hand;"));
-        
-        // 输入框获得焦点时的样式变化
+        // 输入框获得焦点时的样式变化 - 使用CSS类
         setupInputFieldFocus(usernameField);
         setupInputFieldFocus(passwordField);
         setupInputFieldFocus(confirmPasswordField);
@@ -71,13 +66,9 @@ public class RegisterController {
     private void setupInputFieldFocus(TextField field) {
         field.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                field.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                             "-fx-border-color: #f5576c; -fx-padding: 12; -fx-font-size: 14; " +
-                             "-fx-background-color: #ffffff;");
+                field.getStyleClass().add("modern-input-focused");
             } else {
-                field.setStyle("-fx-background-radius: 8; -fx-border-radius: 8; " +
-                             "-fx-border-color: #e0e0e0; -fx-padding: 12; -fx-font-size: 14; " +
-                             "-fx-background-color: #f8f9fa;");
+                field.getStyleClass().remove("modern-input-focused");
             }
         });
     }
@@ -200,10 +191,10 @@ public class RegisterController {
             Parent welcomeRoot = loader.load();
             
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(welcomeRoot, 400, 600));
+            stage.setScene(new Scene(welcomeRoot, 1000, 800));
             stage.setTitle("GameTrade - 欢迎");
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorDialog("界面切换失败", e.getMessage());
         }
     }
     
@@ -215,10 +206,20 @@ public class RegisterController {
             Parent loginRoot = loader.load();
             
             Stage stage = (Stage) loginLink.getScene().getWindow();
-            stage.setScene(new Scene(loginRoot, 400, 600));
+            stage.setScene(new Scene(loginRoot, 1000, 800));
             stage.setTitle("GameTrade - 登录");
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorDialog("界面切换失败", e.getMessage());
         }
+    }
+    
+    private void showErrorDialog(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.ERROR
+        );
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

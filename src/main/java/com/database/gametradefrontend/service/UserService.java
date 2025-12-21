@@ -1,7 +1,7 @@
 package com.database.gametradefrontend.service;
 
-import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.client.ApiClient;
+import com.database.gametradefrontend.model.User;
 
 public class UserService {
     private final ApiClient apiClient;
