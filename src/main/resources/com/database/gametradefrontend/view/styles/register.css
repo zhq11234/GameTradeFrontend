@@ -1,293 +1,284 @@
-/* 响应式现代化输入框样式 */
-.modern-input {
-    -fx-background-radius: 0.5em;
-    -fx-border-radius: 0.5em;
-    -fx-border-color: #e0e0e0;
-    -fx-padding: 0.8em;
-    -fx-font-size: 0.9em;
+/* 注册界面响应式样式 */
+
+/* 根容器样式 */
+.root {
+    -fx-font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+/* SplitPane样式 */
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: #e0e0e0;
+    -fx-pref-width: 1px;
+}
+
+/* 左边海报区域样式 */
+.poster-container {
+    -fx-background-color: linear-gradient(to bottom right, #1a1a2e, #16213e);
+}
+
+.poster-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 2);
+}
+
+.poster-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #cccccc;
+}
+
+/* 右边表单区域样式 */
+.form-container {
     -fx-background-color: #f8f9fa;
-    -fx-border-width: 1;
-}
-.gradient-box {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
-    rgba(240, 147, 251, 0.9) 0%,
-    rgba(245, 87, 108, 0.9) 100%);
-}
-/* 现代化输入框样式 */
-.modern-input:focused {
-    -fx-border-color: #f5576c;
-    -fx-background-color: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(245, 87, 108, 0.3), 0.6em, 0, 0, 0.1em);
 }
 
-/* 现代化主要按钮样式 */
-.modern-primary-button {
-    -fx-background-radius: 1.5em;
-    -fx-border-radius: 1.5em;
-    -fx-font-size: 1.1em;
+.form-header {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.form-title {
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
-    -fx-min-width: 14em;
-    -fx-max-width: 25em;
-    -fx-min-height: 3.5em;
-    -fx-text-fill: white;
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f093fb, #f5576c);
+    -fx-text-fill: #2c3e50;
 }
 
-.modern-primary-button:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e685f0, #e94b63);
-}
-
-.modern-primary-button:pressed {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
-}
-/* 注册按钮特定样式 */
-.register-button {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f093fb, #f5576c);
-    -fx-text-fill: white;
-}
-
-.register-button:hover, .register-button-hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e685f0, #e94b63);
-}
-
-/* 品牌图标样式 */
-.brand-icon {
-    -fx-font-size: 5em;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
-}
-
-/* 品牌标题样式 */
-.brand-title {
-    -fx-text-fill: white;
-    -fx-font-size: 2.5em;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
-}
-
-/* 品牌副标题样式 */
-.brand-subtitle {
-    -fx-text-fill: rgba(255,255,255,0.9);
-    -fx-font-size: 1.2em;
-    -fx-font-weight: bold;
-}
-
-/* 品牌平台名称样式 */
-.brand-platform {
-    -fx-text-fill: rgba(255,255,255,0.8);
-    -fx-font-size: 1em;
-    -fx-font-style: italic;
-}
-
-/* 表单主标题样式 */
-.form-main-title {
-    -fx-font-weight: bold;
-    -fx-font-size: 2em;
-    -fx-text-fill: #333333;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);
-}
-
-/* 表单副标题样式 */
 .form-subtitle {
-    -fx-font-size: 1em;
-    -fx-text-fill: #666666;
-    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
 }
 
-/* 现代化返回按钮样式 */
-.modern-back-button {
+/* 角色选择区域样式 */
+.role-selection {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+}
+
+.role-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.radio-button {
+    -fx-font-size: 14px;
+}
+
+.radio-button:selected {
+    -fx-text-fill: #3498db;
+}
+
+/* TabPane样式 */
+.tab-pane {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #666666;
-    -fx-padding: 0.5em 1em;
-    -fx-background-radius: 1.5em;
-    -fx-border-radius: 1.5em;
-    -fx-font-size: 0.9em;
-    -fx-cursor: hand;
+    -fx-tab-min-height: 40px;
+    -fx-tab-max-height: 40px;
 }
 
-.modern-back-button:hover {
-    -fx-background-color: rgba(245, 87, 108, 0.15);
-    -fx-text-fill: #f5576c;
-    -fx-effect: dropshadow(three-pass-box, rgba(245, 87, 108, 0.2), 5, 0, 0, 2);
-}
-
-/* 返回标签样式 */
-.back-label {
-    -fx-text-fill: #666666;
-    -fx-font-size: 0.9em;
-}
-
-/* 按钮图标样式 */
-.button-icon {
-    -fx-font-size: 1em;
-}
-
-/* 现代化链接按钮样式 */
-.modern-link-button {
+.tab-pane .tab-header-background {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: #f5576c;
-    -fx-font-size: 0.9em;
-    -fx-font-weight: bold;
-    -fx-padding: 0.3em 0.5em;
-    -fx-underline: false;
-    -fx-cursor: hand;
-    -fx-background-radius: 0.8em;
-    -fx-border-radius: 0.8em;
 }
 
-.modern-link-button:hover {
-    -fx-text-fill: #e94b63;
-    -fx-background-color: rgba(245, 87, 108, 0.1);
-    -fx-underline: false;
-    -fx-effect: dropshadow(three-pass-box, rgba(245, 87, 108, 0.2), 5, 0, 0, 1);
+.tab-pane .tab {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5px 5px 0 0;
+    -fx-border-radius: 5px 5px 0 0;
 }
 
-/* 链接标签样式 */
-.link-label {
-    -fx-text-fill: #666666;
-    -fx-font-size: 0.8em;
+.tab-pane .tab:selected {
+    -fx-background-color: #3498db;
 }
 
-/* 输入框图标样式 */
-.input-icon {
-    -fx-font-size: 1em;
-    -fx-text-fill: #666666;
-}
-
-/* 输入标签样式 */
-.input-label {
-    -fx-text-fill: #666666;
-    -fx-font-weight: 500;
-    -fx-font-size: 0.9em;
-}
-
-/* 现代化错误信息样式 */
-.error-message {
-    -fx-text-fill: #ff4444;
-    -fx-font-size: 0.9em;
-    -fx-text-alignment: center;
-    -fx-wrap-text: true;
-    -fx-font-weight: bold;
-    -fx-padding: 0.5em;
-    -fx-background-color: rgba(255, 68, 68, 0.1);
-    -fx-background-radius: 0.5em;
-    -fx-border-radius: 0.5em;
-}
-
-/* 角色选择单选按钮样式 */
-.role-radio {
-    -fx-font-size: 0.9em;
-    -fx-text-fill: #333333;
-    -fx-font-weight: 500;
-}
-
-.role-radio:selected {
-    -fx-text-fill: #f5576c;
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #2c3e50;
     -fx-font-weight: bold;
 }
 
-/* 成功信息样式 */
-.success-label {
-    -fx-text-fill: #00C851;
-    -fx-font-size: 0.8em;
-    -fx-text-alignment: center;
-    -fx-wrap-text: true;
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: white;
 }
 
-/* 注册成功消息样式 */
-.success-message {
-    -fx-text-fill: #00C851;
-    -fx-font-size: 1.2em;
+/* 表单内容区域样式 */
+.form-content {
+    -fx-padding: 30px;
+    -fx-background-color: white;
+}
+
+.grid-pane {
+    -fx-hgap: 15px;
+    -fx-vgap: 15px;
+}
+
+.form-label {
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-alignment: center;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 200, 81, 0.3), 5, 0, 0, 2);
+    -fx-text-fill: #2c3e50;
 }
 
-/* ========== JavaFX CSS 响应式布局优化 ========== */
-
-/* 响应式输入框优化 - 使用JavaFX CSS特性 */
-.responsive-input {
-    -fx-pref-width: -1;
-    -fx-min-width: 12em;
-    -fx-max-width: 100%;
-    -fx-pref-height: 2.8em;
-    -fx-min-height: 2.5em;
+.text-field, .password-field {
+    -fx-pref-height: 35px;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 0 10px;
 }
 
-/* 响应式按钮优化 - 使用JavaFX CSS特性 */
-.responsive-button {
-    -fx-pref-width: -1;
-    -fx-pref-height: -1;
-    -fx-min-width: 10em;
-    -fx-max-width: 100%;
-    -fx-min-height: 3em;
-    -fx-max-height: 4em;
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
 }
 
-/* 响应式容器 */
-.responsive-container {
-    -fx-min-width: 300px;
-    -fx-max-width: 100%;
+.text-field:error, .password-field:error {
+    -fx-border-color: #e74c3c;
+    -fx-border-width: 2px;
 }
 
-/* 重要控件样式 - 确保在小屏幕上可见 */
-.important-control {
-    -fx-min-width: 6em !important;
-    -fx-min-height: 2.5em !important;
+.text-field:success, .password-field:success {
+    -fx-border-color: #27ae60;
+    -fx-border-width: 2px;
 }
 
-/* 小屏幕适配 - 通过调整最小尺寸实现 */
-.gradient-box {
-    -fx-min-width: 40%;
+/* 状态标签样式 */
+.status-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
-.brand-icon {
-    -fx-font-size: 5em;
+.status-success {
+    -fx-text-fill: #27ae60;
 }
 
-.brand-title {
-    -fx-font-size: 2.5em;
+.status-error {
+    -fx-text-fill: #e74c3c;
 }
 
-.brand-subtitle {
-    -fx-font-size: 1.2em;
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
 }
 
-.form-main-title {
-    -fx-font-size: 2em;
+/* 按钮区域样式 */
+.button-container {
+    -fx-background-color: white;
+    -fx-padding: 20px;
 }
 
-/* 确保注册按钮等重要控件始终可见 */
 .register-button {
-    -fx-min-width: 8em !important;
-    -fx-min-height: 2.8em !important;
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-pref-height: 40px;
+    -fx-pref-width: 200px;
 }
 
-.modern-back-button {
-    -fx-min-width: 3em !important;
-    -fx-min-height: 2.5em !important;
+.register-button:hover {
+    -fx-background-color: #2980b9;
+    -fx-cursor: hand;
 }
 
-.modern-link-button {
-    -fx-min-width: 5em !important;
-    -fx-min-height: 2em !important;
+.register-button:disabled {
+    -fx-background-color: #bdc3c7;
+    -fx-cursor: default;
 }
 
-/* 表单区域响应式内边距 */
-.responsive-form-padding {
-    -fx-padding: 10% 8%;
+/* 登录链接样式 */
+.login-link-container {
+    -fx-spacing: 5px;
 }
 
-/* 小屏幕下的间距优化 */
-.responsive-spacing {
-    -fx-spacing: 20;
+.login-label {
+    -fx-text-fill: #7f8c8d;
 }
 
-.responsive-small-spacing {
-    -fx-spacing: 10;
+.hyperlink {
+    -fx-text-fill: #3498db;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #2980b9;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+/* ScrollPane样式 */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #f0f0f0;
+    -fx-background-radius: 2px;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #bdc3c7;
+    -fx-background-radius: 2px;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #95a5a6;
+}
+
+/* 响应式设计 */
+@media (max-width: 800px) {
+    .split-pane {
+        -fx-orientation: vertical;
+    }
+    
+    .split-pane:vertical > .split-pane-divider {
+        -fx-background-color: #e0e0e0;
+        -fx-pref-height: 1px;
+    }
+    
+    .form-title {
+        -fx-font-size: 24px;
+    }
+    
+    .form-content {
+        -fx-padding: 20px;
+    }
+    
+    .grid-pane {
+        -fx-hgap: 10px;
+        -fx-vgap: 10px;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-opacity: 1;
+    }
+}
+
+.fade-in {
+    -fx-animation: fadeIn 0.3s ease-in;
+}
+
+/* 输入框占位符样式 */
+.text-field .prompt-text, .password-field .prompt-text {
+    -fx-text-fill: #95a5a6;
+    -fx-font-style: italic;
 }

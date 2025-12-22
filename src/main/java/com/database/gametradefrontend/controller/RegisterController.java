@@ -4,11 +4,13 @@ import com.database.gametradefrontend.service.UserService;
 import com.database.gametradefrontend.util.ControllerUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 
 public class RegisterController {
     
     private ToggleGroup roleToggleGroup;
+    
+    @FXML
+    private TabPane formTabPane;
     
     @FXML
     private RadioButton buyerRadio;
@@ -41,28 +43,7 @@ public class RegisterController {
     private TextField contactPersonField;
     
     @FXML
-    private VBox buyerInfoBox;
-    
-    @FXML
-    private VBox vendorInfoBox;
-    
-    @FXML
     private Button registerButton;
-    
-    @FXML
-    private Button backButton;
-    
-    @FXML
-    private Button loginLink;
-
-    @FXML
-    private Label errorLabel;
-
-    @FXML
-    private VBox successBox;
-
-    @FXML
-    private Button loginNowButton;
     
     // 实时验证状态标签
     @FXML
@@ -112,12 +93,12 @@ public class RegisterController {
         vendorRadio.setToggleGroup(roleToggleGroup);
         buyerRadio.setSelected(true);
         
+        // 设置初始Tab为买家注册
+        formTabPane.getSelectionModel().select(0);
+        
         // 初始化控制器
         setupEventHandlers();
         setupRoleToggleListener();
-        
-        // 确保初始状态正确
-        showBuyerFields();
     }
     
     private void setupEventHandlers() {
@@ -140,9 +121,7 @@ public class RegisterController {
     
     private void setupRealTimeValidation() {
         // 账号实时验证
-        accountField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateAccount(newValue);
-        });
+        accountField.textProperty().addListener((observable, oldValue, newValue) -> validateAccount(newValue));
         
         // 密码实时验证
         passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -151,34 +130,22 @@ public class RegisterController {
         });
         
         // 确认密码实时验证
-        confirmPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validatePasswordMatch();
-        });
+        confirmPasswordField.textProperty().addListener((observable, oldValue, newValue) -> validatePasswordMatch());
         
         // 联系方式实时验证
-        contactField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateContact(newValue);
-        });
+        contactField.textProperty().addListener((observable, oldValue, newValue) -> validateContact(newValue));
         
         // 昵称实时验证
-        nicknameField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateNickname(newValue);
-        });
+        nicknameField.textProperty().addListener((observable, oldValue, newValue) -> validateNickname(newValue));
         
         // 企业名实时验证
-        companyNameField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateCompanyName(newValue);
-        });
+        companyNameField.textProperty().addListener((observable, oldValue, newValue) -> validateCompanyName(newValue));
         
         // 注册地址实时验证
-        registeredAddressField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateRegisteredAddress(newValue);
-        });
+        registeredAddressField.textProperty().addListener((observable, oldValue, newValue) -> validateRegisteredAddress(newValue));
         
         // 联系人实时验证
-        contactPersonField.textProperty().addListener((observable, oldValue, newValue) -> {
-            validateContactPerson(newValue);
-        });
+        contactPersonField.textProperty().addListener((observable, oldValue, newValue) -> validateContactPerson(newValue));
     }
     
     private void validateAccount(String account) {
@@ -191,7 +158,7 @@ public class RegisterController {
         } else if (!account.matches("^[a-zA-Z0-9_]+$")) {
             showFieldError(accountField, "账号只能包含字母、数字和下划线");
         } else {
-            showFieldSuccess(accountField, "账号格式正确");
+            showFieldSuccess(accountField);
         }
     }
     
@@ -209,7 +176,7 @@ public class RegisterController {
         } else if (!password.matches(".*\\d.*")) {
             showFieldError(passwordField, "密码应包含至少一个数字");
         } else {
-            showFieldSuccess(passwordField, "密码强度良好");
+            showFieldSuccess(passwordField);
         }
     }
     
@@ -222,7 +189,7 @@ public class RegisterController {
         } else if (!password.equals(confirmPassword)) {
             showFieldError(confirmPasswordField, "两次输入的密码不一致");
         } else if (password.length() >= 8) {
-            showFieldSuccess(confirmPasswordField, "密码匹配");
+            showFieldSuccess(confirmPasswordField);
         }
     }
     
@@ -232,9 +199,9 @@ public class RegisterController {
         } else if (contact.length() > 100) {
             showFieldError(contactField, "联系方式长度不能超过100位");
         } else if (contact.matches("^1[3-9]\\d{9}$")) {
-            showFieldSuccess(contactField, "手机号格式正确");
+            showFieldSuccess(contactField);
         } else if (contact.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
-            showFieldSuccess(contactField, "邮箱格式正确");
+            showFieldSuccess(contactField);
         } else {
             showFieldError(contactField, "请输入有效的手机号或邮箱");
         }
@@ -246,7 +213,7 @@ public class RegisterController {
         } else if (nickname.length() > 50) {
             showFieldError(nicknameField, "昵称长度不能超过50位");
         } else {
-            showFieldSuccess(nicknameField, "昵称格式正确");
+            showFieldSuccess(nicknameField);
         }
     }
     
@@ -256,7 +223,7 @@ public class RegisterController {
         } else if (companyName.length() > 100) {
             showFieldError(companyNameField, "企业名长度不能超过100位");
         } else {
-            showFieldSuccess(companyNameField, "企业名格式正确");
+            showFieldSuccess(companyNameField);
         }
     }
     
@@ -266,7 +233,7 @@ public class RegisterController {
         } else if (address.length() > 200) {
             showFieldError(registeredAddressField, "注册地址长度不能超过200位");
         } else {
-            showFieldSuccess(registeredAddressField, "注册地址格式正确");
+            showFieldSuccess(registeredAddressField);
         }
     }
     
@@ -276,7 +243,7 @@ public class RegisterController {
         } else if (contactPerson.length() > 50) {
             showFieldError(contactPersonField, "联系人长度不能超过50位");
         } else {
-            showFieldSuccess(contactPersonField, "联系人格式正确");
+            showFieldSuccess(contactPersonField);
         }
     }
     
@@ -328,7 +295,7 @@ public class RegisterController {
         }
     }
     
-    private void showFieldSuccess(TextField field, String message) {
+    private void showFieldSuccess(TextField field) {
         // 设置输入框成功样式
         field.setStyle("-fx-border-color: #00C851; -fx-border-width: 2px;");
         
@@ -369,32 +336,14 @@ public class RegisterController {
     }
     
     private void setupRoleToggleListener() {
-        // 监听角色选择变化
+        // 监听角色选择变化，切换TabPane
         roleToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == buyerRadio) {
-                showBuyerFields();
+                formTabPane.getSelectionModel().select(0); // 切换到买家注册Tab
             } else if (newValue == vendorRadio) {
-                showVendorFields();
+                formTabPane.getSelectionModel().select(1); // 切换到供应商注册Tab
             }
         });
-    }
-    
-    private void showBuyerFields() {
-        buyerInfoBox.setVisible(true);
-        vendorInfoBox.setVisible(false);
-        
-        // 清空厂商相关字段
-        companyNameField.clear();
-        registeredAddressField.clear();
-        contactPersonField.clear();
-    }
-    
-    private void showVendorFields() {
-        buyerInfoBox.setVisible(false);
-        vendorInfoBox.setVisible(true);
-        
-        // 清空买家相关字段
-        nicknameField.clear();
     }
     
     @FXML
@@ -406,17 +355,17 @@ public class RegisterController {
         
         // 基本验证
         if (account.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || contact.isEmpty()) {
-            ControllerUtils.showError(errorLabel, "请填写所有必填字段");
+            showAlert("请填写所有必填字段");
             return;
         }
         
         if (!password.equals(confirmPassword)) {
-            ControllerUtils.showError(errorLabel, "两次输入的密码不一致");
+            showAlert("两次输入的密码不一致");
             return;
         }
         
         if (password.length() < 8) {
-            ControllerUtils.showError(errorLabel, "密码长度不能少于8位");
+            showAlert("密码长度不能少于8位");
             return;
         }
         
@@ -432,7 +381,7 @@ public class RegisterController {
         String nickname = nicknameField.getText().trim();
         
         if (nickname.isEmpty()) {
-            ControllerUtils.showError(errorLabel, "请输入昵称");
+            showAlert("请输入昵称");
             return;
         }
         
@@ -469,17 +418,17 @@ public class RegisterController {
         String contactPerson = contactPersonField.getText().trim();
         
         if (companyName.isEmpty()) {
-            ControllerUtils.showError(errorLabel, "请输入企业名");
+            showAlert("请输入企业名");
             return;
         }
         
         if (registeredAddress.isEmpty()) {
-            ControllerUtils.showError(errorLabel, "请输入注册地址");
+            showAlert("请输入注册地址");
             return;
         }
         
         if (contactPerson.isEmpty()) {
-            ControllerUtils.showError(errorLabel, "请输入联系人");
+            showAlert("请输入联系人");
             return;
         }
         
@@ -511,13 +460,24 @@ public class RegisterController {
         }).start();
     }
     
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("注册错误");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
     private void onRegisterSuccess() {
         // 重置UI状态
         ControllerUtils.resetButton(registerButton, "注册");
         
-        // 隐藏错误信息，显示成功区域
-        errorLabel.setVisible(false);
-        successBox.setVisible(true);
+        // 显示成功提示
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("注册成功");
+        alert.setHeaderText(null);
+        alert.setContentText("注册成功！请登录您的账户。");
+        alert.showAndWait();
         
         // 清空输入框
         clearFields();
@@ -529,9 +489,8 @@ public class RegisterController {
         // 重置UI状态
         ControllerUtils.resetButton(registerButton, "注册");
         
-        // 隐藏成功区域，显示错误信息
-        successBox.setVisible(false);
-        ControllerUtils.showError(errorLabel, errorMessage);
+        // 显示错误提示
+        showAlert(errorMessage);
     }
     
     private void clearFields() {
@@ -546,12 +505,12 @@ public class RegisterController {
     }
     
     @FXML
-    private void handleBack() {
-        ControllerUtils.switchScene(backButton, "/com/database/gametradefrontend/view/welcome.fxml", "GameTrade - 欢迎", 1000, 800);
+    private void switchToLogin() {
+        ControllerUtils.switchScene(registerButton, "/com/database/gametradefrontend/view/login.fxml", "GameTrade - 登录", 1000, 800);
     }
     
     @FXML
-    private void handleLoginLink() {
-        ControllerUtils.switchScene(loginLink, "/com/database/gametradefrontend/view/login.fxml", "GameTrade - 登录", 1000, 800);
+    private void switchToWelcome() {
+        ControllerUtils.switchScene(registerButton, "/com/database/gametradefrontend/view/welcome.fxml", "GameTrade - 欢迎", 1000, 800);
     }
 }
