@@ -171,7 +171,9 @@ public class ApiClient {
      * 获取错误信息
      */
     private String getErrorMessage(HttpURLConnection connection) throws IOException {
-        if (connection == null) return "Unknown error";
+        if (connection == null) {
+            return "Unknown error";
+        }
         
         // 先尝试读取 error stream，如果为 null 则回退到 response message
         try {

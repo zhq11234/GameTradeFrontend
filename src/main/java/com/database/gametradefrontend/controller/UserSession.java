@@ -75,17 +75,17 @@ public class UserSession {
     }
     
     /**
-     * 获取当前用户的用户名
+     * 获取当前用户的账号
      */
-    public String getUsername() {
-        return isSessionValid() ? currentUser.getUsername() : null;
+    public String getAccount() {
+        return isSessionValid() ? currentUser.getAccount() : null;
     }
     
     /**
-     * 获取当前用户的ID
+     * 获取当前用户的角色
      */
-    public Long getUserId() {
-        return isSessionValid() ? currentUser.getId() : null;
+    public String getRole() {
+        return isSessionValid() ? currentUser.getRole() : null;
     }
     
     /**

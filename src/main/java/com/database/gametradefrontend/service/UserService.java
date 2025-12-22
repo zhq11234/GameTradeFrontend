@@ -13,25 +13,25 @@ public class UserService {
     /**
      * 用户登录
      */
-    public User login(String username, String password) throws Exception {
+    public User login(String account, String password) throws Exception {
         // 输入验证
-        if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("用户名不能为空");
+        if (account == null || account.trim().isEmpty()) {
+            throw new IllegalArgumentException("账号不能为空");
         }
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("密码不能为空");
         }
         
         // 预处理
-        username = username.trim();
+        account = account.trim();
         password = password.trim();
         
         try {
-            LoginRequest loginRequest = new LoginRequest(username, password);
+            LoginRequest loginRequest = new LoginRequest(account, password);
             return apiClient.post("/users/login", loginRequest, User.class);
         } catch (ApiClient.ApiException e) {
             if (e.getStatusCode() == 401) {
-                // 用户名或密码错误
+                // 账号或密码错误
                 return null;
             }
             throw e;
@@ -39,33 +39,38 @@ public class UserService {
     }
     
     /**
-     * 用户注册
+     * 买家注册
      */
-    public boolean register(User user) throws Exception {
+    public boolean registerBuyer(String account, String password, String contact, String nickname) throws Exception {
         // 输入验证
-        if (user == null) {
-            throw new IllegalArgumentException("用户信息不能为空");
+        if (account == null || account.trim().isEmpty()) {
+            throw new IllegalArgumentException("账号不能为空");
         }
-        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("用户名不能为空");
-        }
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+        if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("密码不能为空");
+        }
+        if (contact == null || contact.trim().isEmpty()) {
+            throw new IllegalArgumentException("联系方式不能为空");
+        }
+        if (nickname == null || nickname.trim().isEmpty()) {
+            throw new IllegalArgumentException("昵称不能为空");
         }
         
         // 预处理
-        user.setUsername(user.getUsername().trim());
-        user.setPassword(user.getPassword().trim());
-        if (user.getEmail() != null) {
-            user.setEmail(user.getEmail().trim());
-        }
+        account = account.trim();
+        password = password.trim();
+        contact = contact.trim();
+        nickname = nickname.trim();
         
         try {
-            apiClient.post("/users/register", user, Void.class);
+            BuyerRegisterRequest registerRequest = new BuyerRegisterRequest(
+                "buyer", account, password, contact, nickname
+            );
+            apiClient.post("/users/register/buyer", registerRequest, Void.class);
             return true;
         } catch (ApiClient.ApiException e) {
             if (e.getStatusCode() == 409) {
-                // 用户名已存在
+                // 账号、联系方式或昵称已存在
                 return false;
             }
             throw e;
@@ -73,26 +78,134 @@ public class UserService {
     }
     
     /**
-     * 检查用户名是否已存在
+     * 厂商注册
      */
-    public boolean checkUsernameExists(String username) throws Exception {
+    public boolean registerVendor(String account, String password, String contact, 
+                                String companyName, String registeredAddress, String contactPerson) throws Exception {
         // 输入验证
-        if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("用户名不能为空");
+        if (account == null || account.trim().isEmpty()) {
+            throw new IllegalArgumentException("账号不能为空");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("密码不能为空");
+        }
+        if (contact == null || contact.trim().isEmpty()) {
+            throw new IllegalArgumentException("联系方式不能为空");
+        }
+        if (companyName == null || companyName.trim().isEmpty()) {
+            throw new IllegalArgumentException("企业名不能为空");
+        }
+        if (registeredAddress == null || registeredAddress.trim().isEmpty()) {
+            throw new IllegalArgumentException("注册地址不能为空");
+        }
+        if (contactPerson == null || contactPerson.trim().isEmpty()) {
+            throw new IllegalArgumentException("联系人不能为空");
         }
         
-        // URL编码用户名
-        String encoded = java.net.URLEncoder.encode(username.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        // 预处理
+        account = account.trim();
+        password = password.trim();
+        contact = contact.trim();
+        companyName = companyName.trim();
+        registeredAddress = registeredAddress.trim();
+        contactPerson = contactPerson.trim();
         
         try {
-            Boolean exists = apiClient.get("/users/check-username?username=" + encoded, Boolean.class);
+            VendorRegisterRequest registerRequest = new VendorRegisterRequest(
+                "vendor", account, password, contact, companyName, registeredAddress, contactPerson
+            );
+            apiClient.post("/users/register/vendor", registerRequest, Void.class);
+            return true;
+        } catch (ApiClient.ApiException e) {
+            if (e.getStatusCode() == 409) {
+                // 账号、联系方式或企业名已存在
+                return false;
+            }
+            throw e;
+        }
+    }
+    
+    /**
+     * 检查账号是否已存在
+     */
+    public boolean checkAccountExists(String account) throws Exception {
+        // 输入验证
+        if (account == null || account.trim().isEmpty()) {
+            throw new IllegalArgumentException("账号不能为空");
+        }
+        
+        // URL编码账号
+        String encoded = java.net.URLEncoder.encode(account.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        
+        try {
+            Boolean exists = apiClient.get("/users/check-account?account=" + encoded, Boolean.class);
             // 返回实际的布尔值（防止null造成的问题）
             return Boolean.TRUE.equals(exists);
         } catch (ApiClient.ApiException e) {
-            if (e.getStatusCode() == 404) {
-                // 用户名不存在
-                return false;
-            }
+            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
+            throw e;
+        }
+    }
+    
+    /**
+     * 检查联系方式是否已存在
+     */
+    public boolean checkContactExists(String contact) throws Exception {
+        // 输入验证
+        if (contact == null || contact.trim().isEmpty()) {
+            throw new IllegalArgumentException("联系方式不能为空");
+        }
+        
+        // URL编码联系方式
+        String encoded = java.net.URLEncoder.encode(contact.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        
+        try {
+            Boolean exists = apiClient.get("/users/check-contact?contact=" + encoded, Boolean.class);
+            return Boolean.TRUE.equals(exists);
+        } catch (ApiClient.ApiException e) {
+            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
+            throw e;
+        }
+    }
+    
+    /**
+     * 检查昵称是否已存在
+     */
+    public boolean checkNicknameExists(String nickname) throws Exception {
+        // 输入验证
+        if (nickname == null || nickname.trim().isEmpty()) {
+            throw new IllegalArgumentException("昵称不能为空");
+        }
+        
+        // URL编码昵称
+        String encoded = java.net.URLEncoder.encode(nickname.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        
+        try {
+            Boolean exists = apiClient.get("/users/check-nickname?nickname=" + encoded, Boolean.class);
+            return Boolean.TRUE.equals(exists);
+        } catch (ApiClient.ApiException e) {
+            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
+            throw e;
+        }
+    }
+    
+    /**
+     * 检查企业名是否已存在
+     */
+    public boolean checkCompanyNameExists(String companyName) throws Exception {
+        // 输入验证
+        if (companyName == null || companyName.trim().isEmpty()) {
+            throw new IllegalArgumentException("企业名不能为空");
+        }
+        
+        // URL编码企业名
+        String encoded = java.net.URLEncoder.encode(companyName.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        
+        try {
+            Boolean exists = apiClient.get("/users/check-company?companyName=" + encoded, Boolean.class);
+            return Boolean.TRUE.equals(exists);
+        } catch (ApiClient.ApiException e) {
+            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
             throw e;
         }
     }
@@ -101,20 +214,77 @@ public class UserService {
      * 内部登录请求类
      */
     private static class LoginRequest {
-        private final String username;
+        private final String account;
         private final String password;
         
-        public LoginRequest(String username, String password) {
-            this.username = username;
+        public LoginRequest(String account, String password) {
+            this.account = account;
             this.password = password;
         }
         
-        public String getUsername() {
-            return username;
+        public String getAccount() {
+            return account;
         }
         
         public String getPassword() {
             return password;
         }
+    }
+    
+    /**
+     * 内部买家注册请求类
+     */
+    private static class BuyerRegisterRequest {
+        private final String role;
+        private final String account;
+        private final String password;
+        private final String contact;
+        private final String nickname;
+        
+        public BuyerRegisterRequest(String role, String account, String password, String contact, String nickname) {
+            this.role = role;
+            this.account = account;
+            this.password = password;
+            this.contact = contact;
+            this.nickname = nickname;
+        }
+        
+        public String getRole() { return role; }
+        public String getAccount() { return account; }
+        public String getPassword() { return password; }
+        public String getContact() { return contact; }
+        public String getNickname() { return nickname; }
+    }
+    
+    /**
+     * 内部厂商注册请求类
+     */
+    private static class VendorRegisterRequest {
+        private final String role;
+        private final String account;
+        private final String password;
+        private final String contact;
+        private final String companyName;
+        private final String registeredAddress;
+        private final String contactPerson;
+        
+        public VendorRegisterRequest(String role, String account, String password, String contact, 
+                                   String companyName, String registeredAddress, String contactPerson) {
+            this.role = role;
+            this.account = account;
+            this.password = password;
+            this.contact = contact;
+            this.companyName = companyName;
+            this.registeredAddress = registeredAddress;
+            this.contactPerson = contactPerson;
+        }
+        
+        public String getRole() { return role; }
+        public String getAccount() { return account; }
+        public String getPassword() { return password; }
+        public String getContact() { return contact; }
+        public String getCompanyName() { return companyName; }
+        public String getRegisteredAddress() { return registeredAddress; }
+        public String getContactPerson() { return contactPerson; }
     }
 }

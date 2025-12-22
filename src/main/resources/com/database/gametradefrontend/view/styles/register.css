@@ -196,10 +196,31 @@
     -fx-border-radius: 0.5em;
 }
 
+/* 角色选择单选按钮样式 */
+.role-radio {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: #333333;
+    -fx-font-weight: 500;
+}
+
+.role-radio:selected {
+    -fx-text-fill: #f5576c;
+    -fx-font-weight: bold;
+}
+
 /* 成功信息样式 */
 .success-label {
     -fx-text-fill: #00C851;
     -fx-font-size: 0.8em;
     -fx-text-alignment: center;
     -fx-wrap-text: true;
+}
+
+/* 注册成功消息样式 */
+.success-message {
+    -fx-text-fill: #00C851;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 200, 81, 0.3), 5, 0, 0, 2);
 }

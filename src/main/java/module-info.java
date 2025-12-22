@@ -16,4 +16,5 @@ module com.database.gametradefrontend {
     exports com.database.gametradefrontend.service;
     exports com.database.gametradefrontend.client;
     opens com.database.gametradefrontend.controller to javafx.fxml;
+    opens com.database.gametradefrontend.service to com.fasterxml.jackson.databind;
 }

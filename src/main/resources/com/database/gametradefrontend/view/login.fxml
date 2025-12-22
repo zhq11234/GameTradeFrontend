@@ -28,36 +28,36 @@
 		         </VBox>
 		      </VBox>
 		      
-		      <!-- 右侧登录表单区域 - 现代化设计 -->
-		      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="20"
-		            style="-fx-background-color: white; -fx-padding: 10% 8%; -fx-min-width: 55%;">
-		         
-		         <!-- 返回导航 -->
-		         <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 0 0 5% 0;">
-		            <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" 
-		                    styleClass="modern-back-button">
-		               <graphic>
-		                  <Label text="⬅️" styleClass="button-icon"/>
-		               </graphic>
-		            </Button>
-		            <Label text="返回欢迎页" styleClass="back-label"/>
-		         </HBox>
-		         
-		         <!-- 表单标题 -->
-		         <VBox alignment="CENTER" spacing="5">
-		            <Label text="用户登录" styleClass="form-main-title"/>
-		            <Label text="请输入您的账户信息" styleClass="form-subtitle"/>
-		         </VBox>
+			      <!-- 右侧登录表单区域 - 现代化设计 -->
+			      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="25"
+			            style="-fx-background-color: white; -fx-padding: 10% 8%; -fx-min-width: 55%;">
+			         
+			         <!-- 返回导航 -->
+			         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 5% 0;">
+			            <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" 
+			                    styleClass="modern-back-button">
+			               <graphic>
+			                  <Label text="⬅️" styleClass="button-icon"/>
+			               </graphic>
+			            </Button>
+			            <Label text="返回欢迎页" styleClass="back-label"/>
+			         </HBox>
+			         
+			         <!-- 表单标题 -->
+			         <VBox alignment="CENTER" spacing="10">
+			            <Label text="用户登录" styleClass="form-main-title"/>
+			            <Label text="请输入您的账户信息" styleClass="form-subtitle"/>
+			         </VBox>
 
-			         <!-- 输入表单区域 -->
-			         <VBox alignment="CENTER" spacing="15" style="-fx-max-width: 36em;">
-            <!-- 用户名输入 -->
+				         <!-- 输入表单区域 -->
+				         <VBox alignment="CENTER" spacing="20" style="-fx-max-width: 38em;">
+            <!-- 账号输入 -->
             <VBox alignment="CENTER" spacing="5">
                <HBox spacing="8" alignment="CENTER">
                   <Label text="👤" styleClass="input-icon"/>
-                  <Label text="用户名" styleClass="input-label"/>
+                  <Label text="账号" styleClass="input-label"/>
                </HBox>
-               <TextField fx:id="usernameField" promptText="请输入用户名"
+               <TextField fx:id="accountField" promptText="请输入账号"
                           styleClass="modern-input, responsive-input" alignment="CENTER"/>
             </VBox>
 

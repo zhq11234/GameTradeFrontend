@@ -131,6 +131,14 @@ VBox, AnchorPane, HBox {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 2);
 }
 
+/* 平台简介样式 */
+.platform-description {
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-size: 1.3em;
+    -fx-font-weight: 500;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+}
+
 /* 按钮发光效果 */
 .button-glow-effect {
     -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.8), 15, 0, 0, 0);

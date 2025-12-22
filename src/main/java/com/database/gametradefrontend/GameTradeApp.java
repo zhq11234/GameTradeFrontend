@@ -39,12 +39,12 @@ public class GameTradeApp extends Application {
             try {
                 // 使用实际存在的API路径进行连接测试
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection)
-                        new java.net.URL("http://localhost:8080/api/users/check-username?username=test").openConnection();
+                        new java.net.URL("http://localhost:8080/api/users/check-account?account=test").openConnection();
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(3000);
 
                 int responseCode = conn.getResponseCode();
-                // 检查用户名API返回200或404都是正常的（用户名存在或不存在）
+                // 检查账号API返回200或404都是正常的（账号存在或不存在）
                 if (responseCode == 200 || responseCode == 404) {
                     System.out.println("✅ 后端连接成功 (响应码: " + responseCode + ")");
                 } else {

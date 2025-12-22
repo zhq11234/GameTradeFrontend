@@ -3,43 +3,40 @@ package com.database.gametradefrontend.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
-    private Long id;
-    private String username;
+    private String account;
+    private String role;
     private String password;  // 用于注册和登录请求，但不会被序列化到响应中
-    private String email;
-    private String phone;
-    private String nickname;
+    private String contact;
+    private String registerTime;
     
     // 默认构造函数（Jackson需要）
     public User() {}
     
     // 带参数的构造函数（用于注册）
-    public User(Long id, String username, String password, String email, String phone, String nickname) {
-        this.id = id;
-        this.username = username;
+    public User(String account, String role, String password, String contact) {
+        this.account = account;
+        this.role = role;
         this.password = password;
-        this.email = email;
-        this.phone = phone;
-        this.nickname = nickname;
+        this.contact = contact;
     }
     
     // Getters and Setters
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
+    @JsonProperty("account")
+    public String getAccount() {
+        return account;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setAccount(String account) {
+        this.account = account;
     }
     
-    @JsonProperty("username")
-    public String getUsername() {
-        return username;
+    @JsonProperty("role")
+    public String getRole() {
+        return role;
     }
     
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRole(String role) {
+        this.role = role;
     }
     
     @JsonProperty("password")
@@ -52,41 +49,31 @@ public class User {
         this.password = password;
     }
     
-    @JsonProperty("email")
-    public String getEmail() {
-        return email;
+    @JsonProperty("contact")
+    public String getContact() {
+        return contact;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
     
-    @JsonProperty("phone")
-    public String getPhone() {
-        return phone;
+    @JsonProperty("registerTime")
+    public String getRegisterTime() {
+        return registerTime;
     }
     
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    
-    @JsonProperty("nickname")
-    public String getNickname() {
-        return nickname;
-    }
-    
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setRegisterTime(String registerTime) {
+        this.registerTime = registerTime;
     }
     
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", nickname='" + nickname + '\'' +
+                "account='" + account + '\'' +
+                ", role='" + role + '\'' +
+                ", contact='" + contact + '\'' +
+                ", registerTime='" + registerTime + '\'' +
                 '}';
     }
 }

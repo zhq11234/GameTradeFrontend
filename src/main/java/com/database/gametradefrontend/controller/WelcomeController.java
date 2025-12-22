@@ -1,14 +1,11 @@
 package com.database.gametradefrontend.controller;
 
+import com.database.gametradefrontend.util.ControllerUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class WelcomeController {
@@ -111,31 +108,11 @@ public class WelcomeController {
     
     @FXML
     private void handleLogin() {
-        try {
-            // 加载登录界面
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/login.fxml"));
-            Parent loginRoot = loader.load();
-            
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(loginRoot, 1000, 800));
-            stage.setTitle("GameTrade - 登录");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ControllerUtils.switchScene(loginButton, "/com/database/gametradefrontend/view/login.fxml", "GameTrade - 登录", 1000, 800);
     }
     
     @FXML
     private void handleRegister() {
-        try {
-            // 加载注册界面
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/register.fxml"));
-            Parent registerRoot = loader.load();
-            
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(registerRoot, 1000, 800));
-            stage.setTitle("GameTrade - 注册");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ControllerUtils.switchScene(registerButton, "/com/database/gametradefrontend/view/register.fxml", "GameTrade - 注册", 1000, 800);
     }
 }
