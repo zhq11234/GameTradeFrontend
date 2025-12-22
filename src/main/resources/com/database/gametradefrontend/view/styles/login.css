@@ -9,18 +9,11 @@
     -fx-border-width: 1;
 }
 
+/* 现代化输入框样式 */
 .modern-input:focused {
     -fx-border-color: #667eea;
     -fx-background-color: #ffffff;
     -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 0.6em, 0, 0, 0.1em);
-}
-
-/* 响应式输入框 */
-.responsive-input {
-    -fx-pref-width: -1;
-    -fx-min-width: 18em;
-    -fx-max-width: 100%;
-    -fx-pref-height: 3em;
 }
 
 /* 现代化主要按钮样式 */
@@ -46,16 +39,6 @@
 .modern-primary-button:pressed {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
-
-/* 响应式按钮 */
-.responsive-button {
-    -fx-pref-width: -1;
-    -fx-pref-height: -1;
-    -fx-min-width: 12em;
-    -fx-max-width: 100%;
-    -fx-max-height: 4em;
-}
-
 /* 登录按钮特定样式 */
 .login-button {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);
@@ -190,4 +173,84 @@
     -fx-background-color: rgba(255, 68, 68, 0.1);
     -fx-background-radius: 0.5em;
     -fx-border-radius: 0.5em;
+}
+
+/* ========== JavaFX CSS 响应式布局优化 ========== */
+
+/* 响应式输入框优化 - 使用JavaFX CSS特性 */
+.responsive-input {
+    -fx-pref-width: -1;
+    -fx-min-width: 12em;
+    -fx-max-width: 100%;
+    -fx-pref-height: 2.8em;
+    -fx-min-height: 2.5em;
+}
+
+/* 响应式按钮优化 - 使用JavaFX CSS特性 */
+.responsive-button {
+    -fx-pref-width: -1;
+    -fx-pref-height: -1;
+    -fx-min-width: 10em;
+    -fx-max-width: 100%;
+    -fx-min-height: 3em;
+    -fx-max-height: 4em;
+}
+
+/* 响应式容器 */
+.responsive-container {
+    -fx-min-width: 300px;
+    -fx-max-width: 100%;
+}
+
+/* 重要控件样式 - 确保在小屏幕上可见 */
+.important-control {
+    -fx-min-width: 6em !important;
+    -fx-min-height: 2.5em !important;
+}
+
+/* 小屏幕适配 - 通过调整最小尺寸实现 */
+.brand-icon {
+    -fx-font-size: 5em;
+}
+
+.brand-title {
+    -fx-font-size: 2.5em;
+}
+
+.brand-subtitle {
+    -fx-font-size: 1.2em;
+}
+
+.form-main-title {
+    -fx-font-size: 2em;
+}
+
+/* 确保登录按钮等重要控件始终可见 */
+.login-button {
+    -fx-min-width: 8em !important;
+    -fx-min-height: 2.8em !important;
+}
+
+.modern-back-button {
+    -fx-min-width: 3em !important;
+    -fx-min-height: 2.5em !important;
+}
+
+.modern-link-button {
+    -fx-min-width: 5em !important;
+    -fx-min-height: 2em !important;
+}
+
+/* 表单区域响应式内边距 */
+.responsive-form-padding {
+    -fx-padding: 10% 8%;
+}
+
+/* 小屏幕下的间距优化 */
+.responsive-spacing {
+    -fx-spacing: 20;
+}
+
+.responsive-small-spacing {
+    -fx-spacing: 10;
 }
