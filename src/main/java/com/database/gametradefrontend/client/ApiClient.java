@@ -109,7 +109,10 @@ public class ApiClient {
             System.out.println("API Request: " + method + " " + fullUrl);
             
             if (requestBody != null) {
-                System.out.println("Request Body: " + objectMapper.writeValueAsString(requestBody));
+                String requestBodyJson = objectMapper.writeValueAsString(requestBody);
+                // 对敏感信息进行掩码处理
+                String maskedBody = maskSensitiveInfo(requestBodyJson);
+                System.out.println("Request Body: " + maskedBody);
             }
             
             URL url = new URL(fullUrl);
@@ -198,6 +201,34 @@ public class ApiClient {
         }
     }
     
+    /**
+     * 对敏感信息进行掩码处理
+     * @param jsonString 原始JSON字符串
+     * @return 掩码处理后的JSON字符串
+     */
+    private String maskSensitiveInfo(String jsonString) {
+        try {
+            // 使用正则表达式匹配敏感字段并替换其值为掩码
+            // 匹配 "password": "任意字符" 的模式
+            String maskedJson = jsonString.replaceAll(
+                "\"password\"\\s*:\\s*\"[^\"]*\"", 
+                "\"password\": \"******\""
+            );
+            
+            // 可以添加其他敏感字段的掩码处理
+            // 例如："token": "任意字符" -> "token": "******"
+            maskedJson = maskedJson.replaceAll(
+                "\"token\"\\s*:\\s*\"[^\"]*\"", 
+                "\"token\": \"******\""
+            );
+            
+            return maskedJson;
+        } catch (Exception e) {
+            // 如果掩码处理失败，返回原始字符串以避免影响正常功能
+            return jsonString;
+        }
+    }
+
     /**
      * API异常类
      */

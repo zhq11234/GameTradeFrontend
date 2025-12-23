@@ -17,16 +17,57 @@
 				 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
 		         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		      
-		      <!-- 左侧品牌展示区域 - 现代化设计 -->
-		      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" 
-		            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(102,126,234,0.9) 0%, rgba(118,75,162,0.9) 100%); -fx-min-width: 45%;">
-		         <VBox alignment="CENTER" spacing="15">
-		            <Label text="🔐" styleClass="brand-icon"/>
-		            <Label text="欢迎回来" styleClass="brand-title"/>
-		            <Label text="请登录您的账户" styleClass="brand-subtitle"/>
-		            <Label text="GameTrade 交易平台" styleClass="brand-platform"/>
-		         </VBox>
-		      </VBox>
+      <!-- 左侧品牌展示区域 - 现代化设计 -->
+      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" 
+            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(102,126,234,0.9) 0%, rgba(118,75,162,0.9) 100%); -fx-min-width: 45%;">
+         <VBox alignment="CENTER" spacing="20">
+            <Label text="🔐" styleClass="brand-icon"/>
+            <Label text="欢迎回来" styleClass="brand-title"/>
+            <Label text="请登录您的账户" styleClass="brand-subtitle"/>
+            <Label text="GameTrade 交易平台" styleClass="brand-platform"/>
+            
+            <!-- 平台特色介绍 -->
+            <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30 0 0 0;">
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="🎮" styleClass="feature-icon"/>
+                  <Label text="海量游戏资源" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="💰" styleClass="feature-icon"/>
+                  <Label text="安全交易保障" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="⚡" styleClass="feature-icon"/>
+                  <Label text="快速交易体验" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="👥" styleClass="feature-icon"/>
+                  <Label text="活跃社区互动" styleClass="feature-text"/>
+               </HBox>
+            </VBox>
+            
+            <!-- 装饰性分隔线 -->
+            <Separator style="-fx-background-color: rgba(255,255,255,0.3); -fx-pref-width: 200px; -fx-padding: 10 0;"/>
+            
+            <!-- 平台统计数据 -->
+            <VBox alignment="CENTER" spacing="8" style="-fx-padding: 10 0;">
+               <HBox alignment="CENTER" spacing="15">
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="10万+" styleClass="stat-number"/>
+                     <Label text="注册用户" styleClass="stat-label"/>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="5万+" styleClass="stat-number"/>
+                     <Label text="游戏资源" styleClass="stat-label"/>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="99.9%" styleClass="stat-number"/>
+                     <Label text="交易成功率" styleClass="stat-label"/>
+                  </VBox>
+               </HBox>
+            </VBox>
+         </VBox>
+      </VBox>
 		      
 				      <!-- 右侧登录表单区域 - 现代化设计 -->
 				      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="25"
