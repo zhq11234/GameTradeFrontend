@@ -14,10 +14,35 @@ public class WelcomeController {
     @FXML private Label welcomeText5, welcomeText6, welcomeText7, welcomeText8;
     @FXML private Button loginButton, registerButton;
     
+    private static boolean animationPlayed = false;
+    
     @FXML
     public void initialize() {
-        // 播放文字动画效果
-        playTextAnimation();
+        if (!animationPlayed) {
+            // 第一次显示，播放文字动画效果
+            playTextAnimation();
+            animationPlayed = true;
+        } else {
+            // 之后显示，直接显示内容
+            setupDirectDisplay();
+        }
+    }
+    
+    private void setupDirectDisplay() {
+        // 直接显示所有文字
+        Label[] textLabels = {welcomeText1, welcomeText2, welcomeText3, welcomeText4,
+                             welcomeText5, welcomeText6, welcomeText7, welcomeText8};
+        
+        for (Label label : textLabels) {
+            label.setVisible(true);
+            label.setOpacity(1);
+            label.setTranslateX(0);
+            label.setTranslateY(0);
+        }
+        
+        // 直接显示按钮
+        loginButton.setOpacity(1);
+        registerButton.setOpacity(1);
     }
     
     private void playTextAnimation() {

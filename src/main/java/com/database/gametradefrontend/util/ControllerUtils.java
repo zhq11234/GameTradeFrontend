@@ -1,5 +1,6 @@
 package com.database.gametradefrontend.util;
 
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * 控制器工具类，用于提取重复的控制器代码
@@ -16,7 +18,7 @@ import javafx.stage.Stage;
 public class ControllerUtils {
     
     /**
-     * 切换界面 - 使用指定窗口大小，保持窗口位置
+     * 切换界面 - 使用指定窗口大小，保持窗口位置，带平滑过渡动画
      * @param currentButton 当前按钮（用于获取Stage）
      * @param fxmlPath FXML文件路径
      * @param title 窗口标题
@@ -25,31 +27,52 @@ public class ControllerUtils {
      */
     public static void switchScene(Button currentButton, String fxmlPath, String title, int width, int height) {
         try {
-            FXMLLoader loader = new FXMLLoader(ControllerUtils.class.getResource(fxmlPath));
-            Parent root = loader.load();
-            
             Stage stage = (Stage) currentButton.getScene().getWindow();
+            Parent currentRoot = stage.getScene().getRoot();
             
             // 保存当前窗口的位置
             double currentX = stage.getX();
             double currentY = stage.getY();
             
-            // 创建新场景，使用指定的窗口大小
-            Scene newScene = new Scene(root, width, height);
-            
-            stage.setScene(newScene);
-            stage.setTitle(title);
-            
-            // 恢复窗口位置
-            if (currentX > 0 && currentY > 0) {
-                stage.setX(currentX);
-                stage.setY(currentY);
-            }
-            
-            // 确保窗口可见
-            if (!stage.isShowing()) {
-                stage.show();
-            }
+            // 淡出当前场景
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), currentRoot);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.setOnFinished(e -> {
+                try {
+                    // 加载新场景
+                    FXMLLoader loader = new FXMLLoader(ControllerUtils.class.getResource(fxmlPath));
+                    Parent newRoot = loader.load();
+                    
+                    // 设置新场景为透明
+                    newRoot.setOpacity(0);
+                    
+                    // 创建新场景
+                    Scene newScene = new Scene(newRoot, width, height);
+                    stage.setScene(newScene);
+                    stage.setTitle(title);
+                    
+                    // 恢复窗口位置
+                    if (currentX > 0 && currentY > 0) {
+                        stage.setX(currentX);
+                        stage.setY(currentY);
+                    }
+                    
+                    // 淡入新场景
+                    FadeTransition fadeIn = new FadeTransition(Duration.millis(400), newRoot);
+                    fadeIn.setFromValue(0.0);
+                    fadeIn.setToValue(1.0);
+                    fadeIn.play();
+                    
+                    // 确保窗口可见
+                    if (!stage.isShowing()) {
+                        stage.show();
+                    }
+                } catch (Exception ex) {
+                    showErrorDialog("界面切换失败", ex.getMessage());
+                }
+            });
+            fadeOut.play();
         } catch (Exception e) {
             showErrorDialog("界面切换失败", e.getMessage());
         }
