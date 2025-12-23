@@ -10,10 +10,18 @@
 }
 
 /* 现代化输入框样式 */
-.modern-input:focused {
+.modern-input:hover {
     -fx-border-color: #667eea;
     -fx-background-color: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 0.6em, 0, 0, 0.1em);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 8, 0.3, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.modern-input:focused {
+    -fx-border-color: #5a6fd8;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0.4, 0, 3);
 }
 
 /* 现代化主要按钮样式 */
@@ -34,6 +42,8 @@
 .modern-primary-button:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5a6fd8, #6a4190);
+    -fx-scale-x: 1.12;
+    -fx-scale-y: 1.12;
 }
 
 .modern-primary-button:pressed {
@@ -109,6 +119,29 @@
     -fx-background-color: rgba(102, 126, 234, 0.15);
     -fx-text-fill: #667eea;
     -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+/* 返回按钮样式 - 与注册界面一致 */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-padding: 0.5em 1em;
+    -fx-background-radius: 1.5em;
+    -fx-border-radius: 1.5em;
+    -fx-font-size: 0.9em;
+    -fx-cursor: hand;
+    -fx-min-width: 3em;
+    -fx-min-height: 2.5em;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(102, 126, 234, 0.15);
+    -fx-text-fill: #667eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
 }
 
 /* 返回标签样式 */

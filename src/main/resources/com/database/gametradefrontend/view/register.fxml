@@ -2,12 +2,9 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
 			prefHeight="700.0" prefWidth="1000.0" stylesheets="@styles/register.css" xmlns="http://javafx.com/javafx/21"
 			xmlns:fx="http://javafx.com/fxml/1"
@@ -27,8 +24,8 @@
 					<!-- 背景圆形 -->
 					<Circle radius="120" fill="radial-gradient(center 50% 50%, radius 70%, rgba(255,255,255,0.2), rgba(255,255,255,0.05))"/>
 					<!-- 装饰线条 -->
-					<Line startX="-80" startY="0" endX="80" endY="0" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
-					<Line startX="0" startY="-80" endX="0" endY="80" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+					<Line startX="-80" endX="80" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+					<Line startY="-80" endY="80" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
 					<!-- 中心点 -->
 					<Circle radius="8" fill="rgba(255,255,255,0.8)"/>
 				</StackPane>
@@ -74,39 +71,47 @@
 				</Label>
 			</VBox>
 
-		<!-- 右边注册表单区域 -->
-		<VBox alignment="TOP_CENTER" prefWidth="600.0" style="-fx-background-color: #f8f9fa;">
-			<!-- 标题区域 -->
-			<VBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0"
-				  style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-				<Label text="用户注册"
-					   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
-					<font>
-						<Font name="System Bold" size="32.0"/>
-					</font>
-					<padding>
-						<Insets top="20.0"/>
-					</padding>
-				</Label>
-				<Label text="创建您的游戏交易账户" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;">
-					<padding>
-						<Insets bottom="20.0" top="5.0"/>
-					</padding>
-				</Label>
-			</VBox>
+			<!-- 右边注册表单区域 -->
+			<VBox alignment="TOP_CENTER" prefWidth="600.0" style="-fx-background-color: #f8f9fa;">
+				<!-- 标题区域 -->
+				<VBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0"
+					  style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+					<!-- 返回按钮 - 右上角 -->
+					<HBox alignment="TOP_RIGHT" style="-fx-padding: 15 20 0 0;">
+						<Button mnemonicParsing="false" onAction="#switchToWelcome" 
+								styleClass="back-button" prefWidth="120" prefHeight="40">
+							<graphic>
+								<HBox alignment="CENTER" spacing="5">
+									<Label text="⬅️" style="-fx-font-size: 16px;"/>
+									<Label text="返回首页" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+								</HBox>
+							</graphic>
+						</Button>
+					</HBox>
+					<Label text="用户注册"
+						   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+						<font>
+							<Font name="System Bold" size="32.0"/>
+						</font>
+						<padding>
+							<Insets top="10.0"/>
+						</padding>
+					</Label>
+					<Label text="创建您的游戏交易账户" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;">
+						<padding>
+							<Insets bottom="20.0" top="5.0"/>
+						</padding>
+					</Label>
+				</VBox>
 
 			<!-- 注册表单内容区域 -->
 			<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
-				<!-- 角色选择区域 -->
-				<HBox alignment="CENTER" spacing="30.0"
-					  style="-fx-background-color: white; -fx-padding: 20;">
-					<Label text="选择角色类型："
-						   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-					<RadioButton fx:id="buyerRadio" mnemonicParsing="false" text="买家"
-								 style="-fx-font-size: 14px;"/>
-					<RadioButton fx:id="vendorRadio" mnemonicParsing="false" text="供应商"
-								 style="-fx-font-size: 14px;"/>
-				</HBox>
+					<!-- 角色选择区域 -->
+					<HBox alignment="CENTER" spacing="30.0" styleClass="role-selection-container">
+						<Label text="选择角色类型：" styleClass="role-label"/>
+						<RadioButton fx:id="buyerRadio" mnemonicParsing="false" text="买家" styleClass="radio-button"/>
+						<RadioButton fx:id="vendorRadio" mnemonicParsing="false" text="供应商" styleClass="radio-button"/>
+					</HBox>
 
 				<!-- 共享基本信息区域 -->
 				<VBox alignment="TOP_CENTER" spacing="15.0"
@@ -123,51 +128,60 @@
 							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
 							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
 						</rowConstraints>
-						<Label text="账号：" style="-fx-font-size: 14px; -fx-font-weight: bold;"
-							   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-						<TextField fx:id="accountField"
-								   promptText="请输入账号（3-50位字母、数字、下划线）"
-								   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-						<Label fx:id="accountStatusLabel" text="✓" textFill="#27ae60" visible="false"
-							   GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+							<!-- 账号字段 -->
+							<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+								<Label text="👤" styleClass="icon-label"/>
+								<Label text="账号：" styleClass="form-label"/>
+							</HBox>
+							<TextField fx:id="accountField"
+									   promptText="请输入账号（3-50位字母、数字、下划线）"
+									   styleClass="text-field"
+									   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+							<Label fx:id="accountStatusLabel" text="✓" styleClass="status-label, status-success" visible="false"
+								   GridPane.columnIndex="2" GridPane.rowIndex="0"/>
 
-						<Label text="密码：" style="-fx-font-size: 14px; -fx-font-weight: bold;"
-							   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-						<PasswordField fx:id="passwordField"
-									   promptText="请输入密码（8-100位，包含大小写字母和数字）"
-									   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-						<Label fx:id="passwordStatusLabel" text="✓" textFill="#27ae60"
-							   visible="false" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+							<!-- 密码字段 -->
+							<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+								<Label text="🔒" styleClass="icon-label"/>
+								<Label text="密码：" styleClass="form-label"/>
+							</HBox>
+							<PasswordField fx:id="passwordField"
+										   promptText="请输入密码（8-100位，包含大小写字母和数字）"
+										   styleClass="password-field"
+										   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+							<Label fx:id="passwordStatusLabel" text="✓" styleClass="status-label, status-success"
+								   visible="false" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
 
-						<Label text="确认密码：" style="-fx-font-size: 14px; -fx-font-weight: bold;"
-							   GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-						<PasswordField fx:id="confirmPasswordField" promptText="请再次输入密码"
-									   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-						<Label fx:id="confirmPasswordStatusLabel" text="✓" textFill="#27ae60"
-							   visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+							<!-- 确认密码字段 -->
+							<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
+								<Label text="✅" styleClass="icon-label"/>
+								<Label text="确认密码：" styleClass="form-label"/>
+							</HBox>
+							<PasswordField fx:id="confirmPasswordField" promptText="请再次输入密码"
+										   styleClass="password-field"
+										   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+							<Label fx:id="confirmPasswordStatusLabel" text="✓" styleClass="status-label, status-success"
+								   visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
 
-						<Label text="联系方式：" style="-fx-font-size: 14px; -fx-font-weight: bold;"
-							   GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-						<TextField fx:id="contactField" promptText="手机号或邮箱"
-								   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-						<Label fx:id="contactStatusLabel" text="✓" textFill="#27ae60" visible="false"
-							   GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+							<!-- 联系方式字段 -->
+							<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="3">
+								<Label text="📞" styleClass="icon-label"/>
+								<Label text="联系方式：" styleClass="form-label"/>
+							</HBox>
+							<TextField fx:id="contactField" promptText="手机号或邮箱"
+									   styleClass="text-field"
+									   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+							<Label fx:id="contactStatusLabel" text="✓" styleClass="status-label, status-success" visible="false"
+								   GridPane.columnIndex="2" GridPane.rowIndex="3"/>
 					</GridPane>
 
-					<!-- 共享错误信息显示区域 -->
-					<VBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 10 0 0 0;">
-						<Label fx:id="accountErrorLabel"
-							   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-							   visible="false"/>
-						<Label fx:id="passwordErrorLabel"
-							   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-							   visible="false"/>
-						<Label fx:id="confirmPasswordErrorLabel"
-							   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;" visible="false"/>
-						<Label fx:id="contactErrorLabel"
-							   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-							   visible="false"/>
-					</VBox>
+						<!-- 共享错误信息显示区域 -->
+						<VBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 10 0 0 0;">
+							<Label fx:id="accountErrorLabel" styleClass="error-label" visible="false"/>
+							<Label fx:id="passwordErrorLabel" styleClass="error-label" visible="false"/>
+							<Label fx:id="confirmPasswordErrorLabel" styleClass="error-label" visible="false"/>
+							<Label fx:id="contactErrorLabel" styleClass="error-label" visible="false"/>
+						</VBox>
 				</VBox>
 
 				<!-- TabPane分页表单（角色特定信息） -->
@@ -191,23 +205,24 @@
 										<RowConstraints minHeight="10.0" prefHeight="30.0"
 														vgrow="SOMETIMES"/>
 									</rowConstraints>
-									<Label text="昵称："
-										   style="-fx-font-size: 14px; -fx-font-weight: bold;"
-										   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-									<TextField fx:id="nicknameField" promptText="请输入昵称"
-											   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-									<Label fx:id="nicknameStatusLabel" text="✓" textFill="#27ae60"
-										   visible="false" GridPane.columnIndex="2"
-										   GridPane.rowIndex="0"/>
+										<!-- 昵称字段 -->
+										<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+											<Label text="😊" styleClass="icon-label"/>
+											<Label text="昵称：" styleClass="form-label"/>
+										</HBox>
+										<TextField fx:id="nicknameField" promptText="请输入昵称"
+												   styleClass="text-field"
+												   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+										<Label fx:id="nicknameStatusLabel" text="✓" styleClass="status-label, status-success"
+											   visible="false" GridPane.columnIndex="2"
+											   GridPane.rowIndex="0"/>
 								</GridPane>
 
-								<!-- 买家错误信息显示区域 -->
-								<VBox alignment="CENTER_LEFT" spacing="5.0"
-									  style="-fx-padding: 10 0 0 0;">
-									<Label fx:id="nicknameErrorLabel"
-										   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-										   visible="false"/>
-								</VBox>
+									<!-- 买家错误信息显示区域 -->
+									<VBox alignment="CENTER_LEFT" spacing="5.0"
+										  style="-fx-padding: 10 0 0 0;">
+										<Label fx:id="nicknameErrorLabel" styleClass="error-label" visible="false"/>
+									</VBox>
 							</VBox>
 						</ScrollPane>
 					</Tab>
@@ -234,72 +249,66 @@
 										<RowConstraints minHeight="10.0" prefHeight="30.0"
 														vgrow="SOMETIMES"/>
 									</rowConstraints>
-									<Label text="企业名称："
-										   style="-fx-font-size: 14px; -fx-font-weight: bold;"
-										   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-									<TextField fx:id="companyNameField" promptText="请输入企业全称"
-											   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-									<Label fx:id="companyNameStatusLabel" text="✓" textFill="#27ae60"
-										   visible="false" GridPane.columnIndex="2"
-										   GridPane.rowIndex="0"/>
+										<!-- 企业名称字段 -->
+										<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+											<Label text="🏢" styleClass="icon-label"/>
+											<Label text="企业名称：" styleClass="form-label"/>
+										</HBox>
+										<TextField fx:id="companyNameField" promptText="请输入企业全称"
+												   styleClass="text-field"
+												   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+										<Label fx:id="companyNameStatusLabel" text="✓" styleClass="status-label, status-success"
+											   visible="false" GridPane.columnIndex="2"
+											   GridPane.rowIndex="0"/>
 
-									<Label text="注册地址："
-										   style="-fx-font-size: 14px; -fx-font-weight: bold;"
-										   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-									<TextField fx:id="registeredAddressField"
-											   promptText="请输入企业注册地址"
-											   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-									<Label fx:id="registeredAddressStatusLabel" text="✓"
-										   textFill="#27ae60" visible="false"
-										   GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+										<!-- 注册地址字段 -->
+										<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+											<Label text="📍" styleClass="icon-label"/>
+											<Label text="注册地址：" styleClass="form-label"/>
+										</HBox>
+										<TextField fx:id="registeredAddressField"
+												   promptText="请输入企业注册地址"
+												   styleClass="text-field"
+												   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+										<Label fx:id="registeredAddressStatusLabel" text="✓"
+											   styleClass="status-label, status-success" visible="false"
+											   GridPane.columnIndex="2" GridPane.rowIndex="1"/>
 
-									<Label text="联系人："
-										   style="-fx-font-size: 14px; -fx-font-weight: bold;"
-										   GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-									<TextField fx:id="contactPersonField"
-											   promptText="请输入联系人姓名" GridPane.columnIndex="1"
-											   GridPane.rowIndex="2"/>
-									<Label fx:id="contactPersonStatusLabel" text="✓"
-										   textFill="#27ae60" visible="false"
-										   GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+										<!-- 联系人字段 -->
+										<HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
+											<Label text="👨‍💼" styleClass="icon-label"/>
+											<Label text="联系人：" styleClass="form-label"/>
+										</HBox>
+										<TextField fx:id="contactPersonField"
+												   promptText="请输入联系人姓名"
+												   styleClass="text-field"
+												   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+										<Label fx:id="contactPersonStatusLabel" text="✓"
+											   styleClass="status-label, status-success" visible="false"
+											   GridPane.columnIndex="2" GridPane.rowIndex="2"/>
 								</GridPane>
 
-								<!-- 供应商错误信息显示区域 -->
-								<VBox alignment="CENTER_LEFT" spacing="5.0"
-									  style="-fx-padding: 10 0 0 0;">
-									<Label fx:id="companyNameErrorLabel"
-										   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-										   visible="false"/>
-									<Label fx:id="registeredAddressErrorLabel"
-										   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-										   visible="false"/>
-									<Label fx:id="contactPersonErrorLabel"
-										   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"
-										   visible="false"/>
-								</VBox>
+									<!-- 供应商错误信息显示区域 -->
+									<VBox alignment="CENTER_LEFT" spacing="5.0"
+										  style="-fx-padding: 10 0 0 0;">
+										<Label fx:id="companyNameErrorLabel" styleClass="error-label" visible="false"/>
+										<Label fx:id="registeredAddressErrorLabel" styleClass="error-label" visible="false"/>
+										<Label fx:id="contactPersonErrorLabel" styleClass="error-label" visible="false"/>
+									</VBox>
 							</VBox>
 						</ScrollPane>
 					</Tab>
 				</TabPane>
 
-					<!-- 注册按钮区域 -->
-					<VBox alignment="CENTER" spacing="15.0"
-						  style="-fx-background-color: white; -fx-padding: 20;">
-						<Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister"
-								prefHeight="40.0" prefWidth="200.0"
-								style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 5;"
-								text="立即注册"/>
-						<HBox alignment="CENTER" spacing="5.0">
-							<Label text="已有账户？" style="-fx-text-fill: #7f8c8d;"/>
-							<Hyperlink onAction="#switchToLogin" text="立即登录"
-									   style="-fx-text-fill: #3498db; -fx-font-weight: bold;"/>
-						</HBox>
-						<!-- 返回按钮 -->
-						<Button mnemonicParsing="false" onAction="#switchToWelcome" 
-								prefHeight="35.0" prefWidth="120.0"
-								style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-border-color: #bdc3c7; -fx-border-width: 1px; -fx-border-radius: 3px;"
-								text="返回首页"/>
-					</VBox>
+							<!-- 注册按钮区域 -->
+							<VBox alignment="CENTER" spacing="15.0" styleClass="button-container">
+								<Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister"
+										styleClass="register-button" text="立即注册"/>
+								<HBox alignment="CENTER" spacing="5.0" styleClass="login-link-container">
+									<Label text="已有账户？" styleClass="login-label"/>
+									<Hyperlink onAction="#switchToLogin" text="立即登录" styleClass="hyperlink"/>
+								</HBox>
+							</VBox>
 			</VBox>
 		</VBox>
 	</SplitPane>
