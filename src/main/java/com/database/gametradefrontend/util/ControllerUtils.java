@@ -16,12 +16,12 @@ import javafx.stage.Stage;
 public class ControllerUtils {
     
     /**
-     * 切换界面 - 保持窗口大小和位置
+     * 切换界面 - 使用指定窗口大小，保持窗口位置
      * @param currentButton 当前按钮（用于获取Stage）
      * @param fxmlPath FXML文件路径
      * @param title 窗口标题
-     * @param width 默认窗口宽度（仅在首次显示时使用）
-     * @param height 默认窗口高度（仅在首次显示时使用）
+     * @param width 窗口宽度
+     * @param height 窗口高度
      */
     public static void switchScene(Button currentButton, String fxmlPath, String title, int width, int height) {
         try {
@@ -30,21 +30,12 @@ public class ControllerUtils {
             
             Stage stage = (Stage) currentButton.getScene().getWindow();
             
-            // 保存当前窗口的位置和大小
+            // 保存当前窗口的位置
             double currentX = stage.getX();
             double currentY = stage.getY();
-            double currentWidth = stage.getWidth();
-            double currentHeight = stage.getHeight();
             
-            // 创建新场景，使用当前窗口大小或默认大小
-            Scene newScene;
-            if (currentWidth > 0 && currentHeight > 0) {
-                // 使用当前窗口大小
-                newScene = new Scene(root, currentWidth, currentHeight);
-            } else {
-                // 使用默认大小
-                newScene = new Scene(root, width, height);
-            }
+            // 创建新场景，使用指定的窗口大小
+            Scene newScene = new Scene(root, width, height);
             
             stage.setScene(newScene);
             stage.setTitle(title);

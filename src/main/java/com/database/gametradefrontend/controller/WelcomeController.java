@@ -16,95 +16,74 @@ public class WelcomeController {
     
     @FXML
     public void initialize() {
-        // 初始化文字动画
-        setupTextAnimations();
-        
-        // 初始化按钮动画
-        setupButtonAnimations();
+        // 播放文字动画效果
+        playTextAnimation();
     }
     
-    private void setupTextAnimations() {
+    private void playTextAnimation() {
+        // 初始化所有文字为不可见
         Label[] textLabels = {welcomeText1, welcomeText2, welcomeText3, welcomeText4,
                              welcomeText5, welcomeText6, welcomeText7, welcomeText8};
         
-        // 为每个文字设置不同的进入方向和延迟
-        for (int i = 0; i < textLabels.length; i++) {
-            Label label = textLabels[i];
-            label.setVisible(true);
-            
-            // 设置不同的进入方向
-            String[] directions = {"left", "right", "top", "bottom"};
-            String direction = directions[i % directions.length];
-            
-            // 设置初始位置和透明度
-            switch (direction) {
-                case "left":
-                    label.setTranslateX(-100);
-                    break;
-                case "right":
-                    label.setTranslateX(100);
-                    break;
-                case "top":
-                    label.setTranslateY(-100);
-                    break;
-                case "bottom":
-                    label.setTranslateY(100);
-                    break;
-            }
+        for (Label label : textLabels) {
+            label.setVisible(false);
             label.setOpacity(0);
-            
-            // 创建进入动画
-            TranslateTransition translateTransition = new TranslateTransition(Duration.millis(800), label);
-            FadeTransition fadeTransition = new FadeTransition(Duration.millis(800), label);
-            
-            switch (direction) {
-                case "left":
-                    translateTransition.setToX(0);
-                    break;
-                case "right":
-                    translateTransition.setToX(0);
-                    break;
-                case "top":
-                    translateTransition.setToY(0);
-                    break;
-                case "bottom":
-                    translateTransition.setToY(0);
-                    break;
-            }
-            
-            fadeTransition.setToValue(1);
-            
-            // 设置延迟
-            translateTransition.setDelay(Duration.millis(i * 150));
-            fadeTransition.setDelay(Duration.millis(i * 150));
-            
-            // 播放动画
-            translateTransition.play();
-            fadeTransition.play();
         }
-    }
-    
-
-    
-
-    
-    private void setupButtonAnimations() {
-        // 按钮进入动画
-        FadeTransition loginFade = new FadeTransition(Duration.millis(1000), loginButton);
-        FadeTransition registerFade = new FadeTransition(Duration.millis(1000), registerButton);
         
+        // 初始化按钮为不可见
         loginButton.setOpacity(0);
         registerButton.setOpacity(0);
         
-        loginFade.setToValue(1);
-        registerFade.setToValue(1);
+        // 为每个文字设置不同的入场动画
+        animateText(welcomeText1, -200, -200, 0, 0, 0);  // 从左上角进入
+        animateText(welcomeText2, 0, -300, 0, 0, 200);   // 从正上方进入
+        animateText(welcomeText3, 200, -200, 0, 0, 400); // 从右上角进入
+        animateText(welcomeText4, -300, 0, 0, 0, 600);   // 从正左方进入
+        animateText(welcomeText5, 300, 0, 0, 0, 800);    // 从正右方进入
+        animateText(welcomeText6, -200, 200, 0, 0, 1000); // 从左下角进入
+        animateText(welcomeText7, 0, 300, 0, 0, 1200);    // 从正下方进入
+        animateText(welcomeText8, 200, 200, 0, 0, 1400);  // 从右下角进入
         
-        loginFade.setDelay(Duration.millis(1200));
-        registerFade.setDelay(Duration.millis(1400));
+        // 延迟显示按钮
+        FadeTransition buttonFade = new FadeTransition(Duration.millis(1200), loginButton);
+        buttonFade.setFromValue(0);
+        buttonFade.setToValue(1);
+        buttonFade.setDelay(Duration.millis(1500));
+        buttonFade.play();
         
-        loginFade.play();
-        registerFade.play();
+        FadeTransition registerButtonFade = new FadeTransition(Duration.millis(1200), registerButton);
+        registerButtonFade.setFromValue(0);
+        registerButtonFade.setToValue(1);
+        registerButtonFade.setDelay(Duration.millis(1800));
+        registerButtonFade.play();
     }
+    
+    private void animateText(Label label, double fromX, double fromY, double toX, double toY, int delay) {
+        // 设置初始位置
+        label.setTranslateX(fromX);
+        label.setTranslateY(fromY);
+        label.setVisible(true);
+        
+        // 创建移动动画
+        TranslateTransition moveTransition = new TranslateTransition(Duration.millis(1200), label);
+        moveTransition.setFromX(fromX);
+        moveTransition.setFromY(fromY);
+        moveTransition.setToX(toX);
+        moveTransition.setToY(toY);
+        moveTransition.setDelay(Duration.millis(delay));
+        
+        // 创建淡入动画
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), label);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setDelay(Duration.millis(delay));
+        
+        // 同时播放移动和淡入动画
+        moveTransition.play();
+        fadeTransition.play();
+    }
+    
+
     
     @FXML
     private void handleLogin() {

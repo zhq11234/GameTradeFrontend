@@ -40,6 +40,6 @@ public class MainController {
         UserSession.getInstance().logout();
         
         // 加载欢迎界面
-        ControllerUtils.switchScene(logoutButton, "/com/database/gametradefrontend/view/welcome.fxml", "GameTrade - 欢迎", 800, 600);
+        ControllerUtils.switchScene(logoutButton, "/com/database/gametradefrontend/view/welcome.fxml", "GameTrade - 欢迎", 1000, 800);
     }
 }
