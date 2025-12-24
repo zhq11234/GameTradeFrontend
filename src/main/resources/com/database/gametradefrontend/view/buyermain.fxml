@@ -1,36 +1,297 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.net.URL?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0"
-            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4facfe 0%, #00f2fe 100%);"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.database.gametradefrontend.controller.MainController">
+<AnchorPane fx:id="rootPane" prefHeight="700.0" prefWidth="1100.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.BuyerMainController"
+            stylesheets="@styles/buyermain.css">
    
-   <stylesheets>
-      <URL value="@styles/buyermain.css" />
-   </stylesheets>
+   <!-- IDEA风格顶部工具栏 -->
+   <HBox alignment="CENTER" styleClass="idea-toolbar"
+         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+      <!-- 左侧品牌区域 -->
+      <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
+         <Label text="🎮" styleClass="idea-brand-icon"/>
+         <Label text="GameTrade" styleClass="idea-brand-title"/>
+      </HBox>
+      
+      <!-- 右侧控制区域 -->
+      <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="5">
+         <!-- 窗口控制按钮 -->
+         <HBox alignment="CENTER" spacing="2" styleClass="window-controls">
+            <Button mnemonicParsing="false" styleClass="window-control-button" onAction="#handleMinimize">
+               <text>−</text>
+            </Button>
+            <Button mnemonicParsing="false" styleClass="window-control-button" onAction="#handleMaximize">
+               <text>□</text>
+            </Button>
+            <Button mnemonicParsing="false" styleClass="window-control-button, close" onAction="#handleClose">
+               <text>×</text>
+            </Button>
+         </HBox>
+         
+         <!-- 个人信息图标 -->
+         <MenuButton fx:id="personalInfoButton" mnemonicParsing="false" styleClass="idea-icon-button">
+            <text>👤</text>
+            <items>
+               <MenuItem text="查看个人信息" onAction="#handleViewPersonalInfo"/>
+               <MenuItem text="编辑个人信息" onAction="#handleEditPersonalInfo"/>
+            </items>
+         </MenuButton>
+         
+         <!-- 通知图标 -->
+         <Button fx:id="notificationButton" mnemonicParsing="false" styleClass="idea-icon-button">
+            <text>🔔</text>
+         </Button>
+      </HBox>
+   </HBox>
    
-	   <!-- 主容器 - 响应式布局 -->
-	   <VBox alignment="CENTER" spacing="5"
-	         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
-	         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-	      
-	      <!-- 欢迎信息 -->
-	      <VBox alignment="CENTER" spacing="2" style="-fx-padding: 12% 0 0 0;">
-	         <Label text="🎮" styleClass="main-icon"/>
-	         <Label fx:id="welcomeLabel" text="欢迎来到交易平台" styleClass="main-title"/>
-	         <Label fx:id="userInfoLabel" text="用户信息" styleClass="subtitle"/>
-	      </VBox>
-	      
-	      <!-- 功能按钮区域 -->
-	      <VBox alignment="CENTER" spacing="2">
-	         <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout" 
-	                 styleClass="modern-button, logout-button, responsive-button">
-	            <text>退出登录</text>
-	         </Button>
-	      </VBox>
-	   </VBox>
+   <!-- 主内容区域 -->
+   <VBox alignment="TOP_CENTER" spacing="0" styleClass="idea-main-content"
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+      
+      <!-- 紧凑型横向导航栏 -->
+      <HBox alignment="CENTER_LEFT" styleClass="idea-navbar">
+         <Button fx:id="dashboardButton" mnemonicParsing="false" onAction="#showDashboard"
+                 styleClass="idea-nav-button, active">
+            <text>🏠 首页</text>
+         </Button>
+         
+         <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#handleTrade"
+                 styleClass="idea-nav-button">
+            <text>🛒 交易</text>
+         </Button>
+         
+         <Button fx:id="collectionButton" mnemonicParsing="false" onAction="#handleCollection"
+                 styleClass="idea-nav-button">
+            <text>📚 收藏</text>
+         </Button>
+         
+         <MenuButton fx:id="orderButton" styleClass="idea-nav-button" text="📊 订单">
+            <items>
+               <MenuItem text="交易记录" onAction="#handleHistory"/>
+               <MenuItem text="订单管理" onAction="#handleOrderManagement"/>
+               <MenuItem text="退款申请" onAction="#handleRefundRequest"/>
+            </items>
+         </MenuButton>
+         
+         <MenuButton fx:id="reviewButton" styleClass="idea-nav-button" text="⭐ 评价">
+            <items>
+               <MenuItem text="我的评价" onAction="#handleMyReviews"/>
+               <MenuItem text="发布评价" onAction="#handlePostReview"/>
+               <MenuItem text="评价统计" onAction="#handleReviewStats"/>
+            </items>
+         </MenuButton>
+         
+         <MenuButton fx:id="messageButton" styleClass="idea-nav-button" text="🔔 消息">
+            <items>
+               <MenuItem text="系统通知" onAction="#handleSystemMessages"/>
+               <MenuItem text="交易消息" onAction="#handleTradeMessages"/>
+               <MenuItem text="私信" onAction="#handlePrivateMessages"/>
+            </items>
+         </MenuButton>
+         
+         <MenuButton fx:id="settingsButton" styleClass="idea-nav-button" text="⚙️ 设置">
+            <items>
+               <MenuItem text="账户设置" onAction="#handleAccountSettings"/>
+               <MenuItem text="隐私设置" onAction="#handlePrivacySettings"/>
+               <MenuItem text="通知设置" onAction="#handleNotificationSettings"/>
+            </items>
+         </MenuButton>
+      </HBox>
+      
+      <!-- 内容显示区域 -->
+      <VBox fx:id="contentArea" alignment="TOP_CENTER" spacing="20" 
+            styleClass="content-area" VBox.vgrow="ALWAYS">
+         
+         <!-- 默认显示首页仪表板 -->
+         <VBox fx:id="dashboardContent" alignment="TOP_CENTER" spacing="30" styleClass="dashboard-content">
+            <!-- 欢迎区域 -->
+            <VBox alignment="CENTER" spacing="10" styleClass="welcome-section">
+               <Label fx:id="welcomeLabel" styleClass="welcome-title"/>
+               <Label text="在这里管理您的游戏交易和收藏" styleClass="welcome-subtitle"/>
+            </VBox>
+            
+            <!-- 竖向功能卡片容器 -->
+            <FlowPane fx:id="functionCardsContainer" alignment="TOP_CENTER" hgap="20" vgap="20" 
+                     prefWrapLength="800" styleClass="function-cards-container">
+               
+               <!-- 游戏交易卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="🛒" styleClass="function-icon"/>
+                     <Label text="游戏交易" styleClass="function-title"/>
+                     <Label text="浏览和购买您喜欢的游戏" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickTradeButton" mnemonicParsing="false" onAction="#handleTrade"
+                             styleClass="function-button">
+                        <text>开始交易</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+               
+               <!-- 我的收藏卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="📚" styleClass="function-icon"/>
+                     <Label text="我的收藏" styleClass="function-title"/>
+                     <Label text="管理您收藏的游戏和心愿单" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickCollectionButton" mnemonicParsing="false" onAction="#handleCollection"
+                             styleClass="function-button">
+                        <text>查看收藏</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+               
+               <!-- 交易记录卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="📊" styleClass="function-icon"/>
+                     <Label text="交易记录" styleClass="function-title"/>
+                     <Label text="查看您的交易历史和订单详情" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickHistoryButton" mnemonicParsing="false" onAction="#handleHistory"
+                             styleClass="function-button">
+                        <text>查看记录</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+               
+               <!-- 评价管理卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="⭐" styleClass="function-icon"/>
+                     <Label text="评价管理" styleClass="function-title"/>
+                     <Label text="查看和发布游戏评价" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickReviewButton" mnemonicParsing="false" onAction="#handleReview"
+                             styleClass="function-button">
+                        <text>管理评价</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+               
+               <!-- 消息中心卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="🔔" styleClass="function-icon"/>
+                     <Label text="消息中心" styleClass="function-title"/>
+                     <Label text="查看系统通知和交易消息" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickMessageButton" mnemonicParsing="false" onAction="#handleMessage"
+                             styleClass="function-button">
+                        <text>查看消息</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+               
+               <!-- 系统设置卡片 -->
+               <VBox styleClass="function-card">
+                  <VBox alignment="CENTER" spacing="15">
+                     <Label text="⚙️" styleClass="function-icon"/>
+                     <Label text="系统设置" styleClass="function-title"/>
+                     <Label text="个性化设置和账户管理" styleClass="function-description" wrapText="true"/>
+                     <Button fx:id="quickSettingsButton" mnemonicParsing="false" onAction="#handleSettings"
+                             styleClass="function-button">
+                        <text>系统设置</text>
+                     </Button>
+                  </VBox>
+               </VBox>
+            </FlowPane>
+            
+            <!-- 快速统计信息 -->
+            <HBox alignment="CENTER" spacing="30" styleClass="stats-section">
+               <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+                  <Label text="0" styleClass="stat-number"/>
+                  <Label text="待处理订单" styleClass="stat-label"/>
+               </VBox>
+               
+               <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+                  <Label text="0" styleClass="stat-number"/>
+                  <Label text="收藏游戏" styleClass="stat-label"/>
+               </VBox>
+               
+               <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+                  <Label text="0" styleClass="stat-number"/>
+                  <Label text="未读消息" styleClass="stat-label"/>
+               </VBox>
+               
+               <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+                  <Label text="0" styleClass="stat-number"/>
+                  <Label text="待评价订单" styleClass="stat-label"/>
+               </VBox>
+            </HBox>
+         </VBox>
+      </VBox>
+   </VBox>
+   
+   <!-- 个人信息查看对话框 -->
+   <DialogPane fx:id="personalInfoDialog" visible="false"
+               styleClass="modal-dialog"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <content>
+         <VBox spacing="20" alignment="CENTER" style="-fx-padding: 20;">
+            <Label text="个人信息" styleClass="modal-title"/>
+            
+            <VBox spacing="15" styleClass="modal-content">
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="账号：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogAccount" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="角色：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogRole" styleClass="user-info-value"/>
+               </HBox>
+               
+               <!-- 买家信息字段 -->
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="昵称：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogNickname" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="联系方式：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogContact" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="生日：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogBirthday" styleClass="user-info-value"/>
+               </HBox>
+               
+               <!-- 厂商信息字段 -->
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="企业名称：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogCompanyName" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="注册地址：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogRegisteredAddress" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="联系人：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogContactPerson" styleClass="user-info-value"/>
+               </HBox>
+               
+               <HBox spacing="10" alignment="CENTER_LEFT">
+                  <Label text="注册时间：" styleClass="user-info-label" prefWidth="80"/>
+                  <Label fx:id="dialogRegisterTime" styleClass="user-info-value"/>
+               </HBox>
+            </VBox>
+            
+            <Button fx:id="closeDialogButton" mnemonicParsing="false" onAction="#handleCloseDialog"
+                    styleClass="personal-info-button">
+               <text>关闭</text>
+            </Button>
+         </VBox>
+      </content>
+   </DialogPane>
+   
+   <!-- 信息显示标签 -->
+   <Label fx:id="messageLabel" visible="false" styleClass="success-message"
+          AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0"/>
 </AnchorPane>

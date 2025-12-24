@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class LoginController {
+public class  LoginController {
     
     @FXML
     private TextField accountField;
@@ -95,8 +95,33 @@ public class LoginController {
         // 重置UI状态
         ControllerUtils.resetButton(loginButton, "登录");
         
-        // 跳转到主界面
-        ControllerUtils.switchScene(loginButton, "/com/database/gametradefrontend/view/buyermain.fxml", "GameTrade - 主界面", 1000, 800);
+        // 根据用户角色跳转到不同的主界面
+        String role = user.getRole();
+        String fxmlPath;
+        String title;
+
+        switch (role) {
+            case "buyer" -> {
+                fxmlPath = "/com/database/gametradefrontend/view/buyermain.fxml";
+                title = "GameTrade - 买家中心";
+            }
+            case "vendor" -> {
+                fxmlPath = "/com/database/gametradefrontend/view/vendormain.fxml";
+                title = "GameTrade - 厂商中心";
+            }
+            case "admin" -> {
+                // 默认跳转到买家界面
+                fxmlPath = "/com/database/gametradefrontend/view/adminmain.fxml";
+                title = "GameTrade - 管理员界面";
+            }
+            case null, default -> {
+                // 默认跳转到买家界面
+                fxmlPath = "/com/database/gametradefrontend/view/buyermain.fxml";
+                title = "GameTrade - 买家中心";
+            }
+        }
+        
+        ControllerUtils.switchScene(loginButton, fxmlPath, title, 1000, 800);
     }
     
     private void onLoginFailure(String errorMessage) {

@@ -1,7 +1,9 @@
 package com.database.gametradefrontend.util;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -19,15 +21,15 @@ public class ControllerUtils {
     
     /**
      * 切换界面 - 使用指定窗口大小，保持窗口位置，带平滑过渡动画
-     * @param currentButton 当前按钮（用于获取Stage）
+     * @param currentNode 当前节点（用于获取Stage）
      * @param fxmlPath FXML文件路径
      * @param title 窗口标题
      * @param width 窗口宽度
      * @param height 窗口高度
      */
-    public static void switchScene(Button currentButton, String fxmlPath, String title, int width, int height) {
+    public static void switchScene(Node currentNode, String fxmlPath, String title, int width, int height) {
         try {
-            Stage stage = (Stage) currentButton.getScene().getWindow();
+            Stage stage = (Stage) currentNode.getScene().getWindow();
             Parent currentRoot = stage.getScene().getRoot();
             
             // 保存当前窗口的位置
@@ -69,12 +71,14 @@ public class ControllerUtils {
                         stage.show();
                     }
                 } catch (Exception ex) {
-                    showErrorDialog("界面切换失败", ex.getMessage());
+                    // 使用Platform.runLater避免在动画期间调用showAndWait
+                    Platform.runLater(() -> showErrorDialog("界面切换失败", ex.getMessage()));
                 }
             });
             fadeOut.play();
         } catch (Exception e) {
-            showErrorDialog("界面切换失败", e.getMessage());
+            // 使用Platform.runLater避免在动画期间调用showAndWait
+            Platform.runLater(() -> showErrorDialog("界面切换失败", e.getMessage()));
         }
     }
     
@@ -145,5 +149,41 @@ public class ControllerUtils {
     public static void setupButtonHover(Button button, String hoverClass) {
         button.setOnMouseEntered(e -> button.getStyleClass().add(hoverClass));
         button.setOnMouseExited(e -> button.getStyleClass().remove(hoverClass));
+    }
+    
+    /**
+     * 显示自动隐藏的消息（3秒后自动消失）
+     * @param messageLabel 消息标签
+     * @param message 消息内容
+     * @param isSuccess 是否为成功消息
+     */
+    public static void showAutoHideMessage(Label messageLabel, String message, boolean isSuccess) {
+        messageLabel.setText(message);
+        messageLabel.setStyle(isSuccess ? 
+                "-fx-text-fill: #00c851; -fx-background-color: rgba(0, 200, 81, 0.1);" :
+                "-fx-text-fill: #ff4444; -fx-background-color: rgba(255, 68, 68, 0.1);");
+        messageLabel.setVisible(true);
+        
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+                Platform.runLater(() -> messageLabel.setVisible(false));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
+    }
+    
+    /**
+     * 处理异常并显示错误消息
+     * @param operation 操作名称
+     * @param e 异常对象
+     * @param messageLabel 消息标签（可选，为null时不显示用户消息）
+     */
+    public static void handleException(String operation, Exception e, Label messageLabel) {
+        System.err.println(operation + "失败: " + e.getMessage());
+        if (messageLabel != null) {
+            showAutoHideMessage(messageLabel, operation + "失败: " + e.getMessage(), false);
+        }
     }
 }

@@ -124,11 +124,11 @@ public class UserService {
             throw e;
         }
     }
-    
+
     /**
-     * 检查账号是否已存在
+     * 查询用户个人信息
      */
-    public boolean checkAccountExists(String account) throws Exception {
+    public Object getPersonalInfo(String account) throws Exception {
         // 输入验证
         if (account == null || account.trim().isEmpty()) {
             throw new IllegalArgumentException("账号不能为空");
@@ -138,74 +138,39 @@ public class UserService {
         String encoded = java.net.URLEncoder.encode(account.trim(), java.nio.charset.StandardCharsets.UTF_8);
         
         try {
-            Boolean exists = apiClient.get("/users/check-account?account=" + encoded, Boolean.class);
-            // 返回实际的布尔值（防止null造成的问题）
-            return Boolean.TRUE.equals(exists);
+            return apiClient.get("/users/personal-info?account=" + encoded, Object.class);
         } catch (ApiClient.ApiException e) {
-            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
+            if (e.getStatusCode() == 404) {
+                // 用户不存在
+                return null;
+            }
             throw e;
         }
     }
     
     /**
-     * 检查联系方式是否已存在
+     * 修改用户个人信息
      */
-    public boolean checkContactExists(String contact) throws Exception {
+    public boolean updatePersonalInfo(String account, java.util.Map<String, Object> personalInfo) throws Exception {
         // 输入验证
-        if (contact == null || contact.trim().isEmpty()) {
-            throw new IllegalArgumentException("联系方式不能为空");
+        if (account == null || account.trim().isEmpty()) {
+            throw new IllegalArgumentException("账号不能为空");
+        }
+        if (personalInfo == null || personalInfo.isEmpty()) {
+            throw new IllegalArgumentException("个人信息不能为空");
         }
         
-        // URL编码联系方式
-        String encoded = java.net.URLEncoder.encode(contact.trim(), java.nio.charset.StandardCharsets.UTF_8);
+        // URL编码账号
+        String encoded = java.net.URLEncoder.encode(account.trim(), java.nio.charset.StandardCharsets.UTF_8);
         
         try {
-            Boolean exists = apiClient.get("/users/check-contact?contact=" + encoded, Boolean.class);
-            return Boolean.TRUE.equals(exists);
+            apiClient.put("/users/personal-info?account=" + encoded, personalInfo, Void.class);
+            return true;
         } catch (ApiClient.ApiException e) {
-            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
-            throw e;
-        }
-    }
-    
-    /**
-     * 检查昵称是否已存在
-     */
-    public boolean checkNicknameExists(String nickname) throws Exception {
-        // 输入验证
-        if (nickname == null || nickname.trim().isEmpty()) {
-            throw new IllegalArgumentException("昵称不能为空");
-        }
-        
-        // URL编码昵称
-        String encoded = java.net.URLEncoder.encode(nickname.trim(), java.nio.charset.StandardCharsets.UTF_8);
-        
-        try {
-            Boolean exists = apiClient.get("/users/check-nickname?nickname=" + encoded, Boolean.class);
-            return Boolean.TRUE.equals(exists);
-        } catch (ApiClient.ApiException e) {
-            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
-            throw e;
-        }
-    }
-    
-    /**
-     * 检查企业名是否已存在
-     */
-    public boolean checkCompanyNameExists(String companyName) throws Exception {
-        // 输入验证
-        if (companyName == null || companyName.trim().isEmpty()) {
-            throw new IllegalArgumentException("企业名不能为空");
-        }
-        
-        // URL编码企业名
-        String encoded = java.net.URLEncoder.encode(companyName.trim(), java.nio.charset.StandardCharsets.UTF_8);
-        
-        try {
-            Boolean exists = apiClient.get("/users/check-company?companyName=" + encoded, Boolean.class);
-            return Boolean.TRUE.equals(exists);
-        } catch (ApiClient.ApiException e) {
-            // 检查接口应该总是返回200状态码，如果出现错误则抛出异常
+            if (e.getStatusCode() == 404) {
+                // 用户不存在
+                return false;
+            }
             throw e;
         }
     }
