@@ -13,9 +13,17 @@
          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       
       <!-- 品牌区域 -->
-      <HBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+      <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
          <Label text="🎮" styleClass="brand-icon"/>
          <Label text="GameTrade" styleClass="brand-title"/>
+      </HBox>
+      
+      <!-- 用户信息显示 -->
+      <HBox alignment="CENTER_RIGHT" spacing="8">
+         <VBox alignment="CENTER_RIGHT" spacing="2">
+            <Label fx:id="accountValue" styleClass="user-info-display" text="未登录"/>
+            <Label fx:id="roleValue" styleClass="user-role-display" text="访客"/>
+         </VBox>
       </HBox>
    </HBox>
    
@@ -89,6 +97,8 @@
                <items>
                   <MenuItem text="查看个人信息" onAction="#handleViewPersonalInfo"/>
                   <MenuItem text="编辑个人信息" onAction="#handleEditPersonalInfo"/>
+                  <SeparatorMenuItem/>
+                  <MenuItem text="退出登录" onAction="#handleLogout"/>
                </items>
             </MenuButton>
          </HBox>
@@ -236,41 +246,58 @@
                </HBox>
                
                <!-- 买家信息字段 -->
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="昵称：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogNickname" styleClass="user-info-value"/>
-               </HBox>
-               
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="联系方式：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogContact" styleClass="user-info-value"/>
-               </HBox>
-               
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="生日：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogBirthday" styleClass="user-info-value"/>
-               </HBox>
+               <VBox fx:id="buyerInfoSection" spacing="10" visible="false">
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="昵称：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogNickname" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="联系方式：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogContact" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="生日：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogBirthday" styleClass="user-info-value"/>
+                  </HBox>
+               </VBox>
                
                <!-- 厂商信息字段 -->
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="企业名称：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogCompanyName" styleClass="user-info-value"/>
-               </HBox>
+               <VBox fx:id="vendorInfoSection" spacing="10" visible="false">
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="企业名称：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogCompanyName" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="注册地址：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogRegisteredAddress" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="联系人：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogContactPerson" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="注册时间：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogRegisterTime" styleClass="user-info-value"/>
+                  </HBox>
+               </VBox>
                
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="注册地址：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogRegisteredAddress" styleClass="user-info-value"/>
-               </HBox>
-               
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="联系人：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogContactPerson" styleClass="user-info-value"/>
-               </HBox>
-               
-               <HBox spacing="10" alignment="CENTER_LEFT">
-                  <Label text="注册时间：" styleClass="user-info-label" prefWidth="80"/>
-                  <Label fx:id="dialogRegisterTime" styleClass="user-info-value"/>
-               </HBox>
+               <!-- 管理员信息字段 -->
+               <VBox fx:id="adminInfoSection" spacing="10" visible="false">
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="管理员级别：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogAdminLevel" styleClass="user-info-value"/>
+                  </HBox>
+                  
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="权限范围：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label fx:id="dialogPermissionScope" styleClass="user-info-value"/>
+                  </HBox>
+               </VBox>
             </VBox>
             
             <Button fx:id="closeDialogButton" mnemonicParsing="false" onAction="#handleCloseDialog"

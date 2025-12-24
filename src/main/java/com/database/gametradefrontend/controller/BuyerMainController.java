@@ -67,6 +67,21 @@ public class BuyerMainController {
     
     @FXML
     private Label dialogRegisterTime;
+    
+    @FXML
+    private Label dialogAdminLevel;
+    
+    @FXML
+    private Label dialogPermissionScope;
+    
+    @FXML
+    private VBox buyerInfoSection;
+    
+    @FXML
+    private VBox vendorInfoSection;
+    
+    @FXML
+    private VBox adminInfoSection;
 
 
     
@@ -167,9 +182,11 @@ public class BuyerMainController {
         try {
             if (userSession.isLoggedIn()) {
                 String account = userSession.getAccount();
+                String role = userSession.getRole();
+                String roleDisplayName = getRoleDisplayName(role);
                 
                 // 更新界面显示
-                updateUserInterface(account, "买家", "欢迎，" + account + "！");
+                updateUserInterface(account, roleDisplayName, "欢迎，" + account + "！");
                 
                 // 启用个人信息相关按钮
                 enableUserInfoButtons(true);
@@ -178,13 +195,29 @@ public class BuyerMainController {
                 loadPersonalInfo();
             } else {
                 // 用户未登录，显示默认信息
-                updateUserInterface("未登录", "买家", "欢迎来到买家中心");
+                updateUserInterface("未登录", "访客", "欢迎来到GameTrade");
                 
                 // 禁用个人信息相关按钮
                 enableUserInfoButtons(false);
             }
         } catch (Exception e) {
             ControllerUtils.handleException("初始化用户信息", e, messageLabel);
+        }
+    }
+    
+    /**
+     * 获取角色显示名称
+     */
+    private String getRoleDisplayName(String role) {
+        switch (role) {
+            case "buyer":
+                return "买家";
+            case "vendor":
+                return "厂商";
+            case "admin":
+                return "管理员";
+            default:
+                return "用户";
         }
     }
     
@@ -228,19 +261,56 @@ public class BuyerMainController {
                 
                 // 更新对话框中的基本信息
                 dialogAccount.setText(account);
-                dialogRole.setText(userSession.getRole());
+                String role = userSession.getRole();
+                dialogRole.setText(getRoleDisplayName(role));
                 
-                // 设置信息字段，简化重复代码
+                // 根据角色显示相应的信息区域
+                showRoleSpecificInfo(role, infoMap);
+            }
+        } catch (Exception e) {
+            ControllerUtils.handleException("加载个人信息", e, messageLabel);
+        }
+    }
+    
+    /**
+     * 根据角色显示相应的信息区域
+     */
+    private void showRoleSpecificInfo(String role, Map<?, ?> infoMap) {
+        // 首先隐藏所有区域
+        buyerInfoSection.setVisible(false);
+        vendorInfoSection.setVisible(false);
+        adminInfoSection.setVisible(false);
+        
+        // 根据角色显示相应的区域
+        switch (role) {
+            case "buyer":
+                buyerInfoSection.setVisible(true);
                 setDialogField(infoMap, "nickname", dialogNickname, "未设置");
                 setDialogField(infoMap, "contact", dialogContact, "未设置");
                 setDialogField(infoMap, "birthday", dialogBirthday, "未设置");
+                break;
+                
+            case "vendor":
+                vendorInfoSection.setVisible(true);
                 setDialogField(infoMap, "companyName", dialogCompanyName, "未设置");
                 setDialogField(infoMap, "registeredAddress", dialogRegisteredAddress, "未设置");
                 setDialogField(infoMap, "contactPerson", dialogContactPerson, "未设置");
                 setDialogField(infoMap, "registerTime", dialogRegisterTime, "未知");
-            }
-        } catch (Exception e) {
-            ControllerUtils.handleException("加载个人信息", e, messageLabel);
+                break;
+                
+            case "admin":
+                adminInfoSection.setVisible(true);
+                setDialogField(infoMap, "adminLevel", dialogAdminLevel, "普通管理员");
+                setDialogField(infoMap, "permissionScope", dialogPermissionScope, "全部权限");
+                break;
+                
+            default:
+                // 默认显示买家信息
+                buyerInfoSection.setVisible(true);
+                setDialogField(infoMap, "nickname", dialogNickname, "未设置");
+                setDialogField(infoMap, "contact", dialogContact, "未设置");
+                setDialogField(infoMap, "birthday", dialogBirthday, "未设置");
+                break;
         }
     }
     
