@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0"
+			style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);"
+			xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+			fx:controller="com.database.gametradefrontend.controller.LoginController">
+   
+   <stylesheets>
+      <URL value="@../view/styles/login.css" />
+   </stylesheets>
+   
+		   <!-- 现代化响应式横向布局容器 -->
+		   <HBox alignment="CENTER"
+				 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+		         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		      
+      <!-- 左侧品牌展示区域 - 现代化设计 -->
+      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" 
+            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(102,126,234,0.9) 0%, rgba(118,75,162,0.9) 100%); -fx-min-width: 45%;">
+         <VBox alignment="CENTER" spacing="20">
+            <Label text="🔐" styleClass="brand-icon"/>
+            <Label text="欢迎回来" styleClass="brand-title"/>
+            <Label text="请登录您的账户" styleClass="brand-subtitle"/>
+            <Label text="GameTrade 交易平台" styleClass="brand-platform"/>
+            
+            <!-- 平台特色介绍 -->
+            <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30 0 0 0;">
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="🎮" styleClass="feature-icon"/>
+                  <Label text="海量游戏资源" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="💰" styleClass="feature-icon"/>
+                  <Label text="安全交易保障" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="⚡" styleClass="feature-icon"/>
+                  <Label text="快速交易体验" styleClass="feature-text"/>
+               </HBox>
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="👥" styleClass="feature-icon"/>
+                  <Label text="活跃社区互动" styleClass="feature-text"/>
+               </HBox>
+            </VBox>
+            
+            <!-- 装饰性分隔线 -->
+            <Separator style="-fx-background-color: rgba(255,255,255,0.3); -fx-pref-width: 200px; -fx-padding: 10 0;"/>
+            
+            <!-- 平台统计数据 -->
+            <VBox alignment="CENTER" spacing="8" style="-fx-padding: 10 0;">
+               <HBox alignment="CENTER" spacing="15">
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="10万+" styleClass="stat-number"/>
+                     <Label text="注册用户" styleClass="stat-label"/>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="5万+" styleClass="stat-number"/>
+                     <Label text="游戏资源" styleClass="stat-label"/>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="2">
+                     <Label text="99.9%" styleClass="stat-number"/>
+                     <Label text="交易成功率" styleClass="stat-label"/>
+                  </VBox>
+               </HBox>
+            </VBox>
+         </VBox>
+      </VBox>
+		      
+				      <!-- 右侧登录表单区域 - 现代化设计 -->
+				      <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="25"
+				            style="-fx-background-color: white; -fx-padding: 10% 8%; -fx-min-width: 55%;">
+				         
+				         <!-- 返回按钮 - 右上角 -->
+				         <HBox alignment="TOP_RIGHT" style="-fx-padding: 15 0 0 0;">
+				            <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" 
+				                    styleClass="back-button" prefWidth="120" prefHeight="40">
+				               <graphic>
+				                  <HBox alignment="CENTER" spacing="5">
+				                     <Label text="⬅️" style="-fx-font-size: 16px;"/>
+				                     <Label text="返回首页" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+				                  </HBox>
+				               </graphic>
+				            </Button>
+				         </HBox>
+			         
+			         <!-- 表单标题 -->
+			         <VBox alignment="CENTER" spacing="10">
+			            <Label text="用户登录" styleClass="form-main-title"/>
+			            <Label text="请输入您的账户信息" styleClass="form-subtitle"/>
+			         </VBox>
+
+				         <!-- 输入表单区域 -->
+				         <VBox alignment="CENTER" spacing="20" style="-fx-max-width: 38em;">
+            <!-- 账号输入 -->
+            <VBox alignment="CENTER" spacing="5">
+               <HBox spacing="8" alignment="CENTER">
+                  <Label text="👤" styleClass="input-icon"/>
+                  <Label text="账号" styleClass="input-label"/>
+               </HBox>
+               <TextField fx:id="accountField" promptText="请输入账号"
+                          styleClass="modern-input, responsive-input" alignment="CENTER"/>
+            </VBox>
+
+            <!-- 密码输入 -->
+            <VBox alignment="CENTER" spacing="5">
+               <HBox spacing="8" alignment="CENTER">
+                  <Label text="🔒" styleClass="input-icon"/>
+                  <Label text="密码" styleClass="input-label"/>
+               </HBox>
+               <PasswordField fx:id="passwordField"
+                              promptText="请输入密码" styleClass="modern-input, responsive-input" alignment="CENTER"/>
+            </VBox>
+
+		            <!-- 登录按钮 -->
+		            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin"
+		                    styleClass="modern-primary-button, login-button, responsive-button">
+		               <text>登录</text>
+		            </Button>
+		            
+		            <!-- 注册链接 -->
+		            <HBox alignment="CENTER" spacing="5">
+		               <Label text="还没有账号？" styleClass="link-label"/>
+		               <Button fx:id="registerLink" mnemonicParsing="false" onAction="#handleRegisterLink"
+		                       styleClass="modern-link-button">
+		                  <text>立即注册</text>
+		               </Button>
+		            </HBox>
+
+		            <!-- 错误信息显示 -->
+		            <Label fx:id="errorLabel" textFill="#ff4444" visible="false"
+		                   styleClass="error-message" wrapText="true"/>
+		         </VBox>
+		      </VBox>
+		   </HBox>
+</AnchorPane>

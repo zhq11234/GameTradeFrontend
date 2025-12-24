@@ -1,0 +1,145 @@
+/* 响应式欢迎文字样式 */
+.welcome-text {
+    -fx-font-size: 3em;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0.5, 0, 1);
+    -fx-background-color: transparent;
+}
+
+/* 动态亮光效果 - 简化版 */
+.welcome-text-glow {
+    /* 亮光效果已移除 */
+}
+
+/* 响应式现代化按钮样式 */
+.modern-button {
+    -fx-background-radius: 2em;
+    -fx-border-radius: 2em;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 12, 0, 0, 4);
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 1em 2em;
+    -fx-min-width: 12em;
+    -fx-max-width: 25em;
+    -fx-min-height: 3.5em;
+}
+
+/* 响应式按钮样式 */
+.responsive-button {
+    -fx-pref-width: -1;
+    -fx-pref-height: -1;
+    -fx-min-width: 12em;
+    -fx-max-width: 100%;
+    -fx-max-height: 5em;
+}
+
+/* 按钮悬停效果 */
+.modern-button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.6), 20, 0, 0, 8);
+    -fx-translate-y: -0.2em;
+    -fx-background-color: inherit;
+}
+
+/* 按钮点击效果 */
+.modern-button:pressed {
+    -fx-translate-y: 0.1em;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+/* 登录按钮特定样式 - 更丰富的颜色 */
+.login-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2, #f093fb);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.5), 20, 0, 0, 8);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 2;
+    -fx-border-radius: 30px;
+}
+
+.login-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5a6fd8, #6a4190, #e685f0);
+    -fx-effect: dropshadow(three-pass-box, rgba(90, 111, 216, 0.8), 30, 0, 0, 15);
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-text-fill: #fffacd;
+}
+
+/* 注册按钮特定样式 - 更丰富的颜色 */
+.register-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f093fb, #f5576c, #ff9a9e);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(240, 147, 251, 0.5), 20, 0, 0, 8);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 2;
+    -fx-border-radius: 30px;
+}
+
+.register-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e685f0, #e94b63, #ff7b7b);
+    -fx-effect: dropshadow(three-pass-box, rgba(230, 133, 240, 0.8), 30, 0, 0, 15);
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-text-fill: #fffacd;
+}
+
+/* 响应式按钮图标样式 */
+.button-icon {
+    -fx-font-size: 1.2em;
+    -fx-padding: 0 0.6em 0 0;
+}
+
+
+
+/* 文字进入动画 - 优化版 */
+.text-final-position {
+    -fx-translate-x: 0;
+    -fx-translate-y: 0;
+    -fx-opacity: 1;
+    -fx-rotate: 0deg;
+}
+
+/* 渐变闪烁动画 - 增强版 */
+.gradient-animation {
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b, #4ecdc4);
+}
+
+/* 防止界面抖动的优化 */
+* {
+    /* -fx-smooth: true; 移除不支持的属性 */
+}
+
+/* 容器优化 */
+VBox, AnchorPane, HBox {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-insets: 0;
+}
+
+/* 性能优化 */
+.welcome-text, .modern-button {
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+/* 副标题样式 */
+.subtitle {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 2);
+}
+
+/* 平台简介样式 */
+.platform-description {
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-size: 1.3em;
+    -fx-font-weight: 500;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+}
+
+/* 按钮发光效果 */
+.button-glow-effect {
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.8), 15, 0, 0, 0);
+}

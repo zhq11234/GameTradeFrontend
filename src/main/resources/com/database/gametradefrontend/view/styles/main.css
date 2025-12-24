@@ -1,0 +1,61 @@
+/* 响应式主界面样式 */
+
+/* 主图标样式 */
+.main-icon {
+    -fx-font-size: 4em;
+}
+
+/* 主标题样式 */
+.main-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 2em;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 3);
+}
+
+/* 副标题样式 */
+.subtitle {
+    -fx-font-size: 1.1em;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.9;
+}
+
+/* 退出登录按钮样式 */
+.logout-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff6b6b, #ee5a52);
+    -fx-text-fill: white;
+}
+
+.logout-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff5252, #e53935);
+}
+
+/* 响应式现代化按钮样式 */
+.modern-button {
+    -fx-background-radius: 1.5em;
+    -fx-border-radius: 1.5em;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
+    -fx-min-width: 12em;
+    -fx-max-width: 25em;
+    -fx-min-height: 3em;
+}
+
+.modern-button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
+}
+
+.modern-button:pressed {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* 响应式按钮 */
+.responsive-button {
+    -fx-pref-width: -1;
+    -fx-pref-height: -1;
+    -fx-min-width: 12em;
+    -fx-max-width: 100%;
+    -fx-max-height: 4em;
+}

@@ -1,0 +1,315 @@
+/* 响应式现代化输入框样式 */
+.modern-input {
+    -fx-background-radius: 0.5em;
+    -fx-border-radius: 0.5em;
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 0.8em;
+    -fx-font-size: 0.9em;
+    -fx-background-color: #f8f9fa;
+    -fx-border-width: 1;
+}
+
+/* 现代化输入框样式 */
+.modern-input:hover {
+    -fx-border-color: #667eea;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 8, 0.3, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.modern-input:focused {
+    -fx-border-color: #5a6fd8;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0.4, 0, 3);
+}
+
+/* 现代化主要按钮样式 */
+.modern-primary-button {
+    -fx-background-radius: 1.5em;
+    -fx-border-radius: 1.5em;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
+    -fx-min-width: 14em;
+    -fx-max-width: 25em;
+    -fx-min-height: 3.5em;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);
+}
+
+.modern-primary-button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5a6fd8, #6a4190);
+    -fx-scale-x: 1.12;
+    -fx-scale-y: 1.12;
+}
+
+.modern-primary-button:pressed {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+/* 登录按钮特定样式 */
+.login-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);
+    -fx-text-fill: white;
+}
+
+.login-button:hover, .login-button-hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5a6fd8, #6a4190);
+}
+
+/* 品牌图标样式 */
+.brand-icon {
+    -fx-font-size: 80px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 15, 0, 0, 5);
+}
+
+/* 品牌标题样式 */
+.brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 3);
+}
+
+/* 品牌副标题样式 */
+.brand-subtitle {
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+/* 品牌平台名称样式 */
+.brand-platform {
+    -fx-text-fill: rgba(255,255,255,0.8);
+    -fx-font-size: 1em;
+    -fx-font-style: italic;
+}
+
+/* 表单主标题样式 */
+.form-main-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+/* 表单副标题样式 */
+.form-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+    -fx-font-weight: normal;
+}
+
+/* 现代化返回按钮样式 */
+.modern-back-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.modern-back-button:hover {
+    -fx-background-color: rgba(102, 126, 234, 0.15);
+    -fx-text-fill: #667eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+/* 返回按钮样式 - 与注册界面一致 */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-min-width: 48px;
+    -fx-min-height: 40px;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(102, 126, 234, 0.15);
+    -fx-text-fill: #667eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 2);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+/* 返回标签样式 */
+.back-label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 14px;
+}
+
+/* 按钮图标样式 */
+.button-icon {
+    -fx-font-size: 16px;
+}
+
+/* 现代化链接按钮样式 */
+.modern-link-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #667eea;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 5px 8px;
+    -fx-underline: false;
+    -fx-cursor: hand;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+
+.modern-link-button:hover {
+    -fx-text-fill: #5a6fd8;
+    -fx-background-color: rgba(102, 126, 234, 0.1);
+    -fx-underline: false;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 1);
+}
+
+/* 链接标签样式 */
+.link-label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 13px;
+}
+
+/* 输入框图标样式 */
+.input-icon {
+    -fx-font-size: 16px;
+    -fx-text-fill: #666666;
+}
+
+/* 输入标签样式 */
+.input-label {
+    -fx-text-fill: #666666;
+    -fx-font-weight: 500;
+    -fx-font-size: 15px;
+}
+
+/* 现代化错误信息样式 */
+.error-message {
+    -fx-text-fill: #ff4444;
+    -fx-font-size: 14px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-font-weight: bold;
+    -fx-padding: 8px;
+    -fx-background-color: rgba(255, 68, 68, 0.1);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+/* ========== JavaFX CSS 响应式布局优化 ========== */
+
+/* 响应式输入框优化 - 使用JavaFX CSS特性 */
+.responsive-input {
+    -fx-pref-width: -1;
+    -fx-min-width: 12em;
+    -fx-max-width: 100%;
+    -fx-pref-height: 2.8em;
+    -fx-min-height: 2.5em;
+}
+
+/* 响应式按钮优化 - 使用JavaFX CSS特性 */
+.responsive-button {
+    -fx-pref-width: -1;
+    -fx-pref-height: -1;
+    -fx-min-width: 10em;
+    -fx-max-width: 100%;
+    -fx-min-height: 3em;
+    -fx-max-height: 4em;
+}
+
+/* 响应式容器 */
+.responsive-container {
+    -fx-min-width: 300px;
+    -fx-max-width: 100%;
+}
+
+/* 重要控件样式 - 确保在小屏幕上可见 */
+.important-control {
+    -fx-min-width: 6em !important;
+    -fx-min-height: 2.5em !important;
+}
+
+/* 小屏幕适配 - 通过调整最小尺寸实现 */
+.brand-icon {
+    -fx-font-size: 80px;
+}
+
+.brand-title {
+    -fx-font-size: 40px;
+}
+
+.brand-subtitle {
+    -fx-font-size: 19px;
+}
+
+.form-main-title {
+    -fx-font-size: 32px;
+}
+
+/* 确保登录按钮等重要控件始终可见 */
+.login-button {
+    -fx-min-width: 8em !important;
+    -fx-min-height: 2.8em !important;
+}
+
+.modern-back-button {
+    -fx-min-width: 3em !important;
+    -fx-min-height: 2.5em !important;
+}
+
+.modern-link-button {
+    -fx-min-width: 5em !important;
+    -fx-min-height: 2em !important;
+}
+
+/* 表单区域响应式内边距 */
+.responsive-form-padding {
+    -fx-padding: 10% 8%;
+}
+
+/* 小屏幕下的间距优化 */
+.responsive-spacing {
+    -fx-spacing: 20;
+}
+
+.responsive-small-spacing {
+    -fx-spacing: 10;
+}
+
+/* 特色图标样式 */
+.feature-icon {
+    -fx-font-size: 24px;
+    -fx-text-fill: rgba(255,255,255,0.9);
+}
+
+/* 特色文本样式 */
+.feature-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-font-weight: bold;
+}
+
+/* 统计数据数字样式 */
+.stat-number {
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* 统计数据标签样式 */
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(255,255,255,0.8);
+}
