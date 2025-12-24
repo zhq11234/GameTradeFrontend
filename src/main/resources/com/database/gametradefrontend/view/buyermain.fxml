@@ -8,100 +8,90 @@
             fx:controller="com.database.gametradefrontend.controller.BuyerMainController"
             stylesheets="@styles/buyermain.css">
    
-   <!-- IDEA风格顶部工具栏 -->
-   <HBox alignment="CENTER" styleClass="idea-toolbar"
+   <!-- 顶部品牌栏 - 渐变浅粉色 -->
+   <HBox alignment="CENTER" styleClass="brand-toolbar"
          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       
-      <!-- 左侧品牌区域 -->
-      <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8">
-         <Label text="🎮" styleClass="idea-brand-icon"/>
-         <Label text="GameTrade" styleClass="idea-brand-title"/>
-      </HBox>
-      
-      <!-- 右侧控制区域 -->
-      <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="5">
-         <!-- 窗口控制按钮 -->
-         <HBox alignment="CENTER" spacing="2" styleClass="window-controls">
-            <Button mnemonicParsing="false" styleClass="window-control-button" onAction="#handleMinimize">
-               <text>−</text>
-            </Button>
-            <Button mnemonicParsing="false" styleClass="window-control-button" onAction="#handleMaximize">
-               <text>□</text>
-            </Button>
-            <Button mnemonicParsing="false" styleClass="window-control-button, close" onAction="#handleClose">
-               <text>×</text>
-            </Button>
-         </HBox>
-         
-         <!-- 个人信息图标 -->
-         <MenuButton fx:id="personalInfoButton" mnemonicParsing="false" styleClass="idea-icon-button">
-            <text>👤</text>
-            <items>
-               <MenuItem text="查看个人信息" onAction="#handleViewPersonalInfo"/>
-               <MenuItem text="编辑个人信息" onAction="#handleEditPersonalInfo"/>
-            </items>
-         </MenuButton>
-         
-         <!-- 通知图标 -->
-         <Button fx:id="notificationButton" mnemonicParsing="false" styleClass="idea-icon-button">
-            <text>🔔</text>
-         </Button>
+      <!-- 品牌区域 -->
+      <HBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+         <Label text="🎮" styleClass="brand-icon"/>
+         <Label text="GameTrade" styleClass="brand-title"/>
       </HBox>
    </HBox>
    
    <!-- 主内容区域 -->
-   <VBox alignment="TOP_CENTER" spacing="0" styleClass="idea-main-content"
+   <VBox alignment="TOP_CENTER" spacing="0" styleClass="main-content"
          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
       
-      <!-- 紧凑型横向导航栏 -->
-      <HBox alignment="CENTER_LEFT" styleClass="idea-navbar">
-         <Button fx:id="dashboardButton" mnemonicParsing="false" onAction="#showDashboard"
-                 styleClass="idea-nav-button, active">
-            <text>🏠 首页</text>
-         </Button>
+      <!-- 导航栏 - 左侧功能导航，右侧用户操作 -->
+      <HBox alignment="CENTER_LEFT" styleClass="navbar">
+         <!-- 左侧功能导航 -->
+         <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="0">
+            <Button fx:id="dashboardButton" mnemonicParsing="false" onAction="#showDashboard"
+                    styleClass="nav-button, active">
+               <text>🏠 首页</text>
+            </Button>
+            
+            <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#handleTrade"
+                    styleClass="nav-button">
+               <text>🛒 交易</text>
+            </Button>
+            
+            <Button fx:id="collectionButton" mnemonicParsing="false" onAction="#handleCollection"
+                    styleClass="nav-button">
+               <text>📚 收藏</text>
+            </Button>
+            
+            <MenuButton fx:id="orderButton" styleClass="nav-button" text="📊 订单">
+               <items>
+                  <MenuItem text="交易记录" onAction="#handleHistory"/>
+                  <MenuItem text="订单管理" onAction="#handleOrderManagement"/>
+                  <MenuItem text="退款申请" onAction="#handleRefundRequest"/>
+               </items>
+            </MenuButton>
+            
+            <MenuButton fx:id="reviewButton" styleClass="nav-button" text="⭐ 评价">
+               <items>
+                  <MenuItem text="我的评价" onAction="#handleMyReviews"/>
+                  <MenuItem text="发布评价" onAction="#handlePostReview"/>
+                  <MenuItem text="评价统计" onAction="#handleReviewStats"/>
+               </items>
+            </MenuButton>
+            
+            <MenuButton fx:id="messageButton" styleClass="nav-button" text="🔔 消息">
+               <items>
+                  <MenuItem text="系统通知" onAction="#handleSystemMessages"/>
+                  <MenuItem text="交易消息" onAction="#handleTradeMessages"/>
+                  <MenuItem text="私信" onAction="#handlePrivateMessages"/>
+               </items>
+            </MenuButton>
+            
+            <MenuButton fx:id="settingsButton" styleClass="nav-button" text="⚙️ 设置">
+               <items>
+                  <MenuItem text="账户设置" onAction="#handleAccountSettings"/>
+                  <MenuItem text="隐私设置" onAction="#handlePrivacySettings"/>
+                  <MenuItem text="通知设置" onAction="#handleNotificationSettings"/>
+               </items>
+            </MenuButton>
+         </HBox>
          
-         <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#handleTrade"
-                 styleClass="idea-nav-button">
-            <text>🛒 交易</text>
-         </Button>
-         
-         <Button fx:id="collectionButton" mnemonicParsing="false" onAction="#handleCollection"
-                 styleClass="idea-nav-button">
-            <text>📚 收藏</text>
-         </Button>
-         
-         <MenuButton fx:id="orderButton" styleClass="idea-nav-button" text="📊 订单">
-            <items>
-               <MenuItem text="交易记录" onAction="#handleHistory"/>
-               <MenuItem text="订单管理" onAction="#handleOrderManagement"/>
-               <MenuItem text="退款申请" onAction="#handleRefundRequest"/>
-            </items>
-         </MenuButton>
-         
-         <MenuButton fx:id="reviewButton" styleClass="idea-nav-button" text="⭐ 评价">
-            <items>
-               <MenuItem text="我的评价" onAction="#handleMyReviews"/>
-               <MenuItem text="发布评价" onAction="#handlePostReview"/>
-               <MenuItem text="评价统计" onAction="#handleReviewStats"/>
-            </items>
-         </MenuButton>
-         
-         <MenuButton fx:id="messageButton" styleClass="idea-nav-button" text="🔔 消息">
-            <items>
-               <MenuItem text="系统通知" onAction="#handleSystemMessages"/>
-               <MenuItem text="交易消息" onAction="#handleTradeMessages"/>
-               <MenuItem text="私信" onAction="#handlePrivateMessages"/>
-            </items>
-         </MenuButton>
-         
-         <MenuButton fx:id="settingsButton" styleClass="idea-nav-button" text="⚙️ 设置">
-            <items>
-               <MenuItem text="账户设置" onAction="#handleAccountSettings"/>
-               <MenuItem text="隐私设置" onAction="#handlePrivacySettings"/>
-               <MenuItem text="通知设置" onAction="#handleNotificationSettings"/>
-            </items>
-         </MenuButton>
+         <!-- 右侧用户操作区域 -->
+         <HBox alignment="CENTER_RIGHT" spacing="8">
+            <!-- 通知图标 -->
+            <Button fx:id="notificationButton" mnemonicParsing="false" styleClass="user-action-button">
+               <text>🔔</text>
+            </Button>
+            
+            <!-- 个人信息图标 -->
+            <MenuButton fx:id="personalInfoButton" mnemonicParsing="false" styleClass="user-action-button">
+               <text>👤</text>
+               <items>
+                  <MenuItem text="查看个人信息" onAction="#handleViewPersonalInfo"/>
+                  <MenuItem text="编辑个人信息" onAction="#handleEditPersonalInfo"/>
+               </items>
+            </MenuButton>
+         </HBox>
       </HBox>
       
       <!-- 内容显示区域 -->
