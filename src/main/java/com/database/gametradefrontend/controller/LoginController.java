@@ -96,7 +96,7 @@ public class LoginController {
         ControllerUtils.resetButton(loginButton, "登录");
         
         // 跳转到主界面
-        ControllerUtils.switchScene(loginButton, "/com/database/gametradefrontend/view/main.fxml", "GameTrade - 主界面", 1000, 800);
+        ControllerUtils.switchScene(loginButton, "/com/database/gametradefrontend/view/buyermain.fxml", "GameTrade - 主界面", 1000, 800);
     }
     
     private void onLoginFailure(String errorMessage) {

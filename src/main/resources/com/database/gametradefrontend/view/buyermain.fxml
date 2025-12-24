@@ -10,7 +10,7 @@
             fx:controller="com.database.gametradefrontend.controller.MainController">
    
    <stylesheets>
-      <URL value="@styles/main.css" />
+      <URL value="@styles/buyermain.css" />
    </stylesheets>
    
 	   <!-- 主容器 - 响应式布局 -->
