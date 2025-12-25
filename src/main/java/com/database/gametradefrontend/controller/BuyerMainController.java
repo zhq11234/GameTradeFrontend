@@ -371,9 +371,9 @@ public class BuyerMainController {
     private void showBuyerEditDialog() {
         createEditDialog(
             "编辑个人信息", 
-            "修改您的个人信息",
-            new String[]{"昵称", "性别", "生日"},
-            new String[]{"nickname", "gender", "birthday"},
+            "修改您的个人信息（昵称是主键，不允许修改）",
+            new String[]{"性别", "生日"},
+            new String[]{"gender", "birthday"},
             this::updateBuyerPersonalInfo
         );
     }
