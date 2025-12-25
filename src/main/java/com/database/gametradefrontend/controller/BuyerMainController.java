@@ -12,7 +12,6 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -146,6 +145,9 @@ public class BuyerMainController {
     
     @FXML
     private MenuButton personalInfoButton;
+    
+    @FXML
+    private Button editDialogButton;
 
 
     
@@ -209,16 +211,12 @@ public class BuyerMainController {
      * 获取角色显示名称
      */
     private String getRoleDisplayName(String role) {
-        switch (role) {
-            case "buyer":
-                return "买家";
-            case "vendor":
-                return "厂商";
-            case "admin":
-                return "管理员";
-            default:
-                return "用户";
-        }
+        return switch (role) {
+            case "buyer" -> "买家";
+            case "vendor" -> "厂商";
+            case "admin" -> "管理员";
+            default -> "用户";
+        };
     }
     
     /**
@@ -353,6 +351,9 @@ public class BuyerMainController {
             return;
         }
         
+        // 关闭个人信息查看对话框
+        personalInfoDialog.setVisible(false);
+        
         // 根据用户角色创建不同的编辑对话框
         String role = userSession.getRole();
         if (ROLE_BUYER.equals(role)) {
@@ -454,17 +455,15 @@ public class BuyerMainController {
                     String fieldName = fieldNames[i];
                     javafx.scene.control.Control control = controls[i];
                     
-                    if (control instanceof javafx.scene.control.DatePicker) {
+                    if (control instanceof javafx.scene.control.DatePicker datePicker) {
                         // 处理DatePicker
-                        javafx.scene.control.DatePicker datePicker = (javafx.scene.control.DatePicker) control;
                         if (datePicker.getValue() != null) {
                             result.put(fieldName, datePicker.getValue().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE));
                         } else {
                             result.put(fieldName, "");
                         }
-                    } else if (control instanceof javafx.scene.control.TextField) {
+                    } else if (control instanceof javafx.scene.control.TextField textField) {
                         // 处理TextField
-                        javafx.scene.control.TextField textField = (javafx.scene.control.TextField) control;
                         result.put(fieldName, textField.getText().trim());
                     }
                 }
@@ -518,128 +517,6 @@ public class BuyerMainController {
     }
     
     /**
-     * 更新买家个人信息
-     */
-    private void updateBuyerPersonalInfo(Map<String, String> personalInfo) {
-        // 输入验证
-        if (personalInfo.get("nickname").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "昵称不能为空", false);
-            return;
-        }
-        if (personalInfo.get("gender").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "性别不能为空", false);
-            return;
-        }
-        
-        // 生日格式验证（如果提供了生日）
-        String birthday = personalInfo.get("birthday");
-        if (birthday != null && !birthday.isEmpty() && !isValidBirthdayFormat(birthday)) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "生日格式不正确，请使用YYYY-MM-DD格式", false);
-            return;
-        }
-        
-        // 检查昵称是否有变化
-        String newNickname = personalInfo.get("nickname");
-        String currentNickname = getCurrentInfoValue("nickname");
-        boolean nicknameChanged = !newNickname.equals(currentNickname);
-        
-        // 如果昵称有变化，先更新昵称
-        if (nicknameChanged) {
-            updateNickname(newNickname, personalInfo);
-        } else {
-            // 昵称没有变化，直接更新其他信息
-            updateOtherPersonalInfo(personalInfo, "个人信息");
-        }
-    }
-    
-    /**
-     * 更新昵称
-     */
-    private void updateNickname(String newNickname, Map<String, String> personalInfo) {
-        // 使用Task进行安全的异步操作
-        javafx.concurrent.Task<Boolean> nicknameTask = new javafx.concurrent.Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                return userService.updateNickname(userSession.getAccount(), newNickname);
-            }
-        };
-        
-        // 设置成功处理
-        nicknameTask.setOnSucceeded(event -> {
-            boolean success = nicknameTask.getValue();
-            if (success) {
-                // 昵称更新成功，继续更新其他信息
-                updateOtherPersonalInfo(personalInfo, "个人信息");
-            } else {
-                // 昵称冲突
-                ControllerUtils.showAutoHideMessage(messageLabel, 
-                    "昵称 '" + newNickname + "' 已被其他用户使用，请选择其他昵称", false);
-            }
-        });
-        
-        // 设置失败处理
-        nicknameTask.setOnFailed(event -> {
-            Throwable throwable = nicknameTask.getException();
-            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
-            ControllerUtils.handleException("更新昵称", exception, messageLabel);
-        });
-        
-        // 启动任务
-        new Thread(nicknameTask).start();
-    }
-    
-    /**
-     * 更新其他个人信息（不包含昵称）
-     */
-    private void updateOtherPersonalInfo(Map<String, String> personalInfo, String infoType) {
-        // 创建副本，移除昵称字段
-        Map<String, String> otherInfo = new HashMap<>(personalInfo);
-        otherInfo.remove("nickname");
-        
-        // 如果没有其他信息需要更新，直接返回成功
-        if (otherInfo.isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
-            loadPersonalInfo();
-            return;
-        }
-        
-        // 使用Task进行安全的异步操作
-        javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                Map<String, Object> updateInfo = new HashMap<>(otherInfo);
-                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
-            }
-        };
-        
-        // 设置成功处理
-        updateTask.setOnSucceeded(event -> {
-            boolean success = updateTask.getValue();
-            if (success) {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
-                loadPersonalInfo(); // 重新加载信息
-                
-                // 如果个人信息对话框是可见的，刷新对话框内容
-                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
-                    javafx.application.Platform.runLater(this::loadPersonalInfo);
-                }
-            } else {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
-            }
-        });
-        
-        // 设置失败处理
-        updateTask.setOnFailed(event -> {
-            Throwable throwable = updateTask.getException();
-            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
-            ControllerUtils.handleException("更新" + infoType, exception, messageLabel);
-        });
-        
-        // 启动任务
-        new Thread(updateTask).start();
-    }
-    
-    /**
      * 验证生日格式（YYYY-MM-DD）
      */
     private boolean isValidBirthdayFormat(String birthday) {
@@ -654,180 +531,7 @@ public class BuyerMainController {
             return false;
         }
     }
-    
-    /**
-     * 更新厂商个人信息
-     */
-    private void updateVendorPersonalInfo(Map<String, String> personalInfo) {
-        // 输入验证
-        if (personalInfo.get("companyName").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "企业名称不能为空", false);
-            return;
-        }
-        if (personalInfo.get("registeredAddress").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "注册地址不能为空", false);
-            return;
-        }
-        if (personalInfo.get("contactPerson").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "联系人不能为空", false);
-            return;
-        }
-        
-        // 检查厂商名字是否有变化
-        String newCompanyName = personalInfo.get("companyName");
-        String currentCompanyName = getCurrentInfoValue("companyName");
-        boolean companyNameChanged = !newCompanyName.equals(currentCompanyName);
-        
-        // 如果厂商名字有变化，先更新厂商名字
-        if (companyNameChanged) {
-            updateCompanyName(newCompanyName, personalInfo);
-        } else {
-            // 厂商名字没有变化，直接更新其他信息
-            updateOtherVendorInfo(personalInfo, "企业信息");
-        }
-    }
-    
-    /**
-     * 更新厂商名字
-     */
-    private void updateCompanyName(String newCompanyName, Map<String, String> personalInfo) {
-        // 使用Task进行安全的异步操作
-        javafx.concurrent.Task<Boolean> companyNameTask = new javafx.concurrent.Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                // 这里需要调用专门的厂商名字更新API
-                // 暂时使用通用的更新方法，但移除companyName字段
-                Map<String, Object> updateInfo = new HashMap<>();
-                updateInfo.put("companyName", newCompanyName);
-                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
-            }
-        };
-        
-        // 设置成功处理
-        companyNameTask.setOnSucceeded(event -> {
-            boolean success = companyNameTask.getValue();
-            if (success) {
-                // 厂商名字更新成功，继续更新其他信息
-                updateOtherVendorInfo(personalInfo, "企业信息");
-            } else {
-                // 厂商名字冲突
-                ControllerUtils.showAutoHideMessage(messageLabel, 
-                    "企业名称 '" + newCompanyName + "' 已被其他用户使用，请选择其他企业名称", false);
-            }
-        });
-        
-        // 设置失败处理
-        companyNameTask.setOnFailed(event -> {
-            Throwable throwable = companyNameTask.getException();
-            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
-            ControllerUtils.handleException("更新企业名称", exception, messageLabel);
-        });
-        
-        // 启动任务
-        new Thread(companyNameTask).start();
-    }
-    
-    /**
-     * 更新其他厂商信息（不包含厂商名字）
-     */
-    private void updateOtherVendorInfo(Map<String, String> personalInfo, String infoType) {
-        // 创建副本，移除厂商名字字段
-        Map<String, String> otherInfo = new HashMap<>(personalInfo);
-        otherInfo.remove("companyName");
-        
-        // 如果没有其他信息需要更新，直接返回成功
-        if (otherInfo.isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
-            loadPersonalInfo();
-            return;
-        }
-        
-        // 使用Task进行安全的异步操作
-        javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                Map<String, Object> updateInfo = new HashMap<>(otherInfo);
-                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
-            }
-        };
-        
-        // 设置成功处理
-        updateTask.setOnSucceeded(event -> {
-            boolean success = updateTask.getValue();
-            if (success) {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
-                loadPersonalInfo(); // 重新加载信息
-                
-                // 如果个人信息对话框是可见的，刷新对话框内容
-                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
-                    javafx.application.Platform.runLater(this::loadPersonalInfo);
-                }
-            } else {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
-            }
-        });
-        
-        // 设置失败处理
-        updateTask.setOnFailed(event -> {
-            Throwable throwable = updateTask.getException();
-            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
-            ControllerUtils.handleException("更新" + infoType, exception, messageLabel);
-        });
-        
-        // 启动任务
-        new Thread(updateTask).start();
-    }
-    
-    /**
-     * 通用的个人信息更新方法
-     */
-    private void updatePersonalInfo(Map<String, String> personalInfo, String infoType, boolean fieldChanged, String conflictFieldName) {
-        // 使用Task进行安全的异步操作
-        javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                Map<String, Object> updateInfo = new HashMap<>(personalInfo);
-                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
-            }
-        };
-        
-        // 设置成功处理
-        updateTask.setOnSucceeded(event -> {
-            boolean success = updateTask.getValue();
-            if (success) {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
-                loadPersonalInfo(); // 重新加载信息
-                
-                // 如果个人信息对话框是可见的，刷新对话框内容
-                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
-                    // 延迟一小段时间确保数据加载完成
-                    // 再次加载确保数据最新
-                    javafx.application.Platform.runLater(this::loadPersonalInfo);
-                }
-            } else {
-                // 更新失败，检查是否是字段冲突
-                if (fieldChanged) {
-                    String fieldDisplayName = getFieldDisplayName(conflictFieldName);
-                    String fieldValue = personalInfo.get(conflictFieldName);
-                    ControllerUtils.showAutoHideMessage(messageLabel, 
-                        fieldDisplayName + " '" + fieldValue + "' 已被其他用户使用，请选择其他" + fieldDisplayName, false);
-                } else {
-                    ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
-                }
-            }
-        });
-        
-        // 设置失败处理
-        updateTask.setOnFailed(event -> {
-            Throwable throwable = updateTask.getException();
-            // 将Throwable转换为Exception
-            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
-            ControllerUtils.handleException("更新" + infoType, exception, messageLabel);
-        });
-        
-        // 启动任务
-        new Thread(updateTask).start();
-    }
+
     
     /**
      * 获取字段显示名称
@@ -1215,6 +919,90 @@ public class BuyerMainController {
             stage.setMaximized(false);
         } else {
             stage.setMaximized(true);
+        }
+    }
+    
+    /**
+     * 更新买家个人信息
+     */
+    private void updateBuyerPersonalInfo(Map<String, String> updatedInfo) {
+        if (!userSession.isLoggedIn()) {
+            ControllerUtils.showAutoHideMessage(messageLabel, "请先登录", false);
+            return;
+        }
+        
+        try {
+            String account = userSession.getAccount();
+            
+            // 构建更新数据
+            Map<String, Object> updateData = new HashMap<>();
+            
+            // 只更新有值的字段
+            if (updatedInfo.containsKey("nickname") && !updatedInfo.get("nickname").isEmpty()) {
+                updateData.put("nickname", updatedInfo.get("nickname"));
+            }
+            if (updatedInfo.containsKey("gender") && !updatedInfo.get("gender").isEmpty()) {
+                updateData.put("gender", updatedInfo.get("gender"));
+            }
+            if (updatedInfo.containsKey("birthday") && !updatedInfo.get("birthday").isEmpty()) {
+                updateData.put("birthday", updatedInfo.get("birthday"));
+            }
+            
+            // 调用服务更新个人信息
+            boolean success = userService.updatePersonalInfo(account, updateData);
+            
+            if (success) {
+                ControllerUtils.showAutoHideMessage(messageLabel, "个人信息更新成功", true);
+                // 刷新缓存和显示
+                personalInfoCache = null;
+                loadPersonalInfo();
+            } else {
+                ControllerUtils.showAutoHideMessage(messageLabel, "个人信息更新失败", false);
+            }
+        } catch (Exception e) {
+            ControllerUtils.handleException("更新个人信息", e, messageLabel);
+        }
+    }
+    
+    /**
+     * 更新厂商个人信息
+     */
+    private void updateVendorPersonalInfo(Map<String, String> updatedInfo) {
+        if (!userSession.isLoggedIn()) {
+            ControllerUtils.showAutoHideMessage(messageLabel, "请先登录", false);
+            return;
+        }
+        
+        try {
+            String account = userSession.getAccount();
+            
+            // 构建更新数据
+            Map<String, Object> updateData = new HashMap<>();
+            
+            // 只更新有值的字段
+            if (updatedInfo.containsKey("companyName") && !updatedInfo.get("companyName").isEmpty()) {
+                updateData.put("companyName", updatedInfo.get("companyName"));
+            }
+            if (updatedInfo.containsKey("registeredAddress") && !updatedInfo.get("registeredAddress").isEmpty()) {
+                updateData.put("registeredAddress", updatedInfo.get("registeredAddress"));
+            }
+            if (updatedInfo.containsKey("contactPerson") && !updatedInfo.get("contactPerson").isEmpty()) {
+                updateData.put("contactPerson", updatedInfo.get("contactPerson"));
+            }
+            
+            // 调用服务更新个人信息
+            boolean success = userService.updatePersonalInfo(account, updateData);
+            
+            if (success) {
+                ControllerUtils.showAutoHideMessage(messageLabel, "企业信息更新成功", true);
+                // 刷新缓存和显示
+                personalInfoCache = null;
+                loadPersonalInfo();
+            } else {
+                ControllerUtils.showAutoHideMessage(messageLabel, "企业信息更新失败", false);
+            }
+        } catch (Exception e) {
+            ControllerUtils.handleException("更新企业信息", e, messageLabel);
         }
     }
     

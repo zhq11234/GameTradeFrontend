@@ -300,10 +300,16 @@
                </VBox>
             </VBox>
             
-            <Button fx:id="closeDialogButton" mnemonicParsing="false" onAction="#handleCloseDialog"
-                    styleClass="personal-info-button">
-               <text>关闭</text>
-            </Button>
+            <HBox spacing="20" alignment="CENTER">
+               <Button fx:id="editDialogButton" mnemonicParsing="false" onAction="#handleEditPersonalInfo"
+                       styleClass="personal-info-button edit-button">
+                  <text>编辑信息</text>
+               </Button>
+               <Button fx:id="closeDialogButton" mnemonicParsing="false" onAction="#handleCloseDialog"
+                       styleClass="personal-info-button">
+                  <text>关闭</text>
+               </Button>
+            </HBox>
          </VBox>
       </content>
    </DialogPane>
