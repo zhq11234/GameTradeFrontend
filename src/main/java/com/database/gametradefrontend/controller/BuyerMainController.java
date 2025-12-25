@@ -286,7 +286,7 @@ public class BuyerMainController {
             case "buyer":
                 buyerInfoSection.setVisible(true);
                 setDialogField(infoMap, "nickname", dialogNickname, "未设置");
-                setDialogField(infoMap, "contact", dialogContact, "未设置");
+                setDialogField(infoMap, "gender", dialogContact, "未设置"); // 使用dialogContact显示性别
                 setDialogField(infoMap, "birthday", dialogBirthday, "未设置");
                 break;
                 
@@ -308,7 +308,7 @@ public class BuyerMainController {
                 // 默认显示买家信息
                 buyerInfoSection.setVisible(true);
                 setDialogField(infoMap, "nickname", dialogNickname, "未设置");
-                setDialogField(infoMap, "contact", dialogContact, "未设置");
+                setDialogField(infoMap, "gender", dialogContact, "未设置"); // 使用dialogContact显示性别
                 setDialogField(infoMap, "birthday", dialogBirthday, "未设置");
                 break;
         }
@@ -371,8 +371,8 @@ public class BuyerMainController {
         createEditDialog(
             "编辑个人信息", 
             "修改您的个人信息",
-            new String[]{"昵称", "联系方式", "生日 (YYYY-MM-DD)"},
-            new String[]{"nickname", "contact", "birthday"},
+            new String[]{"昵称", "性别", "生日"},
+            new String[]{"nickname", "gender", "birthday"},
             this::updateBuyerPersonalInfo
         );
     }
@@ -408,17 +408,40 @@ public class BuyerMainController {
         grid.setVgap(10);
         grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
         
-        // 创建输入框数组
-        javafx.scene.control.TextField[] fields = new javafx.scene.control.TextField[labels.length];
+        // 创建控件数组（支持TextField和DatePicker）
+        javafx.scene.control.Control[] controls = new javafx.scene.control.Control[labels.length];
         
         // 添加表单字段
         for (int i = 0; i < labels.length; i++) {
-            fields[i] = new javafx.scene.control.TextField();
-            fields[i].setPromptText(labels[i]);
-            fields[i].setText(getCurrentInfoValue(fieldNames[i]));
+            String fieldName = fieldNames[i];
+            String currentValue = getCurrentInfoValue(fieldName);
+            
+            // 如果是生日字段，使用DatePicker
+            if ("birthday".equals(fieldName)) {
+                javafx.scene.control.DatePicker datePicker = new javafx.scene.control.DatePicker();
+                datePicker.setPromptText(labels[i]);
+                
+                // 设置初始值
+                if (currentValue != null && !currentValue.isEmpty()) {
+                    try {
+                        java.time.LocalDate date = java.time.LocalDate.parse(currentValue, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE);
+                        datePicker.setValue(date);
+                    } catch (Exception e) {
+                        // 如果解析失败，保持为空
+                    }
+                }
+                
+                controls[i] = datePicker;
+            } else {
+                // 其他字段使用TextField
+                javafx.scene.control.TextField textField = new javafx.scene.control.TextField();
+                textField.setPromptText(labels[i]);
+                textField.setText(currentValue);
+                controls[i] = textField;
+            }
             
             grid.add(new javafx.scene.control.Label(labels[i] + ":"), 0, i);
-            grid.add(fields[i], 1, i);
+            grid.add(controls[i], 1, i);
         }
         
         dialog.getDialogPane().setContent(grid);
@@ -428,7 +451,22 @@ public class BuyerMainController {
             if (dialogButton == saveButtonType) {
                 Map<String, String> result = new HashMap<>();
                 for (int i = 0; i < fieldNames.length; i++) {
-                    result.put(fieldNames[i], fields[i].getText().trim());
+                    String fieldName = fieldNames[i];
+                    javafx.scene.control.Control control = controls[i];
+                    
+                    if (control instanceof javafx.scene.control.DatePicker) {
+                        // 处理DatePicker
+                        javafx.scene.control.DatePicker datePicker = (javafx.scene.control.DatePicker) control;
+                        if (datePicker.getValue() != null) {
+                            result.put(fieldName, datePicker.getValue().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE));
+                        } else {
+                            result.put(fieldName, "");
+                        }
+                    } else if (control instanceof javafx.scene.control.TextField) {
+                        // 处理TextField
+                        javafx.scene.control.TextField textField = (javafx.scene.control.TextField) control;
+                        result.put(fieldName, textField.getText().trim());
+                    }
                 }
                 return result;
             }
@@ -488,8 +526,8 @@ public class BuyerMainController {
             ControllerUtils.showAutoHideMessage(messageLabel, "昵称不能为空", false);
             return;
         }
-        if (personalInfo.get("contact").isEmpty()) {
-            ControllerUtils.showAutoHideMessage(messageLabel, "联系方式不能为空", false);
+        if (personalInfo.get("gender").isEmpty()) {
+            ControllerUtils.showAutoHideMessage(messageLabel, "性别不能为空", false);
             return;
         }
         
@@ -500,7 +538,105 @@ public class BuyerMainController {
             return;
         }
         
-        updatePersonalInfo(personalInfo, "个人信息");
+        // 检查昵称是否有变化
+        String newNickname = personalInfo.get("nickname");
+        String currentNickname = getCurrentInfoValue("nickname");
+        boolean nicknameChanged = !newNickname.equals(currentNickname);
+        
+        // 如果昵称有变化，先更新昵称
+        if (nicknameChanged) {
+            updateNickname(newNickname, personalInfo);
+        } else {
+            // 昵称没有变化，直接更新其他信息
+            updateOtherPersonalInfo(personalInfo, "个人信息");
+        }
+    }
+    
+    /**
+     * 更新昵称
+     */
+    private void updateNickname(String newNickname, Map<String, String> personalInfo) {
+        // 使用Task进行安全的异步操作
+        javafx.concurrent.Task<Boolean> nicknameTask = new javafx.concurrent.Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return userService.updateNickname(userSession.getAccount(), newNickname);
+            }
+        };
+        
+        // 设置成功处理
+        nicknameTask.setOnSucceeded(event -> {
+            boolean success = nicknameTask.getValue();
+            if (success) {
+                // 昵称更新成功，继续更新其他信息
+                updateOtherPersonalInfo(personalInfo, "个人信息");
+            } else {
+                // 昵称冲突
+                ControllerUtils.showAutoHideMessage(messageLabel, 
+                    "昵称 '" + newNickname + "' 已被其他用户使用，请选择其他昵称", false);
+            }
+        });
+        
+        // 设置失败处理
+        nicknameTask.setOnFailed(event -> {
+            Throwable throwable = nicknameTask.getException();
+            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
+            ControllerUtils.handleException("更新昵称", exception, messageLabel);
+        });
+        
+        // 启动任务
+        new Thread(nicknameTask).start();
+    }
+    
+    /**
+     * 更新其他个人信息（不包含昵称）
+     */
+    private void updateOtherPersonalInfo(Map<String, String> personalInfo, String infoType) {
+        // 创建副本，移除昵称字段
+        Map<String, String> otherInfo = new HashMap<>(personalInfo);
+        otherInfo.remove("nickname");
+        
+        // 如果没有其他信息需要更新，直接返回成功
+        if (otherInfo.isEmpty()) {
+            ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
+            loadPersonalInfo();
+            return;
+        }
+        
+        // 使用Task进行安全的异步操作
+        javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                Map<String, Object> updateInfo = new HashMap<>(otherInfo);
+                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
+            }
+        };
+        
+        // 设置成功处理
+        updateTask.setOnSucceeded(event -> {
+            boolean success = updateTask.getValue();
+            if (success) {
+                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
+                loadPersonalInfo(); // 重新加载信息
+                
+                // 如果个人信息对话框是可见的，刷新对话框内容
+                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
+                    javafx.application.Platform.runLater(this::loadPersonalInfo);
+                }
+            } else {
+                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
+            }
+        });
+        
+        // 设置失败处理
+        updateTask.setOnFailed(event -> {
+            Throwable throwable = updateTask.getException();
+            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
+            ControllerUtils.handleException("更新" + infoType, exception, messageLabel);
+        });
+        
+        // 启动任务
+        new Thread(updateTask).start();
     }
     
     /**
@@ -537,13 +673,115 @@ public class BuyerMainController {
             return;
         }
         
-        updatePersonalInfo(personalInfo, "企业信息");
+        // 检查厂商名字是否有变化
+        String newCompanyName = personalInfo.get("companyName");
+        String currentCompanyName = getCurrentInfoValue("companyName");
+        boolean companyNameChanged = !newCompanyName.equals(currentCompanyName);
+        
+        // 如果厂商名字有变化，先更新厂商名字
+        if (companyNameChanged) {
+            updateCompanyName(newCompanyName, personalInfo);
+        } else {
+            // 厂商名字没有变化，直接更新其他信息
+            updateOtherVendorInfo(personalInfo, "企业信息");
+        }
+    }
+    
+    /**
+     * 更新厂商名字
+     */
+    private void updateCompanyName(String newCompanyName, Map<String, String> personalInfo) {
+        // 使用Task进行安全的异步操作
+        javafx.concurrent.Task<Boolean> companyNameTask = new javafx.concurrent.Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                // 这里需要调用专门的厂商名字更新API
+                // 暂时使用通用的更新方法，但移除companyName字段
+                Map<String, Object> updateInfo = new HashMap<>();
+                updateInfo.put("companyName", newCompanyName);
+                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
+            }
+        };
+        
+        // 设置成功处理
+        companyNameTask.setOnSucceeded(event -> {
+            boolean success = companyNameTask.getValue();
+            if (success) {
+                // 厂商名字更新成功，继续更新其他信息
+                updateOtherVendorInfo(personalInfo, "企业信息");
+            } else {
+                // 厂商名字冲突
+                ControllerUtils.showAutoHideMessage(messageLabel, 
+                    "企业名称 '" + newCompanyName + "' 已被其他用户使用，请选择其他企业名称", false);
+            }
+        });
+        
+        // 设置失败处理
+        companyNameTask.setOnFailed(event -> {
+            Throwable throwable = companyNameTask.getException();
+            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
+            ControllerUtils.handleException("更新企业名称", exception, messageLabel);
+        });
+        
+        // 启动任务
+        new Thread(companyNameTask).start();
+    }
+    
+    /**
+     * 更新其他厂商信息（不包含厂商名字）
+     */
+    private void updateOtherVendorInfo(Map<String, String> personalInfo, String infoType) {
+        // 创建副本，移除厂商名字字段
+        Map<String, String> otherInfo = new HashMap<>(personalInfo);
+        otherInfo.remove("companyName");
+        
+        // 如果没有其他信息需要更新，直接返回成功
+        if (otherInfo.isEmpty()) {
+            ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
+            loadPersonalInfo();
+            return;
+        }
+        
+        // 使用Task进行安全的异步操作
+        javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                Map<String, Object> updateInfo = new HashMap<>(otherInfo);
+                return userService.updatePersonalInfo(userSession.getAccount(), updateInfo);
+            }
+        };
+        
+        // 设置成功处理
+        updateTask.setOnSucceeded(event -> {
+            boolean success = updateTask.getValue();
+            if (success) {
+                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
+                loadPersonalInfo(); // 重新加载信息
+                
+                // 如果个人信息对话框是可见的，刷新对话框内容
+                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
+                    javafx.application.Platform.runLater(this::loadPersonalInfo);
+                }
+            } else {
+                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
+            }
+        });
+        
+        // 设置失败处理
+        updateTask.setOnFailed(event -> {
+            Throwable throwable = updateTask.getException();
+            Exception exception = throwable instanceof Exception ? (Exception) throwable : new Exception(throwable);
+            ControllerUtils.handleException("更新" + infoType, exception, messageLabel);
+        });
+        
+        // 启动任务
+        new Thread(updateTask).start();
     }
     
     /**
      * 通用的个人信息更新方法
      */
-    private void updatePersonalInfo(Map<String, String> personalInfo, String infoType) {
+    private void updatePersonalInfo(Map<String, String> personalInfo, String infoType, boolean fieldChanged, String conflictFieldName) {
         // 使用Task进行安全的异步操作
         javafx.concurrent.Task<Boolean> updateTask = new javafx.concurrent.Task<Boolean>() {
             @Override
@@ -559,8 +797,23 @@ public class BuyerMainController {
             if (success) {
                 ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新成功", true);
                 loadPersonalInfo(); // 重新加载信息
+                
+                // 如果个人信息对话框是可见的，刷新对话框内容
+                if (personalInfoDialog != null && personalInfoDialog.isVisible()) {
+                    // 延迟一小段时间确保数据加载完成
+                    // 再次加载确保数据最新
+                    javafx.application.Platform.runLater(this::loadPersonalInfo);
+                }
             } else {
-                ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
+                // 更新失败，检查是否是字段冲突
+                if (fieldChanged) {
+                    String fieldDisplayName = getFieldDisplayName(conflictFieldName);
+                    String fieldValue = personalInfo.get(conflictFieldName);
+                    ControllerUtils.showAutoHideMessage(messageLabel, 
+                        fieldDisplayName + " '" + fieldValue + "' 已被其他用户使用，请选择其他" + fieldDisplayName, false);
+                } else {
+                    ControllerUtils.showAutoHideMessage(messageLabel, infoType + "更新失败", false);
+                }
             }
         });
         
@@ -574,6 +827,20 @@ public class BuyerMainController {
         
         // 启动任务
         new Thread(updateTask).start();
+    }
+    
+    /**
+     * 获取字段显示名称
+     */
+    private String getFieldDisplayName(String fieldName) {
+        switch (fieldName) {
+            case "nickname":
+                return "昵称";
+            case "companyName":
+                return "企业名称";
+            default:
+                return fieldName;
+        }
     }
     
     /**

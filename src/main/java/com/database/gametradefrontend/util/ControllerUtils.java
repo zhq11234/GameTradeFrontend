@@ -29,8 +29,21 @@ public class ControllerUtils {
      */
     public static void switchScene(Node currentNode, String fxmlPath, String title, int width, int height) {
         try {
-            Stage stage = (Stage) currentNode.getScene().getWindow();
-            Parent currentRoot = stage.getScene().getRoot();
+            Stage stage;
+            Parent currentRoot;
+            
+            // 安全地获取Stage和当前根节点
+            if (currentNode != null && currentNode.getScene() != null) {
+                stage = (Stage) currentNode.getScene().getWindow();
+                currentRoot = stage.getScene().getRoot();
+            } else {
+                // 如果currentNode为null，尝试通过其他方式获取Stage
+                stage = getPrimaryStage();
+                if (stage == null) {
+                    throw new IllegalStateException("无法获取有效的Stage对象");
+                }
+                currentRoot = stage.getScene().getRoot();
+            }
             
             // 保存当前窗口的位置
             double currentX = stage.getX();
@@ -80,6 +93,19 @@ public class ControllerUtils {
             // 使用Platform.runLater避免在动画期间调用showAndWait
             Platform.runLater(() -> showErrorDialog("界面切换失败", e.getMessage()));
         }
+    }
+    
+    /**
+     * 获取主Stage（备用方法）
+     */
+    private static Stage getPrimaryStage() {
+        // 尝试通过JavaFX的Window列表获取Stage
+        for (javafx.stage.Window window : javafx.stage.Window.getWindows()) {
+            if (window instanceof Stage && window.isShowing()) {
+                return (Stage) window;
+            }
+        }
+        return null;
     }
     
     /**

@@ -253,7 +253,7 @@
                   </HBox>
                   
                   <HBox spacing="10" alignment="CENTER_LEFT">
-                     <Label text="联系方式：" styleClass="user-info-label" prefWidth="80"/>
+                     <Label text="性别：" styleClass="user-info-label" prefWidth="80"/>
                      <Label fx:id="dialogContact" styleClass="user-info-value"/>
                   </HBox>
                   
