@@ -155,6 +155,12 @@ public class ApiClient {
                     if (responseType == Void.class) {
                         return null;
                     }
+                    
+                    // 如果响应类型是String，直接返回响应字符串，不进行JSON解析
+                    if (responseType == String.class) {
+                        return responseType.cast(response.toString());
+                    }
+                    
                     return objectMapper.readValue(response.toString(), responseType);
                 }
             } else {
