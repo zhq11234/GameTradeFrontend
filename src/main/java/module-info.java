@@ -10,6 +10,7 @@ module com.database.gametradefrontend {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
+    requires java.logging;
 
     opens com.database.gametradefrontend to javafx.fxml;
     exports com.database.gametradefrontend;

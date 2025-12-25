@@ -66,7 +66,7 @@ public class UserService {
             BuyerRegisterRequest registerRequest = new BuyerRegisterRequest(
                 "buyer", account, password, contact, nickname
             );
-            apiClient.post("/users/register/buyer", registerRequest, Void.class);
+            apiClient.post("/buyers/register", registerRequest, Void.class);
             return true;
         } catch (ApiClient.ApiException e) {
             if (e.getStatusCode() == 409) {
@@ -114,7 +114,7 @@ public class UserService {
             VendorRegisterRequest registerRequest = new VendorRegisterRequest(
                 "vendor", account, password, contact, companyName, registeredAddress, contactPerson
             );
-            apiClient.post("/users/register/vendor", registerRequest, Void.class);
+            apiClient.post("/vendors/register", registerRequest, Void.class);
             return true;
         } catch (ApiClient.ApiException e) {
             if (e.getStatusCode() == 409) {
@@ -125,56 +125,6 @@ public class UserService {
         }
     }
 
-    /**
-     * 查询用户个人信息
-     */
-    public Object getPersonalInfo(String account) throws Exception {
-        // 输入验证
-        if (account == null || account.trim().isEmpty()) {
-            throw new IllegalArgumentException("账号不能为空");
-        }
-        
-        // URL编码账号
-        String encoded = java.net.URLEncoder.encode(account.trim(), java.nio.charset.StandardCharsets.UTF_8);
-        
-        try {
-            return apiClient.get("/users/personal-info?account=" + encoded, Object.class);
-        } catch (ApiClient.ApiException e) {
-            if (e.getStatusCode() == 404) {
-                // 用户不存在
-                return null;
-            }
-            throw e;
-        }
-    }
-    
-    /**
-     * 修改用户个人信息
-     */
-    public boolean updatePersonalInfo(String account, java.util.Map<String, Object> personalInfo) throws Exception {
-        // 输入验证
-        if (account == null || account.trim().isEmpty()) {
-            throw new IllegalArgumentException("账号不能为空");
-        }
-        if (personalInfo == null || personalInfo.isEmpty()) {
-            throw new IllegalArgumentException("个人信息不能为空");
-        }
-        
-        // URL编码账号
-        String encoded = java.net.URLEncoder.encode(account.trim(), java.nio.charset.StandardCharsets.UTF_8);
-        
-        try {
-            apiClient.put("/users/personal-info?account=" + encoded, personalInfo, Void.class);
-            return true;
-        } catch (ApiClient.ApiException e) {
-            if (e.getStatusCode() == 404) {
-                // 用户不存在
-                return false;
-            }
-            throw e;
-        }
-    }
-    
     /**
      * 内部登录请求类
      */

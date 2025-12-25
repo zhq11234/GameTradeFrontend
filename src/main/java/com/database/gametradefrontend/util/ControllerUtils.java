@@ -212,4 +212,28 @@ public class ControllerUtils {
             showAutoHideMessage(messageLabel, operation + "失败: " + e.getMessage(), false);
         }
     }
+    
+    /**
+     * 显示错误警告对话框
+     * @param message 错误消息
+     */
+    public static void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("错误");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    /**
+     * 显示信息提示对话框
+     * @param message 信息消息
+     */
+    public static void showInfoAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("提示");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

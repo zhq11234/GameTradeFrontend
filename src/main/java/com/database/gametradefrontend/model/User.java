@@ -8,6 +8,10 @@ public class User {
     private String password;  // 用于注册和登录请求，但不会被序列化到响应中
     private String contact;
     private String registerTime;
+    private String company;   // 企业名称（厂商用户专用）
+    private String address;   // 注册地址（厂商用户专用）
+    private String contactPerson;
+    // 联系人（厂商用户专用）
     
     // 默认构造函数（Jackson需要）
     public User() {}
@@ -18,6 +22,16 @@ public class User {
         this.role = role;
         this.password = password;
         this.contact = contact;
+    }
+    
+    // 带完整参数的构造函数（厂商用户专用）
+    public User(String account, String role, String password, String contact, String company, String address) {
+        this.account = account;
+        this.role = role;
+        this.password = password;
+        this.contact = contact;
+        this.company = company;
+        this.address = address;
     }
     
     // Getters and Setters
@@ -67,6 +81,24 @@ public class User {
         this.registerTime = registerTime;
     }
     
+    @JsonProperty("company")
+    public String getCompany() {
+        return company;
+    }
+    
+    public void setCompany(String company) {
+        this.company = company;
+    }
+    
+    @JsonProperty("address")
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    
     @Override
     public String toString() {
         return "User{" +
@@ -74,6 +106,16 @@ public class User {
                 ", role='" + role + '\'' +
                 ", contact='" + contact + '\'' +
                 ", registerTime='" + registerTime + '\'' +
+                ", company='" + company + '\'' +
+                ", address='" + address + '\'' +
                 '}';
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
     }
 }
