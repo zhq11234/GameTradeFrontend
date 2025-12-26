@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0"
+            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 50%, #f093fb 100%);"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.EditGamesController">
+   
+   <stylesheets>
+      <URL value="@styles/vendormain.css" />
+   </stylesheets>
+
+   <!-- 主容器 -->
+   <VBox alignment="TOP_CENTER" spacing="0" 
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+      <!-- 顶部导航栏 -->
+      <HBox alignment="CENTER" spacing="20" styleClass="top-navbar"
+            style="-fx-background-color: rgba(255,255,255,0.95); -fx-padding: 15 30;">
+         
+         <!-- 页面标题 -->
+         <HBox alignment="CENTER" spacing="15" HBox.hgrow="ALWAYS">
+            <Label text="修改游戏" styleClass="section-title" style="-fx-font-size: 24px;"/>
+         </HBox>
+         
+         <!-- 返回按钮 -->
+         <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBackToMain"
+                 styleClass="cancel-button" style="-fx-min-width: 80px;">
+            <text>返回</text>
+         </Button>
+      </HBox>
+
+      <!-- 主内容区域 -->
+      <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.8);">
+         <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+            
+            <!-- 提示信息 -->
+            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 15; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
+               <Label text="温馨提示：" styleClass="form-label" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+               <Label text="• 点击游戏卡片可以查看和修改游戏信息" styleClass="form-label" style="-fx-font-size: 14px;"/>
+               <Label text="• 修改后请记得保存更改" styleClass="form-label" style="-fx-font-size: 14px;"/>
+               <Label text="• 游戏名称、企业名称、上线时间、状态为不可修改字段" styleClass="form-label" style="-fx-font-size: 14px;"/>
+            </VBox>
+            
+            <!-- 游戏卡片容器 -->
+            <FlowPane fx:id="gameCardsContainer" hgap="20" vgap="20" 
+                      alignment="TOP_CENTER" style="-fx-padding: 0 20;">
+               <!-- 游戏卡片将通过控制器动态添加 -->
+            </FlowPane>
+            
+            <!-- 无数据提示 -->
+            <Label fx:id="noDataLabel" text="暂无游戏数据" styleClass="no-data-label" visible="false"/>
+            
+            <!-- 加载状态 -->
+            <Label fx:id="loadingLabel" text="正在加载游戏数据..." styleClass="loading-label" visible="false"/>
+            
+         </VBox>
+      </ScrollPane>
+   </VBox>
+</AnchorPane>

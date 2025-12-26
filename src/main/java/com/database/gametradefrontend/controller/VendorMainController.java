@@ -558,7 +558,32 @@ public class VendorMainController {
     
     @FXML
     private void handleEditGame() {
-        ControllerUtils.showInfoAlert("游戏修改功能\n(待实现)");
+        try {
+            // 创建新窗口
+            Stage editGamesStage = new Stage();
+            editGamesStage.setTitle("GameTrade - 修改游戏");
+            editGamesStage.setWidth(1200);
+            editGamesStage.setHeight(800);
+            
+            // 设置模态，但不阻塞主窗口
+            editGamesStage.initModality(Modality.WINDOW_MODAL);
+            editGamesStage.initOwner(editGameButton.getScene().getWindow());
+            editGamesStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            
+            // 加载FXML文件
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/edit-games.fxml"));
+            Parent root = loader.load();
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            editGamesStage.setScene(scene);
+            
+            // 显示窗口
+            editGamesStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开游戏修改页面失败: " + e.getMessage());
+        }
     }
     
     @FXML
