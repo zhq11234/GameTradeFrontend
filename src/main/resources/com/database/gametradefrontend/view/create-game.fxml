@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<?import java.net.URL?>
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.GameCreationController">
+   
+   <stylesheets>
+      <URL value="@styles/vendormain.css" />
+   </stylesheets>
+
+   <!-- 主容器 -->
+   <VBox alignment="TOP_CENTER" spacing="0" 
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+      <!-- 顶部导航栏 -->
+      <HBox alignment="CENTER" spacing="20" styleClass="top-navbar"
+            style="-fx-background-color: rgba(255,255,255,0.95); -fx-padding: 15 30;">
+         
+         <!-- 页面标题 -->
+         <HBox alignment="CENTER" spacing="15" HBox.hgrow="ALWAYS">
+            <Label text="创建新游戏" styleClass="section-title" style="-fx-font-size: 24px;"/>
+         </HBox>
+      </HBox>
+
+      <!-- 主内容区域 -->
+      <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.8);">
+         <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+            
+            <!-- 游戏创建表单 -->
+            <VBox alignment="TOP_CENTER" spacing="15" 
+                  style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
+               
+               <GridPane hgap="15" vgap="15" alignment="CENTER">
+                  <columnConstraints>
+                     <ColumnConstraints halignment="RIGHT" minWidth="120"/>
+                     <ColumnConstraints halignment="LEFT" minWidth="350"/>
+                  </columnConstraints>
+                  
+                  <Label text="游戏名称：" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gameNameField" styleClass="form-input" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                            promptText="请输入游戏名称"/>
+                  
+                  <Label text="游戏类别：" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gameCategoryField" styleClass="form-input" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                            promptText="请输入游戏类别，如：角色扮演、MOBA等"/>
+                  
+                  <Label text="价格：" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <TextField fx:id="gamePriceField" styleClass="form-input" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                            promptText="请输入价格，如：免费、19.99等"/>
+                  
+                  <Label text="企业名称：" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                  <TextField fx:id="companyNameField" styleClass="form-input" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                            promptText="请输入企业名称"/>
+                  
+                  <Label text="游戏简介：" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                  <TextArea fx:id="gameDescriptionField" styleClass="form-input" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                            prefRowCount="4" wrapText="true" promptText="请输入游戏简介"/>
+                  
+                  <Label text="下载链接：" styleClass="form-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                  <TextField fx:id="downloadLinkField" styleClass="form-input" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                            promptText="请输入游戏下载链接"/>
+                  
+                  <Label text="版号：" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                  <TextField fx:id="licenseNumberField" styleClass="form-input" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                            promptText="请输入游戏版号"/>
+                  
+                  <Label text="游戏图片：" styleClass="form-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                  <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="7" GridPane.columnIndex="1">
+                     <ImageView fx:id="gameImageView" fitWidth="80" fitHeight="60" preserveRatio="true"
+                               style="-fx-border-color: #ccc; -fx-border-width: 1px; -fx-border-radius: 5px;"/>
+                     <VBox spacing="10">
+                        <Button fx:id="selectImageButton" mnemonicParsing="false" onAction="#handleSelectImage"
+                                styleClass="action-button" style="-fx-min-width: 120px;">
+                           <text>选择图片</text>
+                        </Button>
+                        <Label fx:id="imageFileNameLabel" text="默认图片: yuanshen.png" styleClass="form-value" style="-fx-font-size: 12px;"/>
+                     </VBox>
+                  </HBox>
+                  
+                  <HBox alignment="CENTER" spacing="15" GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                     <Button fx:id="submitGameButton" mnemonicParsing="false" onAction="#handleSubmitGame"
+                             styleClass="save-button" style="-fx-min-width: 100px;">
+                        <text>提交创建</text>
+                     </Button>
+                     <Button fx:id="cancelGameButton" mnemonicParsing="false" onAction="#handleCancelGame"
+                             styleClass="cancel-button" style="-fx-min-width: 100px;">
+                        <text>取消</text>
+                     </Button>
+                  </HBox>
+               </GridPane>
+            </VBox>
+            
+            <!-- 提示信息 -->
+            <VBox alignment="CENTER" spacing="10">
+               <Label text="温馨提示：" styleClass="form-label" style="-fx-font-weight: bold;"/>
+               <Label text="• 请确保所有信息填写准确无误" styleClass="form-label" style="-fx-font-size: 12px;"/>
+               <Label text="• 游戏创建后需要审核才能上架" styleClass="form-label" style="-fx-font-size: 12px;"/>
+               <Label text="• 下载链接必须是有效的URL地址" styleClass="form-label" style="-fx-font-size: 12px;"/>
+            </VBox>
+            
+         </VBox>
+      </ScrollPane>
+   </VBox>
+</AnchorPane>

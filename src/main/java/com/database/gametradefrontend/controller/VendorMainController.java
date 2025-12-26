@@ -4,6 +4,9 @@ import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.util.ControllerUtils;
 import com.database.gametradefrontend.client.ApiClient;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,12 +14,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.Optional;
 
 
 /**
@@ -65,6 +73,18 @@ public class VendorMainController {
     @FXML private TextField addressField;
     @FXML private TextField contactField;
     @FXML private Button saveProfileButton;
+    
+    // 游戏创建表单字段
+    @FXML private TextField gameNameField;
+    @FXML private TextField gameCategoryField;
+    @FXML private TextField gamePriceField;
+    @FXML private TextField companyNameField;
+    @FXML private TextArea gameDescriptionField;
+    @FXML private TextField downloadLinkField;
+    @FXML private TextField licenseNumberField;
+    @FXML private Button submitGameButton;
+    @FXML private Button cancelGameButton;
+    @FXML private Button backButton;
     
     // 当前用户信息
     private User currentUser;
@@ -403,7 +423,31 @@ public class VendorMainController {
     
     @FXML
     private void handleCreateGame() {
-        ControllerUtils.showInfoAlert("游戏创建功能\n(待实现)");
+        try {
+            // 创建新窗口
+            Stage gameCreationStage = new Stage();
+            gameCreationStage.setTitle("GameTrade - 创建游戏");
+            gameCreationStage.setWidth(800);
+            gameCreationStage.setHeight(600);
+            
+            // 设置模态，但不阻塞主窗口
+            gameCreationStage.initModality(Modality.WINDOW_MODAL);
+            gameCreationStage.initOwner(createGameButton.getScene().getWindow());
+            gameCreationStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            // 加载FXML文件
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/create-game.fxml"));
+            Parent root = loader.load();
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            gameCreationStage.setScene(scene);
+            
+            // 显示窗口
+            gameCreationStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开游戏创建页面失败: " + e.getMessage());
+        }
     }
     
     @FXML
