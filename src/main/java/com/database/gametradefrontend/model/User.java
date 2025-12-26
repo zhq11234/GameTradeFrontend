@@ -13,6 +13,11 @@ public class User {
     private String contactPerson;
     // 联系人（厂商用户专用）
     
+    // 买家用户专用字段
+    private String nickname;      // 昵称
+    private String email;         // 邮箱
+    private String preferences;   // 偏好设置
+    
     // 默认构造函数（Jackson需要）
     public User() {}
     
@@ -99,6 +104,42 @@ public class User {
         this.address = address;
     }
     
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+    
+    // 买家用户字段的Getters和Setters
+    @JsonProperty("nickname")
+    public String getNickname() {
+        return nickname;
+    }
+    
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    
+    @JsonProperty("email")
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    @JsonProperty("preferences")
+    public String getPreferences() {
+        return preferences;
+    }
+    
+    public void setPreferences(String preferences) {
+        this.preferences = preferences;
+    }
+    
     @Override
     public String toString() {
         return "User{" +
@@ -108,14 +149,9 @@ public class User {
                 ", registerTime='" + registerTime + '\'' +
                 ", company='" + company + '\'' +
                 ", address='" + address + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", preferences='" + preferences + '\'' +
                 '}';
-    }
-
-    public void setContactPerson(String contactPerson) {
-        this.contactPerson = contactPerson;
-    }
-
-    public String getContactPerson() {
-        return contactPerson;
     }
 }

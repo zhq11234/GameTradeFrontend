@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0"
+            style="-fx-background-color: rgba(255,255,255,0.95);"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.database.gametradefrontend.controller.BuyerMainController">
+   
+   <stylesheets>
+      <URL value="@styles/buyermain.css" />
+   </stylesheets>
+
+   <!-- 主容器 - 响应式布局 -->
+   <VBox alignment="TOP_CENTER" spacing="0" 
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+      <!-- 顶部导航栏 -->
+      <HBox alignment="CENTER" spacing="20" styleClass="top-navbar"
+            style="-fx-background-color: rgba(255,255,255,0.95); -fx-padding: 15 30;">
+         
+         <!-- 用户信息和退出按钮 -->
+         <HBox alignment="CENTER_RIGHT" spacing="15" HBox.hgrow="ALWAYS">
+            <Label fx:id="userInfoLabel" text="买家用户" styleClass="user-info"/>
+            <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout"
+                    styleClass="logout-button">
+               <graphic>
+                  <Label text="🚪" styleClass="button-icon"/>
+               </graphic>
+               <text>退出登录</text>
+            </Button>
+         </HBox>
+      </HBox>
+
+      <!-- 主内容区域 -->
+      <HBox alignment="TOP_LEFT" spacing="0" VBox.vgrow="ALWAYS">
+         
+         <!-- 左侧选项卡 -->
+         <VBox alignment="TOP_CENTER" styleClass="tab-container"
+               style="-fx-background-color: rgba(255,255,255,0.9); -fx-min-width: 200;">
+            
+            <!-- 选项卡标题 -->
+            <Label text="功能导航" styleClass="tab-title" 
+                   style="-fx-padding: 20 0 15 0;"/>
+            
+            <!-- 选项卡按钮 -->
+            <VBox alignment="TOP_CENTER" spacing="5" style="-fx-padding: 0 15;">
+               <Button fx:id="gameStoreTab" mnemonicParsing="false" onAction="#showGameStore"
+                       styleClass="tab-button, tab-active">
+                  <graphic>
+                     <Label text="🛒" styleClass="tab-icon"/>
+                  </graphic>
+                  <text>游戏商店</text>
+               </Button>
+               
+               <Button fx:id="myGamesTab" mnemonicParsing="false" onAction="#showMyGames"
+                       styleClass="tab-button">
+                  <graphic>
+                     <Label text="🎮" styleClass="tab-icon"/>
+                  </graphic>
+                  <text>我的游戏库</text>
+               </Button>
+               
+               <Button fx:id="ordersTab" mnemonicParsing="false" onAction="#showOrders"
+                       styleClass="tab-button">
+                  <graphic>
+                     <Label text="📋" styleClass="tab-icon"/>
+                  </graphic>
+                  <text>订单管理</text>
+               </Button>
+               
+               <Button fx:id="profileTab" mnemonicParsing="false" onAction="#showProfile"
+                       styleClass="tab-button">
+                  <graphic>
+                     <Label text="👤" styleClass="tab-icon"/>
+                  </graphic>
+                  <text>个人信息</text>
+               </Button>
+            </VBox>
+         </VBox>
+
+         <!-- 主内容区域 -->
+         <VBox alignment="TOP_CENTER" spacing="20" styleClass="content-area" 
+               HBox.hgrow="ALWAYS" style="-fx-padding: 20;">
+            
+            <!-- 游戏商店页面 -->
+            <VBox fx:id="gameStoreContent" alignment="TOP_CENTER" spacing="20" 
+                  VBox.vgrow="ALWAYS">
+               <Label text="游戏商店" styleClass="section-title"/>
+               
+               <!-- 搜索区域 -->
+               <HBox alignment="CENTER" spacing="15" style="-fx-padding: 0 0 20 0;">
+                  <!-- 搜索框 -->
+                  <TextField fx:id="searchField" promptText="输入游戏名称搜索..." 
+                            styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch"
+                          styleClass="search-button">
+                     <graphic>
+                        <Label text="🔍" styleClass="button-icon"/>
+                     </graphic>
+                     <text>搜索</text>
+                  </Button>
+               </HBox>
+               
+               <!-- 筛选区域 -->
+               <HBox alignment="CENTER" spacing="10">
+                  <Label text="筛选条件：" styleClass="filter-label"/>
+                  <ComboBox fx:id="categoryFilter" promptText="游戏分类" styleClass="filter-combo"/>
+                  <ComboBox fx:id="popularityFilter" promptText="游戏热度" styleClass="filter-combo"/>
+                  <ComboBox fx:id="preferenceFilter" promptText="我的偏好" styleClass="filter-combo"/>
+                  <Button fx:id="resetFilterButton" mnemonicParsing="false" onAction="#handleResetFilter"
+                          styleClass="filter-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>重置</text>
+                  </Button>
+               </HBox>
+               
+               <!-- 游戏列表容器 -->
+               <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-padding: 0 20;"
+                          vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" pannable="true">
+                  <FlowPane fx:id="gameCardsContainer" hgap="20" vgap="20" 
+                            alignment="TOP_CENTER" style="-fx-padding: 10;">
+                     <!-- 游戏卡片将通过控制器动态添加 -->
+                  </FlowPane>
+               </ScrollPane>
+            </VBox>
+
+            <!-- 我的游戏库页面 -->
+            <VBox fx:id="myGamesContent" alignment="TOP_CENTER" spacing="20" 
+                  visible="false" managed="false" VBox.vgrow="ALWAYS">
+               <Label text="我的游戏库" styleClass="section-title"/>
+               
+               <!-- 游戏库操作按钮 -->
+               <HBox alignment="CENTER" spacing="15">
+                  <Button fx:id="refreshLibraryButton" mnemonicParsing="false" onAction="#handleRefreshLibrary"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>刷新游戏库</text>
+                  </Button>
+                  <Button fx:id="downloadAllButton" mnemonicParsing="false" onAction="#handleDownloadAll"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="⬇️" styleClass="button-icon"/>
+                     </graphic>
+                     <text>批量下载</text>
+                  </Button>
+                  <Button fx:id="updateAllButton" mnemonicParsing="false" onAction="#handleUpdateAll"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>批量更新</text>
+                  </Button>
+               </HBox>
+               
+               <!-- 游戏库列表 -->
+               <TableView fx:id="libraryTable" styleClass="data-table">
+                  <columns>
+                     <TableColumn text="游戏名" styleClass="table-column"/>
+                     <TableColumn text="分类" styleClass="table-column"/>
+                     <TableColumn text="购买时间" styleClass="table-column"/>
+                     <TableColumn text="状态" styleClass="table-column"/>
+                     <TableColumn text="操作" styleClass="table-column"/>
+                  </columns>
+               </TableView>
+            </VBox>
+
+            <!-- 订单管理页面 -->
+            <VBox fx:id="ordersContent" alignment="TOP_CENTER" spacing="20" 
+                  visible="false" managed="false" VBox.vgrow="ALWAYS">
+               <Label text="订单管理" styleClass="section-title"/>
+               
+               <!-- 订单操作按钮 -->
+               <HBox alignment="CENTER" spacing="15">
+                  <Button fx:id="refreshOrdersButton" mnemonicParsing="false" onAction="#handleRefreshOrders"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>刷新订单</text>
+                  </Button>
+                  <Button fx:id="createOrderButton" mnemonicParsing="false" onAction="#handleCreateOrder"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="➕" styleClass="button-icon"/>
+                     </graphic>
+                     <text>生成订单</text>
+                  </Button>
+               </HBox>
+               
+               <!-- 订单列表 -->
+               <TableView fx:id="ordersTable" styleClass="data-table">
+                  <columns>
+                     <TableColumn text="订单号" styleClass="table-column"/>
+                     <TableColumn text="游戏名" styleClass="table-column"/>
+                     <TableColumn text="价格" styleClass="table-column"/>
+                     <TableColumn text="状态" styleClass="table-column"/>
+                     <TableColumn text="下单时间" styleClass="table-column"/>
+                     <TableColumn text="操作" styleClass="table-column"/>
+                  </columns>
+               </TableView>
+            </VBox>
+
+            <!-- 个人信息页面 -->
+            <VBox fx:id="profileContent" alignment="TOP_CENTER" spacing="20" 
+                  visible="false" managed="false" VBox.vgrow="ALWAYS">
+               <Label text="个人信息" styleClass="section-title"/>
+               
+               <!-- 个人信息表单 -->
+               <GridPane hgap="15" vgap="15" alignment="CENTER">
+                  <columnConstraints>
+                     <ColumnConstraints halignment="RIGHT" minWidth="100"/>
+                     <ColumnConstraints halignment="LEFT" minWidth="200"/>
+                  </columnConstraints>
+                  
+                  <Label text="账号：" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                  <Label fx:id="accountLabel" styleClass="form-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                  
+                  <Label text="昵称：" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                  <TextField fx:id="nicknameField" styleClass="form-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                  
+                  <Label text="邮箱：" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <TextField fx:id="emailField" styleClass="form-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                  
+                  <Label text="偏好设置：" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                  <TextArea fx:id="preferenceField" styleClass="form-textarea" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                  
+                  <Button fx:id="saveProfileButton" mnemonicParsing="false" onAction="#handleSaveProfile"
+                          styleClass="save-button" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                     <text>保存修改</text>
+                  </Button>
+               </GridPane>
+            </VBox>
+         </VBox>
+      </HBox>
+   </VBox>
+</AnchorPane>

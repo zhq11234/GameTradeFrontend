@@ -1,14 +1,17 @@
 package com.database.gametradefrontend.controller;
 
+import com.database.gametradefrontend.client.ApiClient;
 import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.util.ControllerUtils;
-import com.database.gametradefrontend.client.ApiClient;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 

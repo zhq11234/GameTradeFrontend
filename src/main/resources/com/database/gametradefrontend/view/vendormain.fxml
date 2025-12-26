@@ -99,11 +99,14 @@
                   </Button>
                </HBox>
                
-               <!-- 游戏卡片容器 -->
-               <FlowPane fx:id="gameCardsContainer" hgap="20" vgap="20" 
-                         alignment="TOP_CENTER" style="-fx-padding: 0 20;">
-                  <!-- 游戏卡片将通过控制器动态添加 -->
-               </FlowPane>
+               <!-- 游戏卡片容器（带滚动优化） -->
+               <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-padding: 0 20;"
+                          vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" pannable="true">
+                  <FlowPane fx:id="gameCardsContainer" hgap="20" vgap="20" 
+                            alignment="TOP_CENTER" style="-fx-padding: 10;">
+                     <!-- 游戏卡片将通过控制器动态添加 -->
+                  </FlowPane>
+               </ScrollPane>
             </VBox>
 
             <!-- 游戏管理页面 -->

@@ -243,8 +243,8 @@ public class VendorMainController {
                 }
             }
         }
-        imageView.setFitWidth(250);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(120);
         imageView.setPreserveRatio(false);
         imageView.getStyleClass().add("game-card-image");
         
@@ -291,7 +291,7 @@ public class VendorMainController {
         Label overlayDescription = new Label("简介: " + description);
         overlayDescription.getStyleClass().add("overlay-text");
         overlayDescription.setWrapText(true);
-        overlayDescription.setMaxWidth(230);
+        overlayDescription.setMaxWidth(180);
         
         overlay.getChildren().addAll(overlayTitle, overlayCategory, overlayPrice, overlayStatus, overlayDescription);
         
