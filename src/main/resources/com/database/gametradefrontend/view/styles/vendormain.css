@@ -302,8 +302,65 @@
 
 .save-button:hover {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #45b7aa, #3d8f7d);
-    -fx-effect: dropshadow(three-pass-box, rgba(78, 205, 196, 0.5), 12, 0, 0, 4);
-    -fx-translate-y: -1px;
+}
+
+/* 上架申请卡片样式 - 与游戏卡片保持一致 */
+.application-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-min-width: 250px;
+    -fx-min-height: 300px;
+    -fx-transition: all 0.3s ease;
+}
+
+.application-card:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.3), 20, 0, 0, 8);
+    -fx-translate-y: -5px;
+}
+
+.application-card-image {
+    -fx-background-radius: 15px 15px 0 0;
+    -fx-min-width: 250px;
+    -fx-min-height: 150px;
+    -fx-max-width: 250px;
+    -fx-max-height: 150px;
+}
+
+.application-card-content {
+    -fx-padding: 15px;
+    -fx-spacing: 8px;
+}
+
+.application-card-title {
+    -fx-text-fill: #333;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.application-card-status {
+    -fx-text-fill: #4ecdc4;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.application-card-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 15px;
+    -fx-padding: 20px;
+    -fx-alignment: CENTER;
+    -fx-opacity: 0;
+    -fx-transition: opacity 0.3s ease;
+}
+
+.application-card:hover .application-card-overlay {
+    -fx-opacity: 1;
 }
 
 .refresh-button {
@@ -337,6 +394,73 @@
 .cancel-button:hover {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ff5252, #d32f2f);
     -fx-effect: dropshadow(three-pass-box, rgba(255, 107, 107, 0.5), 12, 0, 0, 4);
+    -fx-translate-y: -1px;
+}
+
+/* 返回按钮样式 */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.3), 8, 0, 0, 2);
+    -fx-translate-y: -1px;
+}
+
+/* 排序选择框样式 */
+.sort-combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: rgba(102, 126, 234, 0.3);
+    -fx-border-width: 1px;
+    -fx-padding: 6px 12px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.sort-combo-box:hover {
+    -fx-border-color: rgba(102, 126, 234, 0.8);
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 0);
+    -fx-translate-y: -1px;
+}
+
+.sort-combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.sort-combo-box .arrow-button:hover {
+    -fx-background-color: rgba(102, 126, 234, 0.1);
+}
+
+/* 刷新按钮样式 */
+.refresh-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #48bb78, #38a169);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(72, 187, 120, 0.3), 8, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+.refresh-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #38a169, #2f855a);
+    -fx-effect: dropshadow(three-pass-box, rgba(72, 187, 120, 0.5), 12, 0, 0, 4);
     -fx-translate-y: -1px;
 }
 

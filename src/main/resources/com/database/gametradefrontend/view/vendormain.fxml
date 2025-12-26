@@ -21,20 +21,8 @@
       <HBox alignment="CENTER" spacing="20" styleClass="top-navbar"
             style="-fx-background-color: rgba(255,255,255,0.95); -fx-padding: 15 30;">
          
-         <!-- 搜索框 -->
-         <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-            <TextField fx:id="searchField" promptText="搜索游戏名称、类别..."
-                       styleClass="search-input" prefWidth="300"/>
-            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch"
-                    styleClass="search-button">
-               <graphic>
-                  <Label text="🔍" styleClass="search-icon"/>
-               </graphic>
-            </Button>
-         </HBox>
-         
          <!-- 用户信息和退出按钮 -->
-         <HBox alignment="CENTER_RIGHT" spacing="15">
+         <HBox alignment="CENTER_RIGHT" spacing="15" HBox.hgrow="ALWAYS">
             <Label fx:id="userInfoLabel" text="厂商用户" styleClass="user-info"/>
             <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout"
                     styleClass="logout-button">
@@ -81,14 +69,6 @@
                      <Label text="💰" styleClass="tab-icon"/>
                   </graphic>
                   <text>销售数据</text>
-               </Button>
-               
-               <Button fx:id="reviewsTab" mnemonicParsing="false" onAction="#showReviews"
-                       styleClass="tab-button">
-                  <graphic>
-                     <Label text="⭐" styleClass="tab-icon"/>
-                  </graphic>
-                  <text>游戏评价</text>
                </Button>
                
                <Button fx:id="profileTab" mnemonicParsing="false" onAction="#showProfile"
@@ -164,42 +144,48 @@
                      </graphic>
                      <text>游戏下架</text>
                   </Button>
+                  
+                  <Button fx:id="viewApplicationsButton" mnemonicParsing="false" onAction="#handleViewApplications"
+                          styleClass="action-button">
+                     <graphic>
+                        <Label text="📋" styleClass="button-icon"/>
+                     </graphic>
+                     <text>查看上架信息</text>
+                  </Button>
                </HBox>
             </VBox>
 
             <!-- 销售数据页面 -->
             <VBox fx:id="salesDataContent" alignment="TOP_CENTER" spacing="20" 
                   visible="false" managed="false" VBox.vgrow="ALWAYS">
-               <Label text="销售数据" styleClass="section-title"/>
+               <!-- 标题和刷新按钮区域 -->
+               <HBox alignment="CENTER" spacing="0" HBox.hgrow="ALWAYS" style="-fx-padding: 0 0 10 0;">
+                  <Label text="销售数据" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                  <Button fx:id="refreshSalesDataButton" mnemonicParsing="false" onAction="#handleRefreshSalesData"
+                          styleClass="refresh-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>刷新</text>
+                  </Button>
+               </HBox>
                
                <!-- 销售数据表格 -->
                <TableView fx:id="salesTable" styleClass="data-table">
                   <columns>
                      <TableColumn text="游戏名" styleClass="table-column"/>
+                     <TableColumn text="游戏类别" styleClass="table-column"/>
                      <TableColumn text="价格" styleClass="table-column"/>
                      <TableColumn text="销量" styleClass="table-column"/>
-                     <TableColumn text="销售额" styleClass="table-column"/>
                      <TableColumn text="访客数" styleClass="table-column"/>
+                     <TableColumn text="销售额" styleClass="table-column"/>
                      <TableColumn text="转化率" styleClass="table-column"/>
+                     <TableColumn text="状态" styleClass="table-column"/>
                   </columns>
                </TableView>
             </VBox>
 
-            <!-- 游戏评价页面 -->
-            <VBox fx:id="reviewsContent" alignment="TOP_CENTER" spacing="20" 
-                  visible="false" managed="false" VBox.vgrow="ALWAYS">
-               <Label text="游戏评价" styleClass="section-title"/>
-               
-               <!-- 评价表格 -->
-               <TableView fx:id="reviewsTable" styleClass="data-table">
-                  <columns>
-                     <TableColumn text="昵称" styleClass="table-column"/>
-                     <TableColumn text="评分" styleClass="table-column"/>
-                     <TableColumn text="评论" styleClass="table-column"/>
-                     <TableColumn text="评价时间" styleClass="table-column"/>
-                  </columns>
-               </TableView>
-            </VBox>
+
 
             <!-- 个人信息页面 -->
             <VBox fx:id="profileContent" alignment="TOP_CENTER" spacing="20" 

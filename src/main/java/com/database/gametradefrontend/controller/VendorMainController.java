@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -29,8 +30,6 @@ public class VendorMainController {
 
     public TextField contactPersonField;
     // 顶部导航组件
-    @FXML private TextField searchField;
-    @FXML private Button searchButton;
     @FXML private Label userInfoLabel;
     @FXML private Button logoutButton;
     
@@ -38,14 +37,12 @@ public class VendorMainController {
     @FXML private Button dashboardTab;
     @FXML private Button gameManagementTab;
     @FXML private Button salesDataTab;
-    @FXML private Button reviewsTab;
     @FXML private Button profileTab;
     
     // 内容区域
     @FXML private VBox dashboardContent;
     @FXML private VBox gameManagementContent;
     @FXML private VBox salesDataContent;
-    @FXML private VBox reviewsContent;
     @FXML private VBox profileContent;
     
     // 游戏卡片容器
@@ -59,10 +56,13 @@ public class VendorMainController {
     @FXML private Button editGameButton;
     @FXML private Button publishGameButton;
     @FXML private Button unpublishGameButton;
+    @FXML private Button viewApplicationsButton;
     
     // 数据表格
     @FXML private TableView<SalesData> salesTable;
-    @FXML private TableView<ReviewData> reviewsTable;
+    
+    // 销售数据刷新按钮
+    @FXML private Button refreshSalesDataButton;
     
     // 个人信息表单
     @FXML private Label accountLabel;
@@ -106,7 +106,6 @@ public class VendorMainController {
     // 模拟数据
     private final List<Game> games = new ArrayList<>();
     private final ObservableList<SalesData> salesData = FXCollections.observableArrayList();
-    private final ObservableList<ReviewData> reviewData = FXCollections.observableArrayList();
     
     // 当前正在编辑的游戏
     private Game currentEditingGame;
@@ -315,23 +314,130 @@ public class VendorMainController {
     }
     
     private void initializeTables() {
-        // 初始化销售数据表格
-        salesData.add(new SalesData("原神", "免费", 10000, 0, 50000, "0%"));
-        salesData.add(new SalesData("王者荣耀", "免费", 50000, 0, 200000, "0%"));
-        salesTable.setItems(salesData);
+        // 初始化销售数据表格列
+        initializeSalesTableColumns();
         
-        // 初始化评价数据表格
-        reviewData.add(new ReviewData("玩家1", "5", "很好玩的游戏", "2024-01-15"));
-        reviewData.add(new ReviewData("玩家2", "4", "画面精美", "2024-01-14"));
-        reviewsTable.setItems(reviewData);
+        // 异步加载销售数据
+        loadSalesData();
+    }
+    
+    private void initializeSalesTableColumns() {
+        // 获取表格列并设置单元格值工厂
+        TableColumn<SalesData, String> gameNameColumn = (TableColumn<SalesData, String>) salesTable.getColumns().get(0);
+        TableColumn<SalesData, String> categoryColumn = (TableColumn<SalesData, String>) salesTable.getColumns().get(1);
+        TableColumn<SalesData, String> priceColumn = (TableColumn<SalesData, String>) salesTable.getColumns().get(2);
+        TableColumn<SalesData, Integer> salesVolumeColumn = (TableColumn<SalesData, Integer>) salesTable.getColumns().get(3);
+        TableColumn<SalesData, Integer> visitorCountColumn = (TableColumn<SalesData, Integer>) salesTable.getColumns().get(4);
+        TableColumn<SalesData, BigDecimal> salesAmountColumn = (TableColumn<SalesData, BigDecimal>) salesTable.getColumns().get(5);
+        TableColumn<SalesData, BigDecimal> conversionRateColumn = (TableColumn<SalesData, BigDecimal>) salesTable.getColumns().get(6);
+        TableColumn<SalesData, String> statusColumn = (TableColumn<SalesData, String>) salesTable.getColumns().get(7);
+        
+        // 设置单元格值工厂
+        gameNameColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getGameName()));
+        categoryColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCategory()));
+        priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getPrice()));
+        salesVolumeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getSalesVolume()).asObject());
+        visitorCountColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getVisitorCount()).asObject());
+        salesAmountColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getSalesAmount()));
+        conversionRateColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getConversionRate()));
+        statusColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus()));
+    }
+    
+    private void loadSalesData() {
+        new Thread(() -> {
+            try {
+                // 调用API获取销售数据
+                String endpoint = "/vendors/query-game-sales";
+                Map<String, Object> requestData = Map.of("account", currentUser.getAccount());
+                
+                Object response = apiClient.post(endpoint, requestData, Object.class);
+                
+                // 在主线程中更新UI
+                javafx.application.Platform.runLater(() -> {
+                    // 恢复按钮状态
+                    refreshSalesDataButton.setDisable(false);
+                    refreshSalesDataButton.setText("刷新");
+                    
+                    if (response instanceof List) {
+                        List<Map<String, Object>> salesList = (List<Map<String, Object>>) response;
+                        
+                        salesData.clear();
+                        
+                        if (!salesList.isEmpty()) {
+                            // 处理API返回的销售数据
+                            for (Map<String, Object> saleData : salesList) {
+                                String gameName = getStringValue(saleData, "gameName", "未知游戏");
+                                String category = getStringValue(saleData, "category", "未知类别");
+                                String price = getStringValue(saleData, "price", "免费");
+                                int salesVolume = getIntValue(saleData, "salesVolume", 0);
+                                int visitorCount = getIntValue(saleData, "visitorCount", 0);
+                                BigDecimal salesAmount = getBigDecimalValue(saleData, "salesAmount", BigDecimal.ZERO);
+                                BigDecimal conversionRate = getBigDecimalValue(saleData, "conversionRate", BigDecimal.ZERO);
+                                String status = getStringValue(saleData, "status", "未知状态");
+                                
+                                SalesData salesItem = new SalesData(gameName, category, price, salesVolume, 
+                                                                   visitorCount, salesAmount, conversionRate, status);
+                                salesData.add(salesItem);
+                            }
+                        } else {
+                            // 如果没有数据，添加一条提示信息
+                            SalesData emptyData = new SalesData("暂无数据", "-", "-", 0, 0, 
+                                                              BigDecimal.ZERO, BigDecimal.ZERO, "-");
+                            salesData.add(emptyData);
+                        }
+                        
+                        salesTable.setItems(salesData);
+                    } else {
+                        ControllerUtils.showErrorAlert("销售数据格式错误");
+                    }
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    // 恢复按钮状态
+                    refreshSalesDataButton.setDisable(false);
+                    refreshSalesDataButton.setText("刷新");
+                    
+                    ControllerUtils.showErrorAlert("加载销售数据失败: " + e.getMessage());
+                    // 添加错误提示数据
+                    salesData.clear();
+                    SalesData errorData = new SalesData("加载失败", "-", "-", 0, 0, 
+                                                      BigDecimal.ZERO, BigDecimal.ZERO, "-");
+                    salesData.add(errorData);
+                    salesTable.setItems(salesData);
+                });
+            }
+        }).start();
+    }
+    
+    private String getStringValue(Map<String, Object> data, String key, String defaultValue) {
+        Object value = data.get(key);
+        return value != null ? value.toString() : defaultValue;
+    }
+    
+    private int getIntValue(Map<String, Object> data, String key, int defaultValue) {
+        try {
+            Object value = data.get(key);
+            return value != null ? Integer.parseInt(value.toString()) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+    
+    private BigDecimal getBigDecimalValue(Map<String, Object> data, String key, BigDecimal defaultValue) {
+        try {
+            Object value = data.get(key);
+            return value != null ? new BigDecimal(value.toString()) : defaultValue;
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
     
     private void setupEventHandlers() {
-        // 搜索按钮事件
-        searchButton.setOnAction(event -> handleSearch());
-        
         // 刷新按钮事件
         refreshButton.setOnAction(event -> handleRefresh());
+        
+        // 销售数据刷新按钮事件
+        refreshSalesDataButton.setOnAction(event -> handleRefreshSalesData());
         
         // 退出登录事件
         logoutButton.setOnAction(event -> handleLogout());
@@ -344,6 +450,20 @@ public class VendorMainController {
         editGameButton.setOnAction(event -> handleEditGame());
         publishGameButton.setOnAction(event -> handlePublishGame());
         unpublishGameButton.setOnAction(event -> handleUnpublishGame());
+        viewApplicationsButton.setOnAction(event -> handleViewApplications());
+    }
+    
+    @FXML
+    private void handleRefreshSalesData() {
+        // 设置按钮为加载状态
+        refreshSalesDataButton.setDisable(true);
+        refreshSalesDataButton.setText("刷新中...");
+        
+        // 重新加载销售数据
+        loadSalesData();
+        
+        // 延迟恢复按钮状态（在loadSalesData的异步回调中处理）
+        // 实际的恢复逻辑在loadSalesData方法的Platform.runLater中处理
     }
     
     // 选项卡切换方法
@@ -363,12 +483,6 @@ public class VendorMainController {
     private void showSalesData() {
         showContent(salesDataContent);
         setActiveTab(salesDataTab);
-    }
-    
-    @FXML
-    private void showReviews() {
-        showContent(reviewsContent);
-        setActiveTab(reviewsTab);
     }
     
     @FXML
@@ -429,8 +543,6 @@ public class VendorMainController {
         gameManagementContent.setManaged(false);
         salesDataContent.setVisible(false);
         salesDataContent.setManaged(false);
-        reviewsContent.setVisible(false);
-        reviewsContent.setManaged(false);
         profileContent.setVisible(false);
         profileContent.setManaged(false);
         
@@ -448,23 +560,10 @@ public class VendorMainController {
         dashboardTab.getStyleClass().remove("tab-active");
         gameManagementTab.getStyleClass().remove("tab-active");
         salesDataTab.getStyleClass().remove("tab-active");
-        reviewsTab.getStyleClass().remove("tab-active");
         profileTab.getStyleClass().remove("tab-active");
     }
     
     // 事件处理方法
-    @FXML
-    private void handleSearch() {
-        String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            ControllerUtils.showInfoAlert("请输入搜索关键词");
-            return;
-        }
-        
-        // 模拟搜索功能
-        ControllerUtils.showInfoAlert("搜索关键词: " + keyword + "\n(搜索功能待实现)");
-    }
-    
     @FXML
     private void handleLogout() {
         UserSession.getInstance().logout();
@@ -840,45 +939,97 @@ public class VendorMainController {
     
     public static class SalesData {
         private String gameName;
+        private String category;
         private String price;
-        private int sales;
-        private double revenue;
-        private int visitors;
-        private String conversionRate;
+        private int salesVolume;
+        private int visitorCount;
+        private BigDecimal salesAmount;
+        private BigDecimal conversionRate;
+        private String status;
         
-        public SalesData(String gameName, String price, int sales, double revenue, int visitors, String conversionRate) {
+        public SalesData(String gameName, String category, String price, int salesVolume, 
+                        int visitorCount, BigDecimal salesAmount, BigDecimal conversionRate, String status) {
             this.gameName = gameName;
+            this.category = category;
             this.price = price;
-            this.sales = sales;
-            this.revenue = revenue;
-            this.visitors = visitors;
+            this.salesVolume = salesVolume;
+            this.visitorCount = visitorCount;
+            this.salesAmount = salesAmount;
             this.conversionRate = conversionRate;
+            this.status = status;
         }
         
         public String getGameName() { return gameName; }
+        public String getCategory() { return category; }
         public String getPrice() { return price; }
-        public int getSales() { return sales; }
-        public double getRevenue() { return revenue; }
-        public int getVisitors() { return visitors; }
-        public String getConversionRate() { return conversionRate; }
+        public int getSalesVolume() { return salesVolume; }
+        public int getVisitorCount() { return visitorCount; }
+        public BigDecimal getSalesAmount() { return salesAmount; }
+        public BigDecimal getConversionRate() { return conversionRate; }
+        public String getStatus() { return status; }
     }
     
-    public static class ReviewData {
-        private String nickname;
-        private String rating;
-        private String comment;
-        private String reviewTime;
+    // 上架申请数据类
+    public static class ApplicationData {
+        private String applicationId;
+        private String gameName;
+        private String companyName;
+        private String approvalStatus;
+        private String approvalResult;
+        private String applicationTime;
         
-        public ReviewData(String nickname, String rating, String comment, String reviewTime) {
-            this.nickname = nickname;
-            this.rating = rating;
-            this.comment = comment;
-            this.reviewTime = reviewTime;
+        public ApplicationData(String applicationId, String gameName, String companyName, 
+                              String approvalStatus, String approvalResult, String applicationTime) {
+            this.applicationId = applicationId;
+            this.gameName = gameName;
+            this.companyName = companyName;
+            this.approvalStatus = approvalStatus;
+            this.approvalResult = approvalResult;
+            this.applicationTime = applicationTime;
         }
         
-        public String getNickname() { return nickname; }
-        public String getRating() { return rating; }
-        public String getComment() { return comment; }
-        public String getReviewTime() { return reviewTime; }
+        public String getApplicationId() { return applicationId; }
+        public String getGameName() { return gameName; }
+        public String getCompanyName() { return companyName; }
+        public String getApprovalStatus() { return approvalStatus; }
+        public String getApprovalResult() { return approvalResult; }
+        public String getApplicationTime() { return applicationTime; }
+    }
+    
+    @FXML
+    private void handleViewApplications() {
+        try {
+            // 创建新窗口
+            Stage viewApplicationsStage = new Stage();
+            viewApplicationsStage.setTitle("GameTrade - 上架申请信息");
+            viewApplicationsStage.setWidth(1200);
+            viewApplicationsStage.setHeight(800);
+            
+            // 设置模态，但不阻塞主窗口
+            viewApplicationsStage.initModality(Modality.WINDOW_MODAL);
+            viewApplicationsStage.initOwner(viewApplicationsButton.getScene().getWindow());
+            viewApplicationsStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            
+            // 加载FXML文件 - 创建一个新的FXML文件来显示上架申请信息
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/view-applications.fxml"));
+            Parent root = loader.load();
+            
+            // 获取控制器实例
+            ViewApplicationsController controller = loader.getController();
+            
+            // 传递必要的引用给新窗口的控制器
+            controller.setApiClient(this.apiClient);
+            controller.setCurrentUser(this.currentUser);
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            viewApplicationsStage.setScene(scene);
+            
+            // 显示窗口
+            viewApplicationsStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开上架申请信息页面失败: " + e.getMessage());
+        }
     }
 }

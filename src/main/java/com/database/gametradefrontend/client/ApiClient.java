@@ -65,8 +65,15 @@ public class ApiClient {
                     connection.setReadTimeout(READ_TIMEOUT);
                     
                     int responseCode = connection.getResponseCode();
-                    return responseCode == HttpURLConnection.HTTP_OK || 
+                    boolean success = responseCode == HttpURLConnection.HTTP_OK || 
                            responseCode == HttpURLConnection.HTTP_NO_CONTENT;
+                    
+                    // 如果成功，立即返回结果，不继续重试
+                    if (success) {
+                        return true;
+                    } else {
+                        throw new ApiException("HTTP " + responseCode + ": " + connection.getResponseMessage(), responseCode);
+                    }
                 } finally {
                     if (connection != null) {
                         connection.disconnect();
@@ -82,23 +89,35 @@ public class ApiClient {
         return false;
     }
     
+    public <T> T delete(String endpoint, Object requestBody, Class<T> responseType) throws Exception {
+        return sendRequestWithRetry("DELETE", endpoint, requestBody, responseType);
+    }
+    
     /**
      * 带重试机制的请求发送方法
      */
     private <T> T sendRequestWithRetry(String method, String endpoint, Object requestBody, Class<T> responseType) throws Exception {
+        Exception lastException = null;
+        
         for (int attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
             try {
-                return sendRequest(method, endpoint, requestBody, responseType);
+                T result = sendRequest(method, endpoint, requestBody, responseType);
+                // 如果成功，立即返回结果，不继续重试
+                return result;
             } catch (Exception e) {
+                lastException = e;
+                
                 if (attempt == MAX_RETRY_ATTEMPTS) {
-                    throw e;
+                    throw lastException;
                 }
                 Thread.sleep(RETRY_DELAY * attempt);
             }
         }
+        
+        // 理论上不会执行到这里，因为如果所有重试都失败会抛出异常
         return null;
     }
-    
+
     /**
      * 通用的HTTP请求发送方法
      */
@@ -106,14 +125,6 @@ public class ApiClient {
         HttpURLConnection connection = null;
         try {
             String fullUrl = BASE_URL + endpoint;
-            System.out.println("API Request: " + method + " " + fullUrl);
-            
-            if (requestBody != null) {
-                String requestBodyJson = objectMapper.writeValueAsString(requestBody);
-                // 对敏感信息进行掩码处理
-                String maskedBody = maskSensitiveInfo(requestBodyJson);
-                System.out.println("Request Body: " + maskedBody);
-            }
             
             URL url = new URL(fullUrl);
             connection = (HttpURLConnection) url.openConnection();
@@ -124,7 +135,7 @@ public class ApiClient {
             connection.setReadTimeout(READ_TIMEOUT);
             
             // 如果有请求体，发送请求体
-            if (requestBody != null && ("POST".equals(method) || "PUT".equals(method))) {
+            if (requestBody != null && ("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method))) {
                 connection.setDoOutput(true);
                 String requestBodyJson = objectMapper.writeValueAsString(requestBody);
                 
@@ -147,11 +158,6 @@ public class ApiClient {
                         response.append(responseLine.trim());
                     }
                     
-                    System.out.println("API Response: " + responseCode + " - Success");
-                    if (!response.toString().isEmpty()) {
-                        System.out.println("Response Body: " + response.toString());
-                    }
-                    
                     if (responseType == Void.class) {
                         return null;
                     }
@@ -161,12 +167,21 @@ public class ApiClient {
                         return responseType.cast(response.toString());
                     }
                     
+                    // 如果响应类型是Object.class，尝试解析JSON，如果失败则返回原始字符串
+                    if (responseType == Object.class) {
+                        try {
+                            return objectMapper.readValue(response.toString(), responseType);
+                        } catch (Exception jsonException) {
+                            // JSON解析失败，返回原始字符串
+                            return responseType.cast(response.toString());
+                        }
+                    }
+                    
                     return objectMapper.readValue(response.toString(), responseType);
                 }
             } else {
                 // 错误响应
                 String errorMessage = getErrorMessage(connection);
-                System.out.println("API Response: " + responseCode + " - Error: " + errorMessage);
                 throw new ApiException("HTTP " + responseCode + ": " + errorMessage, responseCode);
             }
         } finally {

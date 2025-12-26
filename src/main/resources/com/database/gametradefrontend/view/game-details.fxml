@@ -25,6 +25,12 @@
             <Label fx:id="pageTitleLabel" text="游戏详情" styleClass="section-title" style="-fx-font-size: 24px;"/>
          </HBox>
          
+         <!-- 买家评论按钮 -->
+         <Button fx:id="viewReviewsButton" mnemonicParsing="false" onAction="#handleViewReviews"
+                 styleClass="action-button" style="-fx-min-width: 100px; -fx-margin-right: 10px;">
+            <text>买家评论</text>
+         </Button>
+         
          <!-- 返回按钮 -->
          <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBackToMain"
                  styleClass="cancel-button" style="-fx-min-width: 80px;">

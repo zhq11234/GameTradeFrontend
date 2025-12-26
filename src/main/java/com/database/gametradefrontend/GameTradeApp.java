@@ -20,7 +20,6 @@ public class GameTradeApp extends Application {
             Scene scene = new Scene(loader.load(), 1000, 800);
             primaryStage.setTitle("GameTrade - 欢迎");
             primaryStage.setScene(scene);
-//            primaryStage.setResizable(false);
             primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
             primaryStage.show();
 

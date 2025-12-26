@@ -4,12 +4,18 @@ import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.util.ControllerUtils;
 import com.database.gametradefrontend.client.ApiClient;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 游戏详情页面控制器
@@ -18,6 +24,7 @@ import java.util.Map;
 public class GameDetailsController {
 
     @FXML private Button backButton;
+    @FXML private Button viewReviewsButton;
     // 游戏详情页面字段
     @FXML private Label pageTitleLabel;
     @FXML private Label gameNameLabel;
@@ -259,5 +266,229 @@ public class GameDetailsController {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+    
+    @FXML
+    private void handleViewReviews() {
+        if (currentEditingGame == null) {
+            ControllerUtils.showErrorAlert("没有正在查看的游戏");
+            return;
+        }
+        
+        // 显示加载状态
+        viewReviewsButton.setDisable(true);
+        viewReviewsButton.setText("加载中...");
+        
+        new Thread(() -> {
+            try {
+                // 调用API查询游戏评论
+                String endpoint = "/vendors/query-game-reviews";
+                
+                // 准备请求数据
+                Map<String, Object> requestData = new HashMap<>();
+                requestData.put("account", currentUser.getAccount());
+                requestData.put("gameName", currentEditingGame.getName());
+                
+                // 调用API获取评论数据
+                Object response = apiClient.post(endpoint, requestData, Object.class);
+                
+                // 在主线程中更新UI
+                javafx.application.Platform.runLater(() -> {
+                    viewReviewsButton.setDisable(false);
+                    viewReviewsButton.setText("买家评论");
+                    
+                    if (response != null) {
+                        // 处理API响应
+                        List<Map<String, Object>> reviewsList = null;
+                        
+                        if (response instanceof List) {
+                            reviewsList = (List<Map<String, Object>>) response;
+                        }
+                        
+                        if (reviewsList != null && !reviewsList.isEmpty()) {
+                            // 显示评论窗口
+                            showReviewsWindow(reviewsList);
+                        } else {
+                            ControllerUtils.showInfoAlert("该游戏暂无评论");
+                        }
+                    } else {
+                        ControllerUtils.showErrorAlert("查询评论失败");
+                    }
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    viewReviewsButton.setDisable(false);
+                    viewReviewsButton.setText("买家评论");
+                    ControllerUtils.showErrorAlert("查询评论失败: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+    
+    // 显示评论窗口
+    private void showReviewsWindow(List<Map<String, Object>> reviewsList) {
+        try {
+            // 创建新窗口
+            Stage reviewsStage = new Stage();
+            reviewsStage.setTitle("买家评论 - " + currentEditingGame.getName());
+            reviewsStage.setWidth(800);
+            reviewsStage.setHeight(600);
+            
+            // 设置模态
+            reviewsStage.initModality(Modality.WINDOW_MODAL);
+            reviewsStage.initOwner(viewReviewsButton.getScene().getWindow());
+            reviewsStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            // 创建评论列表容器
+            VBox reviewsContainer = new VBox(10);
+            reviewsContainer.setStyle("-fx-padding: 20; -fx-background-color: white;");
+            
+            // 添加标题
+            Label titleLabel = new Label("买家评论 (" + reviewsList.size() + "条)");
+            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;");
+            reviewsContainer.getChildren().add(titleLabel);
+            
+            // 添加评论项
+            for (Map<String, Object> review : reviewsList) {
+                VBox reviewItem = createReviewItem(review);
+                reviewsContainer.getChildren().add(reviewItem);
+            }
+            
+
+            // 创建滚动面板并优化滚轮体验
+            ScrollPane scrollPane = new ScrollPane(reviewsContainer);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setStyle("-fx-background: white;");
+            
+            // 设置滚动条策略
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            
+            // 优化滚动速度
+            scrollPane.setVvalue(0);
+            scrollPane.setPannable(true);
+            
+            // 设置场景
+            Scene scene = new Scene(scrollPane);
+            reviewsStage.setScene(scene);
+            
+            // 显示窗口
+            reviewsStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("显示评论窗口失败: " + e.getMessage());
+        }
+    }
+    
+    // 创建单个评论项
+    private VBox createReviewItem(Map<String, Object> review) {
+        VBox reviewItem = new VBox(5);
+        reviewItem.setStyle("-fx-padding: 15; -fx-background-color: #f5f5f5; -fx-border-radius: 5; -fx-background-radius: 5;");
+        
+        // 顶部信息行（昵称、时间、评分）
+        HBox topRow = new HBox();
+        topRow.setAlignment(Pos.CENTER_LEFT);
+        
+        // 昵称
+        String nickname = safeToString(review.get("nickname"), "匿名用户");
+        Label nicknameLabel = new Label(nickname);
+        nicknameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        
+        // 评价时间
+        String reviewTime = safeToString(review.get("reviewTime"), "未知时间");
+        Label timeLabel = new Label(reviewTime);
+        timeLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 12px; -fx-padding: 0 10 0 10;");
+        
+        // 评分（星星显示）
+        String scoreStr = safeToString(review.get("score"), "0");
+        double score = 0;
+        try {
+            score = Double.parseDouble(scoreStr);
+        } catch (NumberFormatException e) {
+            score = 0;
+        }
+        
+        // 计算星星数量（0-10分转换为0-5颗星）
+        int stars = (int) Math.round(score / 2.0);
+        HBox starsContainer = new HBox(2);
+        starsContainer.setAlignment(Pos.CENTER_RIGHT);
+        starsContainer.setStyle("-fx-padding: 0 0 0 10;");
+        
+        // 添加星星
+        for (int i = 0; i < 5; i++) {
+            Label starLabel = new Label(i < stars ? "★" : "☆");
+            starLabel.setStyle("-fx-text-fill: " + (i < stars ? "#ffa500" : "#ccc") + "; -fx-font-size: 16px;");
+            starsContainer.getChildren().add(starLabel);
+        }
+        
+        // 评分文本
+        Label scoreLabel = new Label(String.format("(%.1f分)", score));
+        scoreLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 12px; -fx-padding: 0 0 0 5;");
+        starsContainer.getChildren().add(scoreLabel);
+        
+        // 使用Region填充空间，使星星靠右对齐
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        topRow.getChildren().addAll(nicknameLabel, timeLabel, spacer, starsContainer);
+        
+        // 评论内容
+        String comment = safeToString(review.get("comment"), "暂无评论");
+        Label commentLabel = new Label(comment);
+        commentLabel.setWrapText(true);
+        commentLabel.setStyle("-fx-font-size: 13px; -fx-padding: 5 0 0 0;");
+        
+        // 如果评论超过50个字符，添加展开功能
+        if (comment.length() > 50) {
+            String shortComment = comment.substring(0, 50) + "...";
+            Label shortCommentLabel = new Label(shortComment);
+            shortCommentLabel.setWrapText(true);
+            shortCommentLabel.setStyle("-fx-font-size: 13px; -fx-padding: 5 0 0 0;");
+            
+            Button expandButton = new Button("展开");
+            expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-border: none; -fx-padding: 0;");
+            expandButton.setOnAction(e -> {
+                if (reviewItem.getChildren().contains(shortCommentLabel)) {
+                    reviewItem.getChildren().remove(shortCommentLabel);
+                    reviewItem.getChildren().remove(expandButton);
+                    reviewItem.getChildren().add(commentLabel);
+                    
+                    Button collapseButton = new Button("收起");
+                    collapseButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-border: none; -fx-padding: 0;");
+                    collapseButton.setOnAction(e2 -> {
+                        reviewItem.getChildren().remove(commentLabel);
+                        reviewItem.getChildren().remove(collapseButton);
+                        reviewItem.getChildren().add(shortCommentLabel);
+                        reviewItem.getChildren().add(expandButton);
+                    });
+                    reviewItem.getChildren().add(collapseButton);
+                }
+            });
+            
+            reviewItem.getChildren().addAll(topRow, shortCommentLabel, expandButton);
+        } else {
+            reviewItem.getChildren().addAll(topRow, commentLabel);
+        }
+        
+        return reviewItem;
+    }
+    
+    // 评论数据类
+    public static class ReviewData {
+        private String nickname;
+        private String score;
+        private String comment;
+        private String reviewTime;
+        
+        public ReviewData(String nickname, String score, String comment, String reviewTime) {
+            this.nickname = nickname;
+            this.score = score;
+            this.comment = comment;
+            this.reviewTime = reviewTime;
+        }
+        
+        public String getNickname() { return nickname; }
+        public String getScore() { return score; }
+        public String getComment() { return comment; }
+        public String getReviewTime() { return reviewTime; }
     }
 }
