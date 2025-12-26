@@ -1,8 +1,10 @@
 package com.database.gametradefrontend.controller;
 
+import com.database.gametradefrontend.client.ApiClient;
 import com.database.gametradefrontend.model.User;
 import com.database.gametradefrontend.util.ControllerUtils;
-import com.database.gametradefrontend.client.ApiClient;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,13 +12,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.stage.Stage;
 
 import java.util.*;
 
@@ -83,6 +83,20 @@ public class VendorMainController {
     @FXML private Button cancelGameButton;
     @FXML private Button backButton;
     
+    // 游戏详情页面字段
+    @FXML private Label pageTitleLabel;
+    @FXML private Label gameNameLabel;
+    @FXML private Label companyNameLabel;
+    @FXML private Label releaseTimeLabel;
+    @FXML private Label statusLabel;
+    @FXML private TextField categoryField;
+    @FXML private TextField priceField;
+    @FXML private TextArea descriptionField;
+    @FXML private TextField downloadLinkFieldDetails;
+    @FXML private TextField licenseNumberFieldDetails;
+    @FXML private Button saveButton;
+    @FXML private Button cancelButton;
+    
     // 当前用户信息
     private User currentUser;
     
@@ -93,6 +107,9 @@ public class VendorMainController {
     private final List<Game> games = new ArrayList<>();
     private final ObservableList<SalesData> salesData = FXCollections.observableArrayList();
     private final ObservableList<ReviewData> reviewData = FXCollections.observableArrayList();
+    
+    // 当前正在编辑的游戏
+    private Game currentEditingGame;
     
     @FXML
     public void initialize() {
@@ -555,6 +572,84 @@ public class VendorMainController {
     }
     
     @FXML
+    private void handleBackToMain() {
+        // 关闭当前窗口
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
+        stage.close();
+    }
+    
+    @FXML
+    private void handleSaveGameDetails() {
+        if (currentEditingGame == null) {
+            ControllerUtils.showErrorAlert("没有正在编辑的游戏");
+            return;
+        }
+        
+        // 获取修改后的数据
+        String category = categoryField.getText().trim();
+        String price = priceField.getText().trim();
+        String description = descriptionField.getText().trim();
+        String downloadLink = downloadLinkFieldDetails.getText().trim();
+        String licenseNumber = licenseNumberFieldDetails.getText().trim();
+        
+        // 验证必填字段
+        if (category.isEmpty() || price.isEmpty()) {
+            ControllerUtils.showErrorAlert("游戏类别和价格不能为空");
+            return;
+        }
+        
+        // 显示保存状态
+        saveButton.setDisable(true);
+        saveButton.setText("保存中...");
+        
+        new Thread(() -> {
+            try {
+                // 调用API更新游戏信息
+                String endpoint = "/vendors/update-game";
+                
+                // 准备请求数据
+                Map<String, Object> requestData = new HashMap<>();
+                requestData.put("account", currentUser.getAccount());
+                requestData.put("gameName", currentEditingGame.getName());
+                requestData.put("price", price);
+                requestData.put("description", description);
+                requestData.put("licenseNumber", licenseNumber);
+                requestData.put("downloadLink", downloadLink);
+                requestData.put("category", category);
+                
+                // 调用API更新游戏信息
+                String result = apiClient.put(endpoint, requestData, String.class);
+                
+                // 在主线程中更新UI
+                javafx.application.Platform.runLater(() -> {
+                    if (result != null && result.contains("成功")) {
+                        ControllerUtils.showInfoAlert("游戏信息修改成功");
+                        
+                        // 关闭窗口
+                        Stage stage = (Stage) saveButton.getScene().getWindow();
+                        stage.close();
+                        
+                        // 刷新主页面游戏数据
+                        initializeGameCards();
+                    } else {
+                        ControllerUtils.showErrorAlert("游戏信息修改失败: " + result);
+                    }
+                    
+                    // 恢复按钮状态
+                    saveButton.setDisable(false);
+                    saveButton.setText("保存修改");
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    ControllerUtils.showErrorAlert("游戏信息修改失败: " + e.getMessage());
+                    saveButton.setDisable(false);
+                    saveButton.setText("保存修改");
+                });
+            }
+        }).start();
+    }
+    
+    @FXML
     private void handleRefresh() {
         // 重新加载游戏数据
         initializeGameCards();
@@ -562,12 +657,42 @@ public class VendorMainController {
     }
     
     private void showGameDetails(Game game) {
-        ControllerUtils.showInfoAlert("游戏详情:\n" +
-                                    "名称: " + game.getName() + "\n" +
-                                    "类别: " + game.getCategory() + "\n" +
-                                    "价格: " + game.getPrice() + "\n" +
-                                    "简介: " + game.getDescription() + "\n" +
-                                    "(评论功能待实现)");
+        try {
+            // 创建新窗口
+            Stage gameDetailsStage = new Stage();
+            gameDetailsStage.setTitle("GameTrade - 游戏详情");
+            gameDetailsStage.setWidth(800);
+            gameDetailsStage.setHeight(700);
+            
+            // 设置模态，但不阻塞主窗口
+            gameDetailsStage.initModality(Modality.WINDOW_MODAL);
+            gameDetailsStage.initOwner(gameCardsContainer.getScene().getWindow());
+            gameDetailsStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            
+            // 加载FXML文件
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/game-details.fxml"));
+            Parent root = loader.load();
+            
+            // 获取控制器实例
+            GameDetailsController controller = loader.getController();
+            
+            // 传递必要的引用给新窗口的控制器
+            controller.setApiClient(this.apiClient);
+            controller.setCurrentUser(this.currentUser);
+            
+            // 加载游戏详情数据
+            controller.loadGameDetails(game);
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            gameDetailsStage.setScene(scene);
+            
+            // 显示窗口
+            gameDetailsStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开游戏详情页面失败: " + e.getMessage());
+        }
     }
 
     // 内部数据类
@@ -578,6 +703,10 @@ public class VendorMainController {
         private String image;
         private String description;
         private String status;
+        private String downloadLink;
+        private String licenseNumber;
+        private String companyName;
+        private String releaseTime;
 
         public Game(String name, String category, String price, String image, String description, String status) {
             this.name = name;
@@ -588,12 +717,36 @@ public class VendorMainController {
             this.status = status;
         }
         
+        public Game(String name, String category, String price, String image, String description, String status, 
+                   String downloadLink, String licenseNumber, String companyName, String releaseTime) {
+            this.name = name;
+            this.category = category;
+            this.price = price;
+            this.image = image;
+            this.description = description;
+            this.status = status;
+            this.downloadLink = downloadLink;
+            this.licenseNumber = licenseNumber;
+            this.companyName = companyName;
+            this.releaseTime = releaseTime;
+        }
+        
         public String getName() { return name; }
         public String getCategory() { return category; }
         public String getPrice() { return price; }
         public String getImage() { return image; }
         public String getDescription() { return description; }
         public String getStatus() { return status; }
+        public String getDownloadLink() { return downloadLink; }
+        public String getLicenseNumber() { return licenseNumber; }
+        public String getCompanyName() { return companyName; }
+        public String getReleaseTime() { return releaseTime; }
+        
+        public void setPrice(String price) { this.price = price; }
+        public void setDescription(String description) { this.description = description; }
+        public void setLicenseNumber(String licenseNumber) { this.licenseNumber = licenseNumber; }
+        public void setDownloadLink(String downloadLink) { this.downloadLink = downloadLink; }
+        public void setCategory(String category) { this.category = category; }
     }
     
     public static class SalesData {

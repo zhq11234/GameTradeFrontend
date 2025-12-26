@@ -1,14 +1,17 @@
 package com.database.gametradefrontend.controller;
 
-import com.database.gametradefrontend.util.ControllerUtils;
 import com.database.gametradefrontend.client.ApiClient;
 import com.database.gametradefrontend.model.User;
+import com.database.gametradefrontend.util.ControllerUtils;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
