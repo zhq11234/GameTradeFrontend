@@ -588,12 +588,76 @@ public class VendorMainController {
     
     @FXML
     private void handlePublishGame() {
-        ControllerUtils.showInfoAlert("游戏上架功能\n(待实现)");
+        try {
+            // 创建新窗口
+            Stage publishGameStage = new Stage();
+            publishGameStage.setTitle("GameTrade - 上架申请");
+            publishGameStage.setWidth(1200);
+            publishGameStage.setHeight(800);
+            
+            // 设置模态，但不阻塞主窗口
+            publishGameStage.initModality(Modality.WINDOW_MODAL);
+            publishGameStage.initOwner(publishGameButton.getScene().getWindow());
+            publishGameStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            
+            // 加载FXML文件 - 创建一个新的FXML文件来显示上架申请结果
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/publish-games.fxml"));
+            Parent root = loader.load();
+            
+            // 获取控制器实例
+            PublishGamesController controller = loader.getController();
+            
+            // 传递必要的引用给新窗口的控制器
+            controller.setApiClient(this.apiClient);
+            controller.setCurrentUser(this.currentUser);
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            publishGameStage.setScene(scene);
+            
+            // 显示窗口
+            publishGameStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开上架申请页面失败: " + e.getMessage());
+        }
     }
     
     @FXML
     private void handleUnpublishGame() {
-        ControllerUtils.showInfoAlert("游戏下架功能\n(待实现)");
+        try {
+            // 创建新窗口
+            Stage unpublishGameStage = new Stage();
+            unpublishGameStage.setTitle("GameTrade - 游戏下架");
+            unpublishGameStage.setWidth(1200);
+            unpublishGameStage.setHeight(800);
+            
+            // 设置模态，但不阻塞主窗口
+            unpublishGameStage.initModality(Modality.WINDOW_MODAL);
+            unpublishGameStage.initOwner(unpublishGameButton.getScene().getWindow());
+            unpublishGameStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png"))));
+            
+            // 加载FXML文件 - 创建一个新的FXML文件来显示下架申请结果
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/database/gametradefrontend/view/unpublish-games.fxml"));
+            Parent root = loader.load();
+            
+            // 获取控制器实例
+            UnpublishGamesController controller = loader.getController();
+            
+            // 传递必要的引用给新窗口的控制器
+            controller.setApiClient(this.apiClient);
+            controller.setCurrentUser(this.currentUser);
+            
+            // 设置场景
+            Scene scene = new Scene(root);
+            unpublishGameStage.setScene(scene);
+            
+            // 显示窗口
+            unpublishGameStage.show();
+            
+        } catch (Exception e) {
+            ControllerUtils.showErrorAlert("打开下架申请页面失败: " + e.getMessage());
+        }
     }
     
     @FXML

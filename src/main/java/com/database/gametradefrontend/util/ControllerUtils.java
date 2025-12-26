@@ -6,10 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -235,5 +232,43 @@ public class ControllerUtils {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    
+    /**
+     * 显示密码输入对话框
+     * @param message 提示消息
+     * @return 用户输入的密码，如果取消则为null
+     */
+    public static String showPasswordDialog(String message) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("密码验证");
+        dialog.setHeaderText("身份验证");
+        dialog.setContentText(message);
+        dialog.getEditor().setPromptText("请输入密码");
+        
+        // 将输入框设置为密码字段
+        javafx.scene.control.PasswordField passwordField = new javafx.scene.control.PasswordField();
+        dialog.getDialogPane().setContent(passwordField);
+        
+        // 传统方式获取结果
+        java.util.Optional<String> result = dialog.showAndWait();
+        return result.orElse(null);
+    }
+    
+    /**
+     * 显示确认对话框
+     * @param title 对话框标题
+     * @param header 对话框头部信息
+     * @param content 对话框内容
+     * @return 用户是否确认操作
+     */
+    public static boolean showConfirmationAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        
+        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK;
     }
 }
