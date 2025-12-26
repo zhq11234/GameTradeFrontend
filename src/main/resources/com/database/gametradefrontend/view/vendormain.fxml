@@ -108,7 +108,17 @@
             
             <!-- 游戏概览页面（默认显示） -->
             <VBox fx:id="dashboardContent" alignment="TOP_CENTER" spacing="25" VBox.vgrow="ALWAYS">
-               <Label text="我的游戏" styleClass="section-title"/>
+               <!-- 标题和刷新按钮区域 -->
+               <HBox alignment="CENTER" spacing="0" HBox.hgrow="ALWAYS" style="-fx-padding: 0 0 10 0;">
+                  <Label text="我的游戏" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                  <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#handleRefresh"
+                          styleClass="refresh-button">
+                     <graphic>
+                        <Label text="🔄" styleClass="button-icon"/>
+                     </graphic>
+                     <text>刷新</text>
+                  </Button>
+               </HBox>
                
                <!-- 游戏卡片容器 -->
                <FlowPane fx:id="gameCardsContainer" hgap="20" vgap="20" 
