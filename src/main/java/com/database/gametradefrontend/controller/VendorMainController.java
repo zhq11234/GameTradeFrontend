@@ -134,17 +134,66 @@ public class VendorMainController {
         // 清空现有卡片
         gameCardsContainer.getChildren().clear();
         
-        // 模拟游戏数据
-        games.add(new Game("原神", "角色扮演", "免费", "yuanshen.png"));
-        games.add(new Game("王者荣耀", "MOBA", "免费", "yuanshen.png"));
-        games.add(new Game("和平精英", "射击", "免费", "yuanshen.png"));
-        games.add(new Game("英雄联盟", "MOBA", "免费", "yuanshen.png"));
+        // 显示加载状态
+        Label loadingLabel = new Label("正在加载游戏数据...");
+        loadingLabel.getStyleClass().add("loading-label");
+        gameCardsContainer.getChildren().add(loadingLabel);
         
-        // 创建游戏卡片
-        for (Game game : games) {
-            StackPane gameCard = createGameCard(game);
-            gameCardsContainer.getChildren().add(gameCard);
-        }
+        // 异步从API获取游戏数据
+        new Thread(() -> {
+            try {
+                // 调用API获取厂商游戏数据
+                String endpoint = "/vendors/query-vendor-games";
+                // 准备请求数据，包含account参数
+                Map<String, Object> requestData = new HashMap<>();
+                requestData.put("account", currentUser.getAccount());
+                
+                Object response = apiClient.post(endpoint, requestData, Object.class);
+                
+                // 在主线程中更新UI
+                javafx.application.Platform.runLater(() -> {
+                    // 清空加载状态
+                    gameCardsContainer.getChildren().clear();
+                    
+                    List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
+                    
+                    if (gameList != null && !gameList.isEmpty()) {
+                        games.clear();
+                        
+                        // 处理API返回的游戏数据
+                        for (Map<String, Object> gameData : gameList) {
+                            String name = gameData.getOrDefault("gameName", gameData.getOrDefault("name", "未知游戏")).toString();
+                            String category = gameData.getOrDefault("category", "未知类别").toString();
+                            String price = gameData.getOrDefault("price", "免费").toString();
+                            String description = gameData.getOrDefault("description", "暂无简介").toString();
+                            String image = gameData.getOrDefault("image", "yuanshen.png").toString();
+                            
+                            // 创建游戏对象
+                            Game game = new Game(name, category, price, image, description);
+                            games.add(game);
+                            
+                            // 创建游戏卡片
+                            StackPane gameCard = createGameCard(game);
+                            gameCardsContainer.getChildren().add(gameCard);
+                        }
+                    } else {
+                        // 如果没有数据，显示提示信息
+                        Label noDataLabel = new Label("暂无游戏数据");
+                        noDataLabel.getStyleClass().add("no-data-label");
+                        gameCardsContainer.getChildren().add(noDataLabel);
+                    }
+                });
+            } catch (Exception e) {
+                // 在主线程中显示错误信息
+                javafx.application.Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    Label errorLabel = new Label("加载游戏数据失败: " + e.getMessage());
+                    errorLabel.getStyleClass().add("error-label");
+                    gameCardsContainer.getChildren().add(errorLabel);
+                    ControllerUtils.showErrorAlert("加载游戏数据失败: " + e.getMessage());
+                });
+            }
+        }).start();
     }
     
     private StackPane createGameCard(Game game) {
@@ -158,17 +207,29 @@ public class VendorMainController {
         
         // 游戏图片
         ImageView imageView = new ImageView();
+        boolean imageLoaded = false;
+        
+        // 首先尝试加载用户传入的图片路径
         try {
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/" + game.getImage())));
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(game.getImage())));
             imageView.setImage(image);
+            imageLoaded = true;
         } catch (Exception e) {
-            // 使用默认图片
+            // 如果直接路径找不到，尝试在icon目录下查找
             try {
-                Image defaultImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png")));
-                imageView.setImage(defaultImage);
+                Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/" + game.getImage())));
+                imageView.setImage(image);
+                imageLoaded = true;
             } catch (Exception ex) {
-                // 如果默认图片也不存在，创建一个占位符
-                imageView.setStyle("-fx-background-color: #667eea; -fx-min-width: 250px; -fx-min-height: 150px;");
+                // 如果icon目录下也找不到，使用默认图片
+                try {
+                    Image defaultImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/yuanshen.png")));
+                    imageView.setImage(defaultImage);
+                    imageLoaded = true;
+                } catch (Exception exc) {
+                    // 如果默认图片也不存在，创建一个占位符
+                    imageView.setStyle("-fx-background-color: #667eea; -fx-min-width: 250px; -fx-min-height: 150px;");
+                }
             }
         }
         imageView.setFitWidth(250);
@@ -192,18 +253,36 @@ public class VendorMainController {
         VBox overlay = new VBox();
         overlay.getStyleClass().add("game-card-overlay");
         overlay.setMouseTransparent(true);
+        overlay.setVisible(false);
         
         Label overlayTitle = new Label(game.getName());
         overlayTitle.getStyleClass().add("overlay-text");
         overlayTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         
-        Label overlayInfo = new Label("类别: " + game.getCategory() + "\n价格: " + game.getPrice());
-        overlayInfo.getStyleClass().add("overlay-text");
+        Label overlayCategory = new Label("类别: " + game.getCategory());
+        overlayCategory.getStyleClass().add("overlay-text");
         
-        overlay.getChildren().addAll(overlayTitle, overlayInfo);
+        Label overlayPrice = new Label("价格: " + game.getPrice());
+        overlayPrice.getStyleClass().add("overlay-text");
+        
+        Label overlayDescription = new Label("简介: " + game.getDescription());
+        overlayDescription.getStyleClass().add("overlay-text");
+        overlayDescription.setWrapText(true);
+        overlayDescription.setMaxWidth(230);
+        
+        overlay.getChildren().addAll(overlayTitle, overlayCategory, overlayPrice, overlayDescription);
         
         // 组装卡片
         card.getChildren().addAll(imageView, content, overlay);
+        
+        // 添加鼠标悬停事件
+        card.setOnMouseEntered(event -> {
+            overlay.setVisible(true);
+        });
+        
+        card.setOnMouseExited(event -> {
+            overlay.setVisible(false);
+        });
         
         // 添加点击事件
         card.setOnMouseClicked(event -> showGameDetails(game));
@@ -470,27 +549,39 @@ public class VendorMainController {
                                     "名称: " + game.getName() + "\n" +
                                     "类别: " + game.getCategory() + "\n" +
                                     "价格: " + game.getPrice() + "\n" +
-                                    "(详细信息和评论功能待实现)");
+                                    "简介: " + game.getDescription() + "\n" +
+                                    "(评论功能待实现)");
     }
-    
+
     // 内部数据类
     public static class Game {
         private String name;
         private String category;
         private String price;
         private String image;
+        private String description;
         
         public Game(String name, String category, String price, String image) {
             this.name = name;
             this.category = category;
             this.price = price;
             this.image = image;
+            this.description = "";
+        }
+        
+        public Game(String name, String category, String price, String image, String description) {
+            this.name = name;
+            this.category = category;
+            this.price = price;
+            this.image = image;
+            this.description = description;
         }
         
         public String getName() { return name; }
         public String getCategory() { return category; }
         public String getPrice() { return price; }
         public String getImage() { return image; }
+        public String getDescription() { return description; }
     }
     
     public static class SalesData {

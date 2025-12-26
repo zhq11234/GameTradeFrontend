@@ -195,6 +195,31 @@
     -fx-text-alignment: center;
 }
 
+.loading-label {
+    -fx-text-fill: #667eea;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+}
+
+.no-data-label {
+    -fx-text-fill: #666;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+}
+
+.error-label {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+    -fx-wrap-text: true;
+}
+
 /* 操作按钮样式 */
 .action-button {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);
