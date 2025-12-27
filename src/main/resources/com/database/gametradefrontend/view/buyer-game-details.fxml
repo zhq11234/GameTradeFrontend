@@ -2,14 +2,14 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 <?import java.net.URL?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="700.0" prefWidth="900.0"
-            style="-fx-background-color: rgba(255,255,255,0.95);"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.database.gametradefrontend.controller.BuyerGameDetailsController">
    
    <stylesheets>
-      <URL value="@styles/buyermain.css" />
+      <URL value="@styles/vendormain.css" />
    </stylesheets>
 
    <!-- 主容器 -->
@@ -26,26 +26,9 @@
             <Label fx:id="pageTitleLabel" text="游戏详情" styleClass="section-title" style="-fx-font-size: 24px;"/>
          </HBox>
          
-         <!-- 操作按钮 -->
-         <Button fx:id="purchaseButton" mnemonicParsing="false" onAction="#handlePurchase"
-                 styleClass="action-button" style="-fx-min-width: 100px; -fx-margin-right: 10px;">
-            <graphic>
-               <Label text="🛒" styleClass="button-icon"/>
-            </graphic>
-            <text>购买游戏</text>
-         </Button>
-         
-         <Button fx:id="downloadButton" mnemonicParsing="false" onAction="#handleDownload"
-                 styleClass="action-button" style="-fx-min-width: 100px; -fx-margin-right: 10px;">
-            <graphic>
-               <Label text="⬇️" styleClass="button-icon"/>
-            </graphic>
-            <text>下载</text>
-         </Button>
-         
          <!-- 返回按钮 -->
          <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBackToMain"
-                 styleClass="logout-button" style="-fx-min-width: 80px;">
+                 styleClass="cancel-button" style="-fx-min-width: 80px;">
             <text>返回</text>
          </Button>
       </HBox>
@@ -55,99 +38,66 @@
                   style="-fx-background-color: rgba(255,255,255,0.8);">
          <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
             
-            <!-- 游戏基本信息区域 -->
-            <HBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 20;">
+            <!-- 游戏基本信息卡片 -->
+            <HBox alignment="TOP_CENTER" spacing="30" 
+                  style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
                
                <!-- 游戏图片 -->
-               <VBox alignment="CENTER" spacing="10">
-                  <ImageView fx:id="gameImageView" fitWidth="300" fitHeight="200" preserveRatio="true"
-                            style="-fx-background-radius: 10px; -fx-border-radius: 10px;"/>
-                  <Label fx:id="priceLabel" styleClass="game-card-price" style="-fx-font-size: 24px;"/>
+               <VBox alignment="CENTER" spacing="10" style="-fx-min-width: 300px;">
+                  <ImageView fx:id="gameImageView" fitWidth="280" fitHeight="200" preserveRatio="true"
+                            style="-fx-background-color: #f0f0f0; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                  <Label text="游戏封面" styleClass="form-label" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
                </VBox>
                
-               <!-- 游戏详细信息 -->
+               <!-- 游戏详情信息 -->
                <VBox alignment="TOP_LEFT" spacing="15" style="-fx-min-width: 400px;">
-                  <Label fx:id="gameNameLabel" styleClass="section-title" style="-fx-font-size: 28px;"/>
+                  <Label fx:id="gameNameLabel" styleClass="section-title" style="-fx-font-size: 28px; -fx-text-fill: #333;"/>
                   
-                  <HBox alignment="CENTER_LEFT" spacing="20">
-                     <Label text="类别：" styleClass="form-label"/>
-                     <Label fx:id="categoryLabel" styleClass="form-value"/>
+                  <GridPane hgap="15" vgap="10" alignment="TOP_LEFT">
+                     <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" minWidth="80"/>
+                        <ColumnConstraints halignment="LEFT" minWidth="200"/>
+                     </columnConstraints>
                      
-                     <Label text="评分：" styleClass="form-label" style="-fx-margin-left: 20px;"/>
-                     <Label fx:id="ratingLabel" styleClass="game-card-rating" style="-fx-font-size: 16px;"/>
-                  </HBox>
-                  
-                  <HBox alignment="CENTER_LEFT" spacing="20">
-                     <Label text="开发商：" styleClass="form-label"/>
-                     <Label fx:id="developerLabel" styleClass="form-value"/>
+                     <Label text="类别：" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                     <Label fx:id="categoryLabel" styleClass="form-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
                      
-                     <Label text="热度：" styleClass="form-label" style="-fx-margin-left: 20px;"/>
-                     <Label fx:id="popularityLabel" styleClass="form-value"/>
-                  </HBox>
-                  
-                  <HBox alignment="CENTER_LEFT" spacing="20">
-                     <Label text="上线时间：" styleClass="form-label"/>
-                     <Label fx:id="releaseTimeLabel" styleClass="form-value"/>
+                     <Label text="价格：" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                     <Label fx:id="priceLabel" styleClass="form-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                      
-                     <Label text="状态：" styleClass="form-label" style="-fx-margin-left: 20px;"/>
-                     <Label fx:id="statusLabel" styleClass="form-value"/>
-                  </HBox>
-                  
-                  <!-- 游戏简介 -->
-                  <VBox alignment="TOP_LEFT" spacing="5">
-                     <Label text="游戏简介：" styleClass="form-label"/>
-                     <TextArea fx:id="descriptionArea" styleClass="form-textarea" 
-                              prefRowCount="4" wrapText="true" editable="false"
-                              style="-fx-pref-height: 100px;"/>
-                  </VBox>
+                     <Label text="评分：" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                     <Label fx:id="ratingLabel" styleClass="form-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                     
+                     <Label text="厂商：" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                     <Label fx:id="developerLabel" styleClass="form-value" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                     
+                     <Label text="销量：" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                     <Label fx:id="popularityLabel" styleClass="form-value" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                     
+                     <Label text="发布时间：" styleClass="form-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                     <Label fx:id="releaseTimeLabel" styleClass="form-value" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                     
+                     <Label text="状态：" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                     <Label fx:id="statusLabel" styleClass="form-value" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                     
+                     <Label text="版号：" styleClass="form-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                     <Label fx:id="licenseNumberLabel" styleClass="form-value" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                  </GridPane>
                </VBox>
             </HBox>
             
-            <!-- 评价区域 -->
-            <VBox alignment="TOP_CENTER" spacing="15" 
+            <!-- 游戏描述 -->
+            <VBox alignment="TOP_LEFT" spacing="10" 
                   style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
-               
-               <Label text="用户评价" styleClass="section-title" style="-fx-font-size: 20px;"/>
-               
-               <!-- 添加评价 -->
-               <HBox alignment="CENTER" spacing="15">
-                  <Label text="我的评价：" styleClass="form-label"/>
-                  <ComboBox fx:id="ratingComboBox" promptText="选择评分" styleClass="filter-combo">
-                     <items>
-                        <FXCollections fx:factory="observableArrayList">
-                           <String>5星 ⭐⭐⭐⭐⭐</String>
-                           <String>4星 ⭐⭐⭐⭐</String>
-                           <String>3星 ⭐⭐⭐</String>
-                           <String>2星 ⭐⭐</String>
-                           <String>1星 ⭐</String>
-                        </FXCollections>
-                     </items>
-                  </ComboBox>
-                  <TextField fx:id="reviewTextField" promptText="输入评价内容..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
-                  <Button fx:id="submitReviewButton" mnemonicParsing="false" onAction="#handleSubmitReview"
-                          styleClass="action-button">
-                     <text>提交评价</text>
-                  </Button>
-               </HBox>
-               
-               <!-- 评价列表 -->
-               <VBox fx:id="reviewsContainer" alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10px;">
-                  <!-- 评价将通过控制器动态添加 -->
-               </VBox>
-               
-               <!-- 加载更多评价 -->
-               <Button fx:id="loadMoreReviewsButton" mnemonicParsing="false" onAction="#handleLoadMoreReviews"
-                       styleClass="filter-button">
-                  <text>加载更多评价</text>
-               </Button>
+               <Label text="游戏描述" styleClass="section-title" style="-fx-font-size: 18px;"/>
+               <TextArea fx:id="descriptionArea" editable="false" wrapText="true" prefRowCount="6"
+                        style="-fx-background-color: transparent; -fx-border-color: #ddd; -fx-border-radius: 4;"/>
             </VBox>
             
             <!-- 系统要求 -->
-            <VBox alignment="TOP_CENTER" spacing="15" 
+            <VBox alignment="TOP_LEFT" spacing="10" 
                   style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
-               
-               <Label text="系统要求" styleClass="section-title" style="-fx-font-size: 20px;"/>
-               
+               <Label text="系统要求" styleClass="section-title" style="-fx-font-size: 18px;"/>
                <GridPane hgap="15" vgap="10" alignment="TOP_LEFT">
                   <columnConstraints>
                      <ColumnConstraints halignment="RIGHT" minWidth="100"/>
@@ -170,6 +120,54 @@
                   <Label fx:id="storageRequirementLabel" styleClass="form-value" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
                </GridPane>
             </VBox>
+            
+            <!-- 用户评价区域 -->
+            <VBox alignment="TOP_LEFT" spacing="15" 
+                  style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 8; -fx-background-radius: 8;">
+               <HBox alignment="CENTER_LEFT" spacing="15" HBox.hgrow="ALWAYS">
+                  <Label text="用户评价" styleClass="section-title" style="-fx-font-size: 18px;"/>
+                  <Label fx:id="averageRatingLabel" text="平均评分: 加载中..." styleClass="form-label"/>
+               </HBox>
+               
+               <!-- 发表评价区域 -->
+               <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 15; -fx-background-color: #f8f9fa; -fx-border-radius: 4;">
+                  <Label text="发表评价" styleClass="form-label" style="-fx-font-weight: bold;"/>
+                  <HBox alignment="CENTER_LEFT" spacing="10">
+                     <Label text="评分：" styleClass="form-label"/>
+                     <ComboBox fx:id="ratingComboBox" styleClass="form-input" style="-fx-min-width: 120px;"/>
+                     <Button fx:id="submitReviewButton" mnemonicParsing="false" onAction="#handleSubmitReview"
+                             styleClass="action-button" style="-fx-min-width: 80px;">
+                        <text>提交</text>
+                     </Button>
+                  </HBox>
+                  <TextArea fx:id="reviewTextArea" promptText="请输入您的评价内容..." prefRowCount="3" wrapText="true"
+                           style="-fx-background-color: white; -fx-border-color: #ddd;"/>
+               </VBox>
+               
+               <!-- 评价列表 -->
+               <VBox fx:id="reviewsContainer" alignment="TOP_CENTER" spacing="10"/>
+               
+               <!-- 分页控件 -->
+               <HBox alignment="CENTER" spacing="10">
+                  <Button fx:id="prevPageButton" mnemonicParsing="false" onAction="#handlePrevPage"
+                          styleClass="action-button" style="-fx-min-width: 60px;">
+                     <text>上一页</text>
+                  </Button>
+                  <Label fx:id="pageInfoLabel" text="第 1 页" styleClass="form-label"/>
+                  <Button fx:id="nextPageButton" mnemonicParsing="false" onAction="#handleNextPage"
+                          styleClass="action-button" style="-fx-min-width: 60px;">
+                     <text>下一页</text>
+                  </Button>
+               </HBox>
+            </VBox>
+            
+            <!-- 购买按钮区域 -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+               <Button fx:id="addToCartButton" mnemonicParsing="false" onAction="#handleAddToCart"
+                       styleClass="save-button" style="-fx-min-width: 200px; -fx-font-size: 16px;">
+                  <text>加入购物车</text>
+               </Button>
+            </HBox>
             
          </VBox>
       </ScrollPane>

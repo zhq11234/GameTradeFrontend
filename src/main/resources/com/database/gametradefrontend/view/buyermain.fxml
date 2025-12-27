@@ -165,10 +165,10 @@
                <TableView fx:id="libraryTable" styleClass="data-table">
                   <columns>
                      <TableColumn text="游戏名" styleClass="table-column"/>
-                     <TableColumn text="分类" styleClass="table-column"/>
-                     <TableColumn text="购买时间" styleClass="table-column"/>
-                     <TableColumn text="状态" styleClass="table-column"/>
-                     <TableColumn text="操作" styleClass="table-column"/>
+                     <TableColumn text="许可证号" styleClass="table-column"/>
+                     <TableColumn text="评分" styleClass="table-column"/>
+                     <TableColumn text="评论" styleClass="table-column"/>
+                     <TableColumn text="评论时间" styleClass="table-column"/>
                   </columns>
                </TableView>
             </VBox>
@@ -187,23 +187,19 @@
                      </graphic>
                      <text>刷新订单</text>
                   </Button>
-                  <Button fx:id="createOrderButton" mnemonicParsing="false" onAction="#handleCreateOrder"
-                          styleClass="action-button">
-                     <graphic>
-                        <Label text="➕" styleClass="button-icon"/>
-                     </graphic>
-                     <text>生成订单</text>
-                  </Button>
                </HBox>
                
                <!-- 订单列表 -->
                <TableView fx:id="ordersTable" styleClass="data-table">
                   <columns>
                      <TableColumn text="订单号" styleClass="table-column"/>
+                     <TableColumn text="买家昵称" styleClass="table-column"/>
                      <TableColumn text="游戏名" styleClass="table-column"/>
+                     <TableColumn text="分类" styleClass="table-column"/>
                      <TableColumn text="价格" styleClass="table-column"/>
-                     <TableColumn text="状态" styleClass="table-column"/>
                      <TableColumn text="下单时间" styleClass="table-column"/>
+                     <TableColumn text="支付时间" styleClass="table-column"/>
+                     <TableColumn text="订单状态" styleClass="table-column"/>
                      <TableColumn text="操作" styleClass="table-column"/>
                   </columns>
                </TableView>

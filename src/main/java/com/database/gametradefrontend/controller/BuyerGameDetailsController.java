@@ -7,111 +7,97 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.util.*;
+import java.util.ResourceBundle;
 
-/**
- * 买家游戏详情页面控制器
- * 支持游戏信息查看、评价、购买等功能
- */
-public class BuyerGameDetailsController {
-
-    // FXML 组件注入
-    @FXML private Label pageTitleLabel;
-    @FXML private Button purchaseButton;
-    @FXML private Button downloadButton;
-    @FXML private Button backButton;
+public class BuyerGameDetailsController implements Initializable {
     
-    // 游戏信息组件
-    @FXML private ImageView gameImageView;
-    @FXML private Label priceLabel;
+    @FXML private Label pageTitleLabel;
     @FXML private Label gameNameLabel;
     @FXML private Label categoryLabel;
+    @FXML private Label priceLabel;
     @FXML private Label ratingLabel;
     @FXML private Label developerLabel;
     @FXML private Label popularityLabel;
     @FXML private Label releaseTimeLabel;
     @FXML private Label statusLabel;
+    @FXML private Label licenseNumberLabel;
     @FXML private TextArea descriptionArea;
+    @FXML private ImageView gameImageView;
     
-    // 系统要求组件
+    // 系统要求相关标签
     @FXML private Label osRequirementLabel;
     @FXML private Label cpuRequirementLabel;
     @FXML private Label memoryRequirementLabel;
     @FXML private Label gpuRequirementLabel;
     @FXML private Label storageRequirementLabel;
     
-    // 评价组件
+    // 评价相关组件
+    @FXML private Label averageRatingLabel;
     @FXML private ComboBox<String> ratingComboBox;
-    @FXML private TextField reviewTextField;
-    @FXML private Button submitReviewButton;
+    @FXML private TextArea reviewTextArea;
     @FXML private VBox reviewsContainer;
-    @FXML private Button loadMoreReviewsButton;
+    @FXML private Button submitReviewButton;
+    @FXML private Button prevPageButton;
+    @FXML private Button nextPageButton;
+    @FXML private Label pageInfoLabel;
     
-    // 当前用户和游戏信息
-    private User currentUser;
+    // 购买相关按钮
+    @FXML private Button addToCartButton;
+    @FXML private Button backButton;
+    
     private ApiClient apiClient;
+    private User currentUser;
     private BuyerMainController.Game currentGame;
-    
-    // 评价数据
-    private final ObservableList<Review> reviews = FXCollections.observableArrayList();
+    private ObservableList<Review> reviews;
     private int currentReviewPage = 0;
     private static final int REVIEWS_PER_PAGE = 5;
-
-    /**
-     * 评价数据类
-     */
+    
+    // 内部类用于存储评价数据
     public static class Review {
-        private final String reviewer;
+        private final String username;
         private final String rating;
         private final String content;
-        private final String reviewTime;
-
-        public Review(String reviewer, String rating, String content, String reviewTime) {
-            this.reviewer = reviewer;
+        private final String date;
+        
+        public Review(String username, String rating, String content, String date) {
+            this.username = username;
             this.rating = rating;
             this.content = content;
-            this.reviewTime = reviewTime;
+            this.date = date;
         }
-
-        // Getters
-        public String getReviewer() { return reviewer; }
+        
+        public String getUsername() { return username; }
         public String getRating() { return rating; }
         public String getContent() { return content; }
-        public String getReviewTime() { return reviewTime; }
+        public String getDate() { return date; }
     }
     
-    /**
-     * 设置游戏数据
-     */
-    public void setGameData(BuyerMainController.Game game) {
-        this.currentGame = game;
-        initializeGameInfo();
-    }
-    
-    /**
-     * 设置API客户端
-     */
     public void setApiClient(ApiClient apiClient) {
         this.apiClient = apiClient;
     }
     
-    /**
-     * 设置当前用户
-     */
+    public void setCurrentGame(BuyerMainController.Game currentGame) {
+        this.currentGame = currentGame;
+    }
+    
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
     
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         // 初始化评价评分选项
         ratingComboBox.setItems(FXCollections.observableArrayList(
             "5星 ⭐⭐⭐⭐⭐", "4星 ⭐⭐⭐⭐", "3星 ⭐⭐⭐", "2星 ⭐⭐", "1星 ⭐"
@@ -119,29 +105,92 @@ public class BuyerGameDetailsController {
         
         // 设置默认值
         ratingComboBox.setValue("5星 ⭐⭐⭐⭐⭐");
+        
+        // 初始化评价列表
+        reviews = FXCollections.observableArrayList();
+        
+        // 初始化后加载游戏信息
+        Platform.runLater(this::initializeGameInfo);
     }
     
-    /**
-     * 初始化游戏信息
-     */
     private void initializeGameInfo() {
         if (currentGame == null) {
             return;
         }
         
-        // 设置页面标题
+        // 设置页面标题和游戏名（使用当前游戏数据作为默认值）
         pageTitleLabel.setText("游戏详情 - " + currentGame.getName());
         gameNameLabel.setText(currentGame.getName());
         
-        // 设置游戏信息
-        categoryLabel.setText(currentGame.getCategory());
-        priceLabel.setText("价格: " + currentGame.getPrice());
-        ratingLabel.setText("评分: " + currentGame.getRating() + "⭐");
-        developerLabel.setText("未知开发商"); // 可以从API获取
-        popularityLabel.setText(currentGame.getPopularity());
-        releaseTimeLabel.setText("未知时间"); // 可以从API获取
-        statusLabel.setText("可购买");
-        descriptionArea.setText(currentGame.getDescription());
+        // 显示加载状态
+        categoryLabel.setText("加载中...");
+        priceLabel.setText("价格: 加载中...");
+        ratingLabel.setText("评分: 加载中...");
+        developerLabel.setText("厂商: 加载中...");
+        popularityLabel.setText("销量: 加载中...");
+        releaseTimeLabel.setText("发布时间: 加载中...");
+        statusLabel.setText("状态: 加载中...");
+        licenseNumberLabel.setText("版号: 加载中...");
+        descriptionArea.setText("正在加载游戏描述...");
+        averageRatingLabel.setText("平均评分: 加载中...");
+        
+        // 异步调用API获取游戏详细信息
+        new Thread(() -> {
+            try {
+                // 调用API获取游戏详细信息
+                String endpoint = "/buyers/games/details?gameName=" + 
+                    java.net.URLEncoder.encode(currentGame.getName(), "UTF-8");
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    if (response instanceof Map) {
+                        Map<String, Object> gameDetails = (Map<String, Object>) response;
+                        
+                        // 提取游戏详细信息（添加null检查）
+                        String gameName = safeToString(gameDetails.get("gameName"), currentGame.getName());
+                        String category = safeToString(gameDetails.get("category"), currentGame.getCategory());
+                        String price = safeToString(gameDetails.get("price"), currentGame.getPrice());
+                        String companyName = safeToString(gameDetails.get("companyName"), "未知厂商");
+                        String releaseTime = safeToString(gameDetails.get("releaseTime"), "未知时间");
+                        String description = safeToString(gameDetails.get("description"), currentGame.getDescription());
+                        String licenseNumber = safeToString(gameDetails.get("licenseNumber"), "未知");
+                        String score = safeToString(gameDetails.get("score"), currentGame.getRating());
+                        String salesVolume = safeToString(gameDetails.get("salesVolume"), currentGame.getPopularity());
+                        
+                        // 处理免费显示逻辑
+                        String displayPrice = price;
+                        if ("0".equals(price) || "0.0".equals(price) || "0.00".equals(price)) {
+                            displayPrice = "免费";
+                        }
+                        
+                        // 更新UI组件
+                        pageTitleLabel.setText("游戏详情 - " + gameName);
+                        gameNameLabel.setText(gameName);
+                        categoryLabel.setText("类别: " + category);
+                        priceLabel.setText("价格: " + displayPrice);
+                        ratingLabel.setText("评分: " + score + "⭐");
+                        developerLabel.setText("厂商: " + companyName);
+                        popularityLabel.setText("销量: " + salesVolume);
+                        releaseTimeLabel.setText("发布时间: " + releaseTime);
+                        statusLabel.setText("状态: 可购买");
+                        licenseNumberLabel.setText("版号: " + licenseNumber);
+                        descriptionArea.setText(description);
+                        averageRatingLabel.setText("平均评分: " + score + "⭐");
+                        
+                    } else {
+                        // 如果API调用失败，使用默认的游戏数据
+                        updateUIWithDefaultData();
+                        ControllerUtils.showErrorAlert("获取游戏详细信息失败，显示基础信息");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    updateUIWithDefaultData();
+                    ControllerUtils.showErrorAlert("获取游戏详细信息失败: " + e.getMessage());
+                });
+            }
+        }).start();
         
         // 加载游戏图片
         loadGameImage();
@@ -153,9 +202,27 @@ public class BuyerGameDetailsController {
         loadReviews();
     }
     
-    /**
-     * 加载游戏图片
-     */
+    private void updateUIWithDefaultData() {
+        categoryLabel.setText("类别: " + currentGame.getCategory());
+        priceLabel.setText("价格: " + currentGame.getPrice());
+        ratingLabel.setText("评分: " + currentGame.getRating() + "⭐");
+        developerLabel.setText("厂商: 未知");
+        popularityLabel.setText("销量: " + currentGame.getPopularity());
+        releaseTimeLabel.setText("发布时间: 未知");
+        statusLabel.setText("状态: 可购买");
+        licenseNumberLabel.setText("版号: 未知");
+        descriptionArea.setText(currentGame.getDescription());
+        averageRatingLabel.setText("平均评分: " + currentGame.getRating() + "⭐");
+    }
+    
+    // 安全转换为字符串，处理null值
+    private String safeToString(Object value, String defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        return value.toString();
+    }
+    
     private void loadGameImage() {
         try {
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/" + currentGame.getImage())));
@@ -170,9 +237,6 @@ public class BuyerGameDetailsController {
         }
     }
     
-    /**
-     * 加载系统要求信息
-     */
     private void loadSystemRequirements() {
         // 模拟系统要求数据，实际应从API获取
         osRequirementLabel.setText("Windows 10/11, macOS 10.14+, Ubuntu 18.04+");
@@ -182,9 +246,6 @@ public class BuyerGameDetailsController {
         storageRequirementLabel.setText("20 GB 可用空间");
     }
     
-    /**
-     * 加载评价数据
-     */
     private void loadReviews() {
         reviewsContainer.getChildren().clear();
         currentReviewPage = 0;
@@ -231,233 +292,140 @@ public class BuyerGameDetailsController {
         }).start();
     }
     
-    /**
-     * 显示评价列表
-     */
     private void displayReviews() {
         int startIndex = currentReviewPage * REVIEWS_PER_PAGE;
         int endIndex = Math.min(startIndex + REVIEWS_PER_PAGE, reviews.size());
         
+        reviewsContainer.getChildren().clear();
+        
         for (int i = startIndex; i < endIndex; i++) {
             Review review = reviews.get(i);
-            addReviewToContainer(review);
+            
+            VBox reviewCard = new VBox(8);
+            reviewCard.setStyle("-fx-padding: 15; -fx-background-color: #f8f9fa; -fx-border-radius: 4; -fx-background-radius: 4;");
+            
+            HBox header = new HBox(10);
+            header.setAlignment(Pos.CENTER_LEFT);
+            
+            Label usernameLabel = new Label(review.getUsername());
+            usernameLabel.setStyle("-fx-font-weight: bold;");
+            
+            Label ratingLabel = new Label(review.getRating());
+            ratingLabel.setStyle("-fx-text-fill: #ffa500; -fx-font-weight: bold;");
+            
+            Label dateLabel = new Label(review.getDate());
+            dateLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 12px;");
+            
+            HBox.setHgrow(dateLabel, Priority.ALWAYS);
+            dateLabel.setAlignment(Pos.CENTER_RIGHT);
+            
+            header.getChildren().addAll(usernameLabel, ratingLabel, dateLabel);
+            
+            Label contentLabel = new Label(review.getContent());
+            contentLabel.setWrapText(true);
+            contentLabel.setStyle("-fx-text-fill: #333;");
+            
+            reviewCard.getChildren().addAll(header, contentLabel);
+            reviewsContainer.getChildren().add(reviewCard);
         }
         
-        // 检查是否还有更多评价可加载
-        loadMoreReviewsButton.setVisible(endIndex < reviews.size());
+        // 更新分页信息
+        updatePaginationInfo();
     }
     
-    /**
-     * 添加单个评价到容器
-     */
-    private void addReviewToContainer(Review review) {
-        VBox reviewBox = new VBox();
-        reviewBox.getStyleClass().add("game-card");
-        reviewBox.setStyle("-fx-padding: 15px; -fx-spacing: 8px;");
+    private void updatePaginationInfo() {
+        int totalPages = (int) Math.ceil((double) reviews.size() / REVIEWS_PER_PAGE);
+        pageInfoLabel.setText("第 " + (currentReviewPage + 1) + " 页 / 共 " + totalPages + " 页");
         
-        // 评价头部信息
-        HBox headerBox = new HBox();
-        headerBox.setSpacing(10);
-        
-        Label reviewerLabel = new Label(review.getReviewer());
-        reviewerLabel.getStyleClass().add("game-card-title");
-        
-        Label ratingLabel = new Label(review.getRating());
-        ratingLabel.getStyleClass().add("game-card-rating");
-        
-        Label timeLabel = new Label(review.getReviewTime());
-        timeLabel.getStyleClass().add("game-card-category");
-        timeLabel.setStyle("-fx-text-fill: #999;");
-        
-        headerBox.getChildren().addAll(reviewerLabel, ratingLabel, timeLabel);
-        
-        // 评价内容
-        Text contentText = new Text(review.getContent());
-        contentText.setWrappingWidth(600);
-        contentText.getStyleClass().add("overlay-text");
-        contentText.setStyle("-fx-fill: #333;");
-        
-        reviewBox.getChildren().addAll(headerBox, contentText);
-        reviewsContainer.getChildren().add(reviewBox);
-    }
-    
-    // 事件处理方法
-    
-    @FXML
-    private void handlePurchase() {
-        if (currentGame == null || currentUser == null) {
-            ControllerUtils.showErrorAlert("无法购买游戏，信息不完整");
-            return;
-        }
-        
-        // 显示购买确认对话框
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("确认购买");
-        confirmAlert.setHeaderText("购买游戏确认");
-        confirmAlert.setContentText("您确定要购买《" + currentGame.getName() + "》吗？\n价格: " + currentGame.getPrice());
-        
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // 执行购买逻辑
-            performPurchase();
-        }
-    }
-    
-    @FXML
-    private void handleDownload() {
-        if (currentGame == null) {
-            ControllerUtils.showErrorAlert("无法下载游戏，信息不完整");
-            return;
-        }
-        
-        // 检查是否已购买
-        if (!checkPurchaseStatus()) {
-            ControllerUtils.showErrorAlert("请先购买游戏才能下载");
-            return;
-        }
-        
-        // 执行下载逻辑
-        performDownload();
+        prevPageButton.setDisable(currentReviewPage == 0);
+        nextPageButton.setDisable(currentReviewPage >= totalPages - 1);
     }
     
     @FXML
     private void handleSubmitReview() {
-        if (currentUser == null || currentGame == null) {
-            ControllerUtils.showErrorAlert("请先登录才能提交评价");
-            return;
-        }
-        
         String rating = ratingComboBox.getValue();
-        String content = reviewTextField.getText().trim();
+        String content = reviewTextArea.getText().trim();
         
         if (content.isEmpty()) {
-            ControllerUtils.showErrorAlert("评价内容不能为空");
+            ControllerUtils.showErrorAlert("请输入评价内容");
             return;
         }
         
-        // 提交评价
-        submitReview(rating, content);
+        // 模拟提交评价
+        ControllerUtils.showInfoAlert("评价提交成功！");
+        reviewTextArea.clear();
+        
+        // 重新加载评价
+        loadReviews();
     }
     
     @FXML
-    private void handleLoadMoreReviews() {
-        currentReviewPage++;
-        displayReviews();
+    private void handlePrevPage() {
+        if (currentReviewPage > 0) {
+            currentReviewPage--;
+            displayReviews();
+        }
+    }
+    
+    @FXML
+    private void handleNextPage() {
+        int totalPages = (int) Math.ceil((double) reviews.size() / REVIEWS_PER_PAGE);
+        if (currentReviewPage < totalPages - 1) {
+            currentReviewPage++;
+            displayReviews();
+        }
+    }
+    
+    @FXML
+    private void handleAddToCart() {
+        if (currentGame == null || currentUser == null) {
+            ControllerUtils.showErrorAlert("无法生成订单：游戏或用户信息缺失");
+            return;
+        }
+        
+        // 获取买家昵称和游戏名称
+        String buyerNickname = currentUser.getNickname();
+        String gameName = currentGame.getName();
+        
+        if (buyerNickname == null || buyerNickname.isEmpty()) {
+            ControllerUtils.showErrorAlert("无法生成订单：用户昵称为空");
+            return;
+        }
+        
+        if (gameName == null || gameName.isEmpty()) {
+            ControllerUtils.showErrorAlert("无法生成订单：游戏名称为空");
+            return;
+        }
+        
+        // 异步调用API生成订单
+        new Thread(() -> {
+            try {
+                // 构建请求体
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("buyerNickname", buyerNickname);
+                requestBody.put("gameName", gameName);
+                
+                // 调用API生成订单
+                String endpoint = "/buyers/orders";
+                String response = apiClient.post(endpoint, requestBody, String.class);
+                
+                // 在主线程中显示成功信息
+                Platform.runLater(() -> {
+                    ControllerUtils.showInfoAlert("订单生成成功！游戏已加入购物车");
+                });
+                
+            } catch (Exception e) {
+                // 在主线程中显示错误信息
+                Platform.runLater(() -> {
+                    ControllerUtils.showErrorAlert("生成订单失败: " + e.getMessage());
+                });
+            }
+        }).start();
     }
     
     @FXML
     private void handleBackToMain() {
-        // 关闭当前窗口
         Stage stage = (Stage) backButton.getScene().getWindow();
         stage.close();
-    }
-    
-    /**
-     * 执行购买操作
-     */
-    private void performPurchase() {
-        purchaseButton.setDisable(true);
-        purchaseButton.setText("购买中...");
-        
-        new Thread(() -> {
-            try {
-                // 模拟API调用购买游戏
-                Thread.sleep(1000); // 模拟网络延迟
-                
-                Platform.runLater(() -> {
-                    ControllerUtils.showInfoAlert("购买成功！您现在可以下载游戏了");
-                    purchaseButton.setText("已购买");
-                    purchaseButton.setDisable(true);
-                    downloadButton.setDisable(false);
-                });
-                
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    ControllerUtils.showErrorAlert("购买失败: " + e.getMessage());
-                    purchaseButton.setText("购买游戏");
-                    purchaseButton.setDisable(false);
-                });
-            }
-        }).start();
-    }
-    
-    /**
-     * 执行下载操作
-     */
-    private void performDownload() {
-        downloadButton.setDisable(true);
-        downloadButton.setText("下载中...");
-        
-        new Thread(() -> {
-            try {
-                // 模拟下载过程
-                for (int i = 0; i <= 100; i += 10) {
-                    final int progress = i;
-                    Platform.runLater(() -> downloadButton.setText("下载中 " + progress + "%"));
-                    Thread.sleep(200);
-                }
-                
-                Platform.runLater(() -> {
-                    ControllerUtils.showInfoAlert("下载完成！游戏已添加到您的游戏库");
-                    downloadButton.setText("已下载");
-                });
-                
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    ControllerUtils.showErrorAlert("下载失败: " + e.getMessage());
-                    downloadButton.setText("下载");
-                    downloadButton.setDisable(false);
-                });
-            }
-        }).start();
-    }
-    
-    /**
-     * 提交评价
-     */
-    private void submitReview(String rating, String content) {
-        submitReviewButton.setDisable(true);
-        submitReviewButton.setText("提交中...");
-        
-        new Thread(() -> {
-            try {
-                // 模拟API调用提交评价
-                Thread.sleep(500); // 模拟网络延迟
-                
-                Platform.runLater(() -> {
-                    // 添加新评价到列表
-                    Review newReview = new Review(currentUser.getNickname() != null ? 
-                        currentUser.getNickname() : currentUser.getAccount(), 
-                        rating, content, new Date().toString());
-                    
-                    reviews.addFirst(newReview); // 添加到开头
-                    reviewsContainer.getChildren().clear();
-                    displayReviews();
-                    
-                    // 清空输入框
-                    reviewTextField.clear();
-                    ratingComboBox.setValue("5星 ⭐⭐⭐⭐⭐");
-                    
-                    ControllerUtils.showInfoAlert("评价提交成功！");
-                    submitReviewButton.setText("提交评价");
-                    submitReviewButton.setDisable(false);
-                });
-                
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    ControllerUtils.showErrorAlert("评价提交失败: " + e.getMessage());
-                    submitReviewButton.setText("提交评价");
-                    submitReviewButton.setDisable(false);
-                });
-            }
-        }).start();
-    }
-    
-    /**
-     * 检查购买状态（模拟）
-     */
-    private boolean checkPurchaseStatus() {
-        // 模拟检查购买状态，实际应从API获取
-        return "已购买".equals(purchaseButton.getText());
     }
 }

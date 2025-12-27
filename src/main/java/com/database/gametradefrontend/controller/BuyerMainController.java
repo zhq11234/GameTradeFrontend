@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -64,7 +65,6 @@ public class BuyerMainController {
     // 订单管理页面组件
     @FXML private VBox ordersContent;
     @FXML private Button refreshOrdersButton;
-    @FXML private Button createOrderButton;
     @FXML private TableView<Order> ordersTable;
     
     // 个人信息页面组件
@@ -131,23 +131,26 @@ public class BuyerMainController {
      * 游戏库游戏数据类
      */
     public static class LibraryGame {
-        private final String name;
-        private final String category;
-        private final String purchaseTime;
-        private final String status;
+        private final String gameName;
+        private final String licenseNumber;
+        private final String score;
+        private final String comment;
+        private final String reviewTime;
         
-        public LibraryGame(String name, String category, String purchaseTime, String status) {
-            this.name = name;
-            this.category = category;
-            this.purchaseTime = purchaseTime;
-            this.status = status;
+        public LibraryGame(String gameName, String licenseNumber, String score, String comment, String reviewTime) {
+            this.gameName = gameName;
+            this.licenseNumber = licenseNumber;
+            this.score = score;
+            this.comment = comment;
+            this.reviewTime = reviewTime;
         }
         
         // Getters
-        public String getName() { return name; }
-        public String getCategory() { return category; }
-        public String getPurchaseTime() { return purchaseTime; }
-        public String getStatus() { return status; }
+        public String getGameName() { return gameName; }
+        public String getLicenseNumber() { return licenseNumber; }
+        public String getScore() { return score; }
+        public String getComment() { return comment; }
+        public String getReviewTime() { return reviewTime; }
     }
     
     /**
@@ -155,25 +158,35 @@ public class BuyerMainController {
      */
     public static class Order {
         private final String orderId;
+        private final String buyerNickname;
         private final String gameName;
+        private final String category;
         private final String price;
-        private final String status;
         private final String orderTime;
+        private final String paymentTime;
+        private final String orderStatus;
         
-        public Order(String orderId, String gameName, String price, String status, String orderTime) {
+        public Order(String orderId, String buyerNickname, String gameName, String category, 
+                    String price, String orderTime, String paymentTime, String orderStatus) {
             this.orderId = orderId;
+            this.buyerNickname = buyerNickname;
             this.gameName = gameName;
+            this.category = category;
             this.price = price;
-            this.status = status;
             this.orderTime = orderTime;
+            this.paymentTime = paymentTime;
+            this.orderStatus = orderStatus;
         }
         
         // Getters
         public String getOrderId() { return orderId; }
+        public String getBuyerNickname() { return buyerNickname; }
         public String getGameName() { return gameName; }
+        public String getCategory() { return category; }
         public String getPrice() { return price; }
-        public String getStatus() { return status; }
         public String getOrderTime() { return orderTime; }
+        public String getPaymentTime() { return paymentTime; }
+        public String getOrderStatus() { return orderStatus; }
     }
     
     @FXML
@@ -229,8 +242,103 @@ public class BuyerMainController {
     }
     
     private void initializeTables() {
-        // 初始化表格列（具体列绑定在FXML中已定义）
-        // 这里可以添加表格数据绑定逻辑
+        // 初始化订单表格列绑定
+        if (ordersTable != null) {
+            // 获取表格列
+            TableColumn<Order, String> orderIdColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(0);
+            TableColumn<Order, String> buyerNicknameColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(1);
+            TableColumn<Order, String> gameNameColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(2);
+            TableColumn<Order, String> categoryColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(3);
+            TableColumn<Order, String> priceColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(4);
+            TableColumn<Order, String> orderTimeColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(5);
+            TableColumn<Order, String> paymentTimeColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(6);
+            TableColumn<Order, String> orderStatusColumn = (TableColumn<Order, String>) ordersTable.getColumns().get(7);
+            TableColumn<Order, Void> actionColumn = (TableColumn<Order, Void>) ordersTable.getColumns().get(8);
+            
+            // 设置单元格值工厂
+            orderIdColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getOrderId()));
+            buyerNicknameColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getBuyerNickname()));
+            gameNameColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getGameName()));
+            categoryColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCategory()));
+            priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getPrice()));
+            orderTimeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getOrderTime()));
+            paymentTimeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getPaymentTime()));
+            orderStatusColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getOrderStatus()));
+            
+            // 设置操作列的自定义单元格
+            actionColumn.setCellFactory(param -> new TableCell<Order, Void>() {
+                private final Button payButton = new Button("💰");
+                private final Button cancelButton = new Button("❌");
+                private final HBox buttonsContainer = new HBox(3, payButton, cancelButton);
+                
+                {
+                    buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER);
+                    
+                    // 设置按钮样式
+                    payButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                    cancelButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                    
+                    // 添加工具提示
+                    Tooltip payTooltip = new Tooltip("支付订单");
+                    Tooltip cancelTooltip = new Tooltip("取消订单");
+                    payButton.setTooltip(payTooltip);
+                    cancelButton.setTooltip(cancelTooltip);
+                    
+                    payButton.setOnAction(event -> {
+                        Order order = getTableView().getItems().get(getIndex());
+                        handlePayOrder(order);
+                    });
+                    
+                    cancelButton.setOnAction(event -> {
+                        Order order = getTableView().getItems().get(getIndex());
+                        handleCancelOrder(order);
+                    });
+                }
+                
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        Order order = getTableView().getItems().get(getIndex());
+                        String status = order.getOrderStatus();
+                        
+                        // 根据订单状态设置按钮可见性
+                        if ("待支付".equals(status)) {
+                            payButton.setDisable(false);
+                            cancelButton.setDisable(false);
+                            payButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                            cancelButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                        } else {
+                            payButton.setDisable(true);
+                            cancelButton.setDisable(true);
+                            payButton.setStyle("-fx-background-color: #cccccc; -fx-text-fill: #666666; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                            cancelButton.setStyle("-fx-background-color: #cccccc; -fx-text-fill: #666666; -fx-font-size: 14px; -fx-min-width: 30px; -fx-min-height: 30px; -fx-max-width: 30px; -fx-max-height: 30px;");
+                        }
+                        
+                        setGraphic(buttonsContainer);
+                    }
+                }
+            });
+        }
+        
+        // 初始化游戏库表格列绑定
+        if (libraryTable != null) {
+            // 获取表格列
+            TableColumn<LibraryGame, String> gameNameColumn = (TableColumn<LibraryGame, String>) libraryTable.getColumns().get(0);
+            TableColumn<LibraryGame, String> licenseNumberColumn = (TableColumn<LibraryGame, String>) libraryTable.getColumns().get(1);
+            TableColumn<LibraryGame, String> scoreColumn = (TableColumn<LibraryGame, String>) libraryTable.getColumns().get(2);
+            TableColumn<LibraryGame, String> commentColumn = (TableColumn<LibraryGame, String>) libraryTable.getColumns().get(3);
+            TableColumn<LibraryGame, String> reviewTimeColumn = (TableColumn<LibraryGame, String>) libraryTable.getColumns().get(4);
+            
+            // 设置单元格值工厂
+            gameNameColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getGameName()));
+            licenseNumberColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getLicenseNumber()));
+            scoreColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getScore()));
+            commentColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getComment()));
+            reviewTimeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getReviewTime()));
+        }
     }
     
     private void setupEventHandlers() {
@@ -837,14 +945,62 @@ public class BuyerMainController {
         // 这里可以根据搜索条件和筛选条件过滤游戏列表
     }
     
+    // 安全转换为字符串，处理null值
+    private String safeToString(Object value, String defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        return value.toString();
+    }
+    
     // 游戏库功能
     private void loadLibraryData() {
-        // 实现加载游戏库数据的逻辑
+        if (currentUser == null || currentUser.getNickname() == null) {
+            ControllerUtils.showErrorAlert("无法加载游戏库：用户信息不完整");
+            return;
+        }
+        
+        // 显示加载状态
         libraryGames.clear();
-        // 模拟数据
-        libraryGames.add(new LibraryGame("原神", "角色扮演", "2024-01-15", "已下载"));
-        libraryGames.add(new LibraryGame("王者荣耀", "MOBA", "2024-01-10", "可更新"));
         libraryTable.setItems(libraryGames);
+        
+        // 异步调用API获取游戏库数据
+        new Thread(() -> {
+            try {
+                // 调用API获取游戏库数据，传递buyerNickname参数
+                String endpoint = "/buyers/game-library?buyerNickname=" + 
+                    java.net.URLEncoder.encode(currentUser.getNickname(), StandardCharsets.UTF_8);
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    if (response instanceof List) {
+                        List<Map<String, Object>> libraryList = (List<Map<String, Object>>) response;
+                        
+                        if (!libraryList.isEmpty()) {
+                            for (Map<String, Object> libraryData : libraryList) {
+                                // 解析游戏库数据
+                                String gameName = safeToString(libraryData.get("gameName"), "未知游戏");
+                                String licenseNumber = safeToString(libraryData.get("licenseNumber"), "未知");
+                                String score = safeToString(libraryData.get("score"), "0");
+                                String comment = safeToString(libraryData.get("comment"), "暂无评论");
+                                String reviewTime = safeToString(libraryData.get("reviewTime"), "未知时间");
+                                
+                                // 创建游戏库对象
+                                LibraryGame libraryGame = new LibraryGame(gameName, licenseNumber, score, comment, reviewTime);
+                                libraryGames.add(libraryGame);
+                            }
+                        } else {
+                            ControllerUtils.showInfoAlert("游戏库为空");
+                        }
+                    } else {
+                        ControllerUtils.showErrorAlert("获取游戏库数据失败：返回数据格式错误");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> ControllerUtils.showErrorAlert("获取游戏库数据失败: " + e.getMessage()));
+            }
+        }).start();
     }
     
     @FXML
@@ -867,12 +1023,56 @@ public class BuyerMainController {
     
     // 订单管理功能
     private void loadOrdersData() {
-        // 实现加载订单数据的逻辑
+        if (currentUser == null || currentUser.getNickname() == null) {
+            ControllerUtils.showErrorAlert("无法加载订单：用户信息不完整");
+            return;
+        }
+        
+        // 显示加载状态
         orders.clear();
-        // 模拟数据
-        orders.add(new Order("ORD001", "原神", "¥68.00", "已支付", "2024-01-15 10:30"));
-        orders.add(new Order("ORD002", "王者荣耀", "免费", "已完成", "2024-01-10 14:20"));
         ordersTable.setItems(orders);
+        
+        // 异步调用API获取订单数据
+        new Thread(() -> {
+            try {
+                // 调用API获取订单数据，传递buyerNickname参数
+                String endpoint = "/buyers/orders?buyerNickname=" + 
+                    java.net.URLEncoder.encode(currentUser.getNickname(), StandardCharsets.UTF_8);
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    if (response instanceof List) {
+                        List<Map<String, Object>> orderList = (List<Map<String, Object>>) response;
+                        
+                        if (!orderList.isEmpty()) {
+                            for (Map<String, Object> orderData : orderList) {
+                                // 解析订单数据
+                                String orderId = safeToString(orderData.get("orderId"), "未知");
+                                String buyerNickname = safeToString(orderData.get("buyerNickname"), currentUser.getNickname());
+                                String gameName = safeToString(orderData.get("gameName"), "未知游戏");
+                                String category = safeToString(orderData.get("category"), "未知类别");
+                                String price = safeToString(orderData.get("price"), "免费");
+                                String orderTime = safeToString(orderData.get("orderTime"), "未知时间");
+                                String paymentTime = safeToString(orderData.get("paymentTime"), "未支付");
+                                String orderStatus = safeToString(orderData.get("orderStatus"), "未知状态");
+                                
+                                // 创建订单对象
+                                Order order = new Order(orderId, buyerNickname, gameName, category, 
+                                                       price, orderTime, paymentTime, orderStatus);
+                                orders.add(order);
+                            }
+                        } else {
+                            ControllerUtils.showInfoAlert("暂无订单数据");
+                        }
+                    } else {
+                        ControllerUtils.showErrorAlert("获取订单数据失败：返回数据格式错误");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> ControllerUtils.showErrorAlert("获取订单数据失败: " + e.getMessage()));
+            }
+        }).start();
     }
     
     @FXML
@@ -881,10 +1081,72 @@ public class BuyerMainController {
         ControllerUtils.showInfoAlert("订单列表已刷新");
     }
     
-    @FXML
-    private void handleCreateOrder() {
-        // 实现生成订单逻辑
-        ControllerUtils.showInfoAlert("打开订单生成页面");
+
+    
+    // 支付订单
+    private void handlePayOrder(Order order) {
+        if (order == null || order.getOrderId() == null) {
+            ControllerUtils.showErrorAlert("无法支付：订单信息不完整");
+            return;
+        }
+        
+        // 异步调用API支付订单
+        new Thread(() -> {
+            try {
+                // 调用API支付订单
+                String endpoint = "/buyers/orders/pay?orderId=" + 
+                    java.net.URLEncoder.encode(order.getOrderId(), StandardCharsets.UTF_8);
+                String apiResponse = apiClient.put(endpoint, new HashMap<>(), String.class);
+                
+                // 在主线程中显示返回消息并刷新订单列表
+                Platform.runLater(() -> {
+                    ControllerUtils.showInfoAlert("支付订单结果: " + apiResponse);
+                    loadOrdersData(); // 刷新订单列表
+                });
+                
+            } catch (Exception e) {
+                // 在主线程中显示错误信息
+                Platform.runLater(() -> ControllerUtils.showErrorAlert("支付订单失败: " + e.getMessage()));
+            }
+        }).start();
+    }
+    
+    // 取消订单
+    private void handleCancelOrder(Order order) {
+        if (order == null || order.getOrderId() == null) {
+            ControllerUtils.showErrorAlert("无法取消：订单信息不完整");
+            return;
+        }
+        
+        // 确认对话框
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("确认取消");
+        confirmation.setHeaderText("确认取消订单？");
+        confirmation.setContentText("订单号: " + order.getOrderId() + "\n游戏: " + order.getGameName());
+        
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // 异步调用API取消订单
+                new Thread(() -> {
+                    try {
+                        // 调用API取消订单
+                        String endpoint = "/buyers/orders/cancel?orderId=" + 
+                            java.net.URLEncoder.encode(order.getOrderId(), StandardCharsets.UTF_8);
+                        String apiResponse = apiClient.put(endpoint, new HashMap<>(), String.class);
+                        
+                        // 在主线程中显示返回消息并刷新订单列表
+                        Platform.runLater(() -> {
+                            ControllerUtils.showInfoAlert("取消订单结果: " + apiResponse);
+                            loadOrdersData(); // 刷新订单列表
+                        });
+                        
+                    } catch (Exception e) {
+                        // 在主线程中显示错误信息
+                        Platform.runLater(() -> ControllerUtils.showErrorAlert("取消订单失败: " + e.getMessage()));
+                    }
+                }).start();
+            }
+        });
     }
     
     // 个人信息功能
@@ -994,7 +1256,7 @@ public class BuyerMainController {
             Parent root = loader.load();
             
             BuyerGameDetailsController controller = loader.getController();
-            controller.setGameData(game);
+            controller.setCurrentGame(game);
             controller.setApiClient(apiClient);
             controller.setCurrentUser(currentUser);
             
