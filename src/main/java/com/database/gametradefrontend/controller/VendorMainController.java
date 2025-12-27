@@ -351,7 +351,6 @@ public class VendorMainController {
                 Map<String, Object> requestData = Map.of("account", currentUser.getAccount());
                 
                 Object response = apiClient.post(endpoint, requestData, Object.class);
-                
                 // 在主线程中更新UI
                 javafx.application.Platform.runLater(() -> {
                     // 恢复按钮状态

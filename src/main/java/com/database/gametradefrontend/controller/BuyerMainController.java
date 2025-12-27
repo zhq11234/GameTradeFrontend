@@ -719,7 +719,7 @@ public class BuyerMainController {
                 // 调用搜索API获取所有游戏数据，gameName参数为空
                 String endpoint = "/buyers/games/search-by-name?gameName=";
                 Object response = apiClient.get(endpoint, Object.class);
-                
+                System.out.println(response.toString());
                 // 在主线程中更新UI
                 Platform.runLater(() -> {
                     gameCardsContainer.getChildren().clear();
@@ -732,13 +732,13 @@ public class BuyerMainController {
                             
                             for (Map<String, Object> gameData : gameList) {
                                 // 解析游戏数据（使用搜索API返回的字段）
-                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
-                                String category = gameData.getOrDefault("category", "未知类别").toString();
-                                String price = gameData.getOrDefault("price", "免费").toString();
-                                String score = gameData.getOrDefault("score", "0").toString();
-                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
-                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
-                                String description = gameData.getOrDefault("description", "暂无简介").toString();
+                                String gameName = Objects.toString(gameData.get("gameName"), "未知游戏");
+                                String category = Objects.toString(gameData.get("category"), "未知类别");
+                                String price = Objects.toString(gameData.get("price"), "免费");
+                                String score = Objects.toString(gameData.get("score"), "0");
+                                String salesVolume = Objects.toString(gameData.get("salesVolume"), "0");
+                                String companyName = Objects.toString(gameData.get("companyName"), "未知厂商");
+                                String description = Objects.toString(gameData.get("description"), "暂无简介");
                                 
                                 // 使用默认图片
                                 String image = "yuanshen.png";

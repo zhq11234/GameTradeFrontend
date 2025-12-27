@@ -68,7 +68,95 @@ public class GameDetailsController {
 
     // 加载游戏详情数据到表单
     public void loadGameDetails(VendorMainController.Game game) {
-
+        // 设置当前正在编辑的游戏
+        this.currentEditingGame = game;
+        
+        // 显示加载状态
+        pageTitleLabel.setText("加载中...");
+        
+        // 异步调用API获取游戏详情
+        new Thread(() -> {
+            try {
+                // 调用API查询游戏详情
+                String endpoint = "/vendors/query-game-info";
+                
+                // 准备请求数据
+                Map<String, Object> requestData = new HashMap<>();
+                requestData.put("gameName", game.getName());
+                
+                // 调用API获取游戏详情数据
+                Object response = apiClient.post(endpoint, requestData, Object.class);
+                
+                // 在主线程中更新UI
+                javafx.application.Platform.runLater(() -> {
+                    pageTitleLabel.setText("游戏详情");
+                    System.out.println(response.toString());
+                    if (response instanceof List) {
+                        List<Map<String, Object>> gameDetailsList = (List<Map<String, Object>>) response;
+                        System.out.println(gameDetailsList);
+                        
+                        if (!gameDetailsList.isEmpty()) {
+                            // 取第一个游戏详情（假设列表包含匹配的游戏详情）
+                            Map<String, Object> gameDetails = gameDetailsList.get(0);
+                            
+                            // 填充游戏详情数据到表单
+                            gameNameLabel.setText(safeToString(gameDetails.get("gameName"), game.getName()));
+                            companyNameLabel.setText(safeToString(gameDetails.get("companyName"), "未知企业"));
+                            releaseTimeLabel.setText(safeToString(gameDetails.get("releaseTime"), "未知时间"));
+                            statusLabel.setText(safeToString(gameDetails.get("status"), "未知状态"));
+                            categoryField.setText(safeToString(gameDetails.get("category"), ""));
+                            priceField.setText(safeToString(gameDetails.get("price"), ""));
+                            descriptionField.setText(safeToString(gameDetails.get("description"), ""));
+                            downloadLinkField.setText(safeToString(gameDetails.get("downloadLink"), ""));
+                            licenseNumberField.setText(safeToString(gameDetails.get("licenseNumber"), ""));
+                        } else {
+                            // 如果列表为空，使用传入的游戏对象的基本信息
+                            gameNameLabel.setText(game.getName());
+                            companyNameLabel.setText("未知企业");
+                            releaseTimeLabel.setText("未知时间");
+                            statusLabel.setText(game.getStatus());
+                            categoryField.setText(game.getCategory());
+                            priceField.setText(game.getPrice());
+                            descriptionField.setText(game.getDescription());
+                            downloadLinkField.setText("");
+                            licenseNumberField.setText("");
+                            
+                            ControllerUtils.showErrorAlert("未找到游戏详情，已显示基本信息");
+                        }
+                    } else {
+                        // 如果API调用失败，使用传入的游戏对象的基本信息
+                        gameNameLabel.setText(game.getName());
+                        companyNameLabel.setText("未知企业");
+                        releaseTimeLabel.setText("未知时间");
+                        statusLabel.setText(game.getStatus());
+                        categoryField.setText(game.getCategory());
+                        priceField.setText(game.getPrice());
+                        descriptionField.setText(game.getDescription());
+                        downloadLinkField.setText("");
+                        licenseNumberField.setText("");
+                        
+                        ControllerUtils.showErrorAlert("获取游戏详情失败，已显示基本信息");
+                    }
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    pageTitleLabel.setText("游戏详情");
+                    
+                    // 如果API调用失败，使用传入的游戏对象的基本信息
+                    gameNameLabel.setText(game.getName());
+                    companyNameLabel.setText("未知企业");
+                    releaseTimeLabel.setText("未知时间");
+                    statusLabel.setText(game.getStatus());
+                    categoryField.setText(game.getCategory());
+                    priceField.setText(game.getPrice());
+                    descriptionField.setText(game.getDescription());
+                    downloadLinkField.setText("");
+                    licenseNumberField.setText("");
+                    
+                    ControllerUtils.showErrorAlert("获取游戏详情失败: " + e.getMessage() + "，已显示基本信息");
+                });
+            }
+        }).start();
     }
 
     @FXML
