@@ -455,9 +455,7 @@ public class BuyerMainController {
                 System.err.println("DEBUG: API endpoint: " + endpoint);
                 
                 Object response = apiClient.get(endpoint, Object.class);
-                
-                // 调试信息：使用util包风格打印响应类型
-                System.err.println("DEBUG: Response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
+
                 
                 // 在主线程中更新UI
                 Platform.runLater(() -> {
