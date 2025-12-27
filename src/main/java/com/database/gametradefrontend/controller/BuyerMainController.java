@@ -719,7 +719,6 @@ public class BuyerMainController {
                 // 调用搜索API获取所有游戏数据，gameName参数为空
                 String endpoint = "/buyers/games/search-by-name?gameName=";
                 Object response = apiClient.get(endpoint, Object.class);
-                System.out.println(response.toString());
                 // 在主线程中更新UI
                 Platform.runLater(() -> {
                     gameCardsContainer.getChildren().clear();

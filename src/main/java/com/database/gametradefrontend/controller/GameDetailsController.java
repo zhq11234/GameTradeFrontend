@@ -97,7 +97,7 @@ public class GameDetailsController {
                         
                         if (!gameDetailsList.isEmpty()) {
                             // 取第一个游戏详情（假设列表包含匹配的游戏详情）
-                            Map<String, Object> gameDetails = gameDetailsList.get(0);
+                            Map<String, Object> gameDetails = gameDetailsList.getFirst();
                             
                             // 填充游戏详情数据到表单
                             gameNameLabel.setText(safeToString(gameDetails.get("gameName"), game.getName()));
