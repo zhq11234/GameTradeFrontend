@@ -168,6 +168,18 @@
     -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 5, 0, 0, 1);
 }
 
+.filter-active {
+    -fx-background-color: rgba(51, 63, 117, 0.3); /* 更暗的背景色 */
+    -fx-border-color: rgba(51, 63, 117, 0.8); /* 更暗的边框色 */
+    -fx-text-fill: #334077; /* 更暗的文字颜色 */
+    -fx-effect: dropshadow(three-pass-box, rgba(51, 63, 117, 0.3), 8, 0, 0, 2);
+}
+
+.filter-active:hover {
+    -fx-background-color: rgba(41, 51, 94, 0.4); /* 悬停时更暗 */
+    -fx-border-color: rgba(41, 51, 94, 0.9);
+}
+
 /* 游戏卡片样式 */
 .game-card {
     -fx-background-color: white;
@@ -222,6 +234,18 @@
 .game-card-rating {
     -fx-text-fill: #ffa500;
     -fx-font-size: 12px;
+}
+
+.game-card-sales {
+    -fx-text-fill: #666;
+    -fx-font-size: 12px;
+}
+
+.game-card-description {
+    -fx-text-fill: #888;
+    -fx-font-size: 11px;
+    -fx-wrap-text: true;
+    -fx-max-width: 200px;
 }
 
 .game-card-overlay {
@@ -333,6 +357,42 @@
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #45b7aa, #3d8f7d);
     -fx-effect: dropshadow(three-pass-box, rgba(78, 205, 196, 0.5), 12, 0, 0, 4);
     -fx-translate-y: -1px;
+}
+
+/* 单选按钮样式 */
+.radio-button {
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.radio-button .radio {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+    -fx-border-color: rgba(102, 126, 234, 0.3);
+    -fx-border-width: 1px;
+    -fx-padding: 2px;
+}
+
+.radio-button:selected .radio {
+    -fx-background-color: #667eea;
+    -fx-border-color: #667eea;
+}
+
+.radio-button .dot {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-padding: 3px;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: white;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: rgba(102, 126, 234, 0.6);
+    -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.2), 3, 0, 0, 1);
 }
 
 /* 状态和提示样式 */

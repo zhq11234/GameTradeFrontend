@@ -109,7 +109,9 @@
                   <Label text="筛选条件：" styleClass="filter-label"/>
                   <ComboBox fx:id="categoryFilter" promptText="游戏分类" styleClass="filter-combo"/>
                   <ComboBox fx:id="popularityFilter" promptText="游戏热度" styleClass="filter-combo"/>
-                  <ComboBox fx:id="preferenceFilter" promptText="我的偏好" styleClass="filter-combo"/>
+                  <Button fx:id="preferenceFilter" mnemonicParsing="false" styleClass="filter-button">
+                     <text>我的偏好</text>
+                  </Button>
                   <Button fx:id="resetFilterButton" mnemonicParsing="false" onAction="#handleResetFilter"
                           styleClass="filter-button">
                      <graphic>
@@ -223,16 +225,22 @@
                   <Label fx:id="accountLabel" styleClass="form-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
                   
                   <Label text="昵称：" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                  <TextField fx:id="nicknameField" styleClass="form-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                  <Label fx:id="nicknameLabel" styleClass="form-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                   
-                  <Label text="邮箱：" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                  <TextField fx:id="emailField" styleClass="form-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                  <Label text="联系方式：" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                  <Label fx:id="contactLabel" styleClass="form-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                   
-                  <Label text="偏好设置：" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                  <TextArea fx:id="preferenceField" styleClass="form-textarea" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                  <Label text="性别：" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                  <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                     <RadioButton fx:id="maleRadioButton" text="男" styleClass="radio-button"/>
+                     <RadioButton fx:id="femaleRadioButton" text="女" styleClass="radio-button"/>
+                  </HBox>
+                  
+                  <Label text="生日：" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                  <DatePicker fx:id="birthdayPicker" styleClass="form-input" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
                   
                   <Button fx:id="saveProfileButton" mnemonicParsing="false" onAction="#handleSaveProfile"
-                          styleClass="save-button" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                          styleClass="save-button" GridPane.rowIndex="5" GridPane.columnIndex="1">
                      <text>保存修改</text>
                   </Button>
                </GridPane>

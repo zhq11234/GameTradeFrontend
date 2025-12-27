@@ -19,7 +19,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +49,8 @@ public class BuyerMainController {
     @FXML private Button searchButton;
     @FXML private ComboBox<String> categoryFilter;
     @FXML private ComboBox<String> popularityFilter;
-    @FXML private ComboBox<String> preferenceFilter;
+    @FXML private Button preferenceFilter;
+    private boolean isPreferenceFilterActive = false;
     @FXML private Button resetFilterButton;
     @FXML private FlowPane gameCardsContainer;
     
@@ -66,10 +70,15 @@ public class BuyerMainController {
     // 个人信息页面组件
     @FXML private VBox profileContent;
     @FXML private Label accountLabel;
-    @FXML private TextField nicknameField;
-    @FXML private TextField emailField;
-    @FXML private TextArea preferenceField;
+    @FXML private Label nicknameLabel;
     @FXML private Button saveProfileButton;
+    
+    // 新增的个人信息字段
+    @FXML private ToggleGroup genderToggleGroup;
+    @FXML private RadioButton maleRadioButton;
+    @FXML private RadioButton femaleRadioButton;
+    @FXML private DatePicker birthdayPicker;
+    @FXML private Label contactLabel;
     
     // 当前用户信息
     private User currentUser;
@@ -93,16 +102,18 @@ public class BuyerMainController {
         private final String description;
         private final String rating;
         private final String popularity;
+        private final String companyName;
         
         public Game(String name, String category, String price, String image, 
-                   String description, String rating, String popularity) {
+                   String description, String rating, String popularity, String companyName) {
             this.name = name;
             this.category = category;
             this.price = price;
             this.image = image;
-            this.description = description;
+            this.description = (description != null) ? description : "暂无简介";
             this.rating = rating;
             this.popularity = popularity;
+            this.companyName = companyName;
         }
         
         // Getters
@@ -113,6 +124,7 @@ public class BuyerMainController {
         public String getDescription() { return description; }
         public String getRating() { return rating; }
         public String getPopularity() { return popularity; }
+        public String getCompanyName() { return companyName; }
     }
     
     /**
@@ -176,12 +188,20 @@ public class BuyerMainController {
         // 创建API客户端实例
         apiClient = new ApiClient();
         
+        // 初始化性别选择组
+        genderToggleGroup = new ToggleGroup();
+        maleRadioButton.setToggleGroup(genderToggleGroup);
+        femaleRadioButton.setToggleGroup(genderToggleGroup);
+        
         // 初始化用户界面
         initializeUserInfo();
         initializeTabs();
         initializeFilters();
         initializeTables();
         setupEventHandlers();
+        
+        // 一进入页面就加载个人信息
+        loadPersonalInfo();
         
         // 默认显示游戏商店页面
         showGameStore();
@@ -190,9 +210,7 @@ public class BuyerMainController {
     private void initializeUserInfo() {
         userInfoLabel.setText("买家用户 - " + currentUser.getAccount());
         accountLabel.setText(currentUser.getAccount());
-        nicknameField.setText(currentUser.getNickname() != null ? currentUser.getNickname() : "");
-        emailField.setText(currentUser.getEmail() != null ? currentUser.getEmail() : "");
-        preferenceField.setText(currentUser.getPreferences() != null ? currentUser.getPreferences() : "");
+        nicknameLabel.setText(currentUser.getNickname() != null ? currentUser.getNickname() : "");
     }
     
     private void initializeTabs() {
@@ -204,8 +222,10 @@ public class BuyerMainController {
     private void initializeFilters() {
         // 初始化筛选器选项
         categoryFilter.getItems().addAll("全部", "动作", "角色扮演", "策略", "射击", "体育", "模拟", "冒险", "益智");
-        popularityFilter.getItems().addAll("全部", "热门", "最新", "评分最高", "销量最高");
-        preferenceFilter.getItems().addAll("全部", "推荐", "根据历史购买", "根据浏览记录");
+        popularityFilter.getItems().addAll("全部", "0以上", "100以上", "1000以上", "10000以上", "100000以上", "1000000以上");
+        
+        // 设置偏好筛选器按钮文本
+        preferenceFilter.setText("我的偏好");
     }
     
     private void initializeTables() {
@@ -214,7 +234,300 @@ public class BuyerMainController {
     }
     
     private void setupEventHandlers() {
-        // 设置各种事件处理器
+        // 设置分类筛选器事件处理器
+        categoryFilter.setOnAction(event -> handleCategoryFilter());
+        
+        // 设置热度筛选器事件处理器
+        popularityFilter.setOnAction(event -> handlePopularityFilter());
+        
+        // 设置偏好筛选器按钮事件处理器
+        preferenceFilter.setOnAction(event -> handlePreferenceFilter());
+    }
+    
+    private void handlePopularityFilter() {
+        String selectedPopularity = popularityFilter.getValue();
+        if (selectedPopularity == null || "全部".equals(selectedPopularity)) {
+            // 如果选择全部或未选择，加载所有游戏数据
+            loadGameStoreData();
+            return;
+        }
+        
+        // 根据选项确定minPopularity参数值
+        String minPopularity = switch (selectedPopularity) {
+            case "100以上" -> "100";
+            case "1000以上" -> "1000";
+            case "10000以上" -> "10000";
+            case "100000以上" -> "100000";
+            case "1000000以上" -> "1000000";
+            default -> "0";
+        };
+
+        // 清空现有卡片
+        gameCardsContainer.getChildren().clear();
+        
+        // 显示加载状态
+        Label loadingLabel = new Label("正在按热度搜索游戏...");
+        loadingLabel.getStyleClass().add("loading-label");
+        gameCardsContainer.getChildren().add(loadingLabel);
+        
+        // 异步调用API按热度搜索游戏
+        new Thread(() -> {
+            try {
+                // 调用API按热度搜索游戏，传递minPopularity参数
+                String endpoint = "/buyers/games/search-by-popularity?minPopularity=" + minPopularity;
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    
+                    if (response instanceof List) {
+                        List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
+                        
+                        if (!gameList.isEmpty()) {
+                            for (Map<String, Object> gameData : gameList) {
+                                // 解析游戏数据
+                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
+                                String category = gameData.getOrDefault("category", "未知类别").toString();
+                                String price = gameData.getOrDefault("price", "免费").toString();
+                                String score = gameData.getOrDefault("score", "0").toString();
+                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
+                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
+                                Object descriptionObj = gameData.get("description");
+                                String description = (descriptionObj != null) ? descriptionObj.toString() : "暂无简介";
+                                
+                                // 使用默认图片
+                                String image = "yuanshen.png";
+                                
+                                // 创建游戏对象（使用现有的Game类，包含description字段）
+                                Game game = new Game(gameName, category, price, image, 
+                                                   description, score, salesVolume, companyName);
+                                
+                                // 创建游戏卡片
+                                StackPane gameCard = createGameCard(game);
+                                gameCardsContainer.getChildren().add(gameCard);
+                            }
+                        } else {
+                            Label noDataLabel = new Label("该热度范围内暂无游戏数据");
+                            noDataLabel.getStyleClass().add("no-data-label");
+                            gameCardsContainer.getChildren().add(noDataLabel);
+                        }
+                    } else {
+                        Label errorLabel = new Label("按热度搜索失败：返回数据格式错误");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    Label errorLabel = new Label("按热度搜索游戏失败: " + e.getMessage());
+                    errorLabel.getStyleClass().add("error-label");
+                    gameCardsContainer.getChildren().add(errorLabel);
+                });
+            }
+        }).start();
+    }
+    
+    private void handleCategoryFilter() {
+        String selectedCategory = categoryFilter.getValue();
+        if (selectedCategory == null || "全部".equals(selectedCategory)) {
+            // 如果选择全部或未选择，加载所有游戏数据
+            loadGameStoreData();
+            return;
+        }
+        
+        // 清空现有卡片
+        gameCardsContainer.getChildren().clear();
+        
+        // 显示加载状态
+        Label loadingLabel = new Label("正在按分类搜索游戏...");
+        loadingLabel.getStyleClass().add("loading-label");
+        gameCardsContainer.getChildren().add(loadingLabel);
+        
+        // 异步调用API按分类搜索游戏
+        new Thread(() -> {
+            try {
+                // 调用API按分类搜索游戏，传递category参数（需要URL编码）
+                String encodedCategory = URLEncoder.encode(selectedCategory, StandardCharsets.UTF_8);
+                String endpoint = "/buyers/games/search-by-category?category=" + encodedCategory;
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    
+                    if (response instanceof List) {
+                        List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
+                        
+                        if (!gameList.isEmpty()) {
+                            for (Map<String, Object> gameData : gameList) {
+                                // 解析游戏数据
+                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
+                                String category = gameData.getOrDefault("category", "未知类别").toString();
+                                String price = gameData.getOrDefault("price", "免费").toString();
+                                String score = gameData.getOrDefault("score", "0").toString();
+                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
+                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
+                                Object descriptionObj = gameData.get("description");
+                                String description = (descriptionObj != null) ? descriptionObj.toString() : "暂无简介";
+                                
+                                // 使用默认图片
+                                String image = "yuanshen.png";
+                                
+                                // 创建游戏对象（使用现有的Game类，包含description字段）
+                                Game game = new Game(gameName, category, price, image, 
+                                                   description, score, salesVolume, companyName);
+                                
+                                // 创建游戏卡片
+                                StackPane gameCard = createGameCard(game);
+                                gameCardsContainer.getChildren().add(gameCard);
+                            }
+                        } else {
+                            Label noDataLabel = new Label("该分类下暂无游戏数据");
+                            noDataLabel.getStyleClass().add("no-data-label");
+                            gameCardsContainer.getChildren().add(noDataLabel);
+                        }
+                    } else {
+                        Label errorLabel = new Label("按分类搜索失败：返回数据格式错误");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    Label errorLabel = new Label("按分类搜索游戏失败: " + e.getMessage());
+                    errorLabel.getStyleClass().add("error-label");
+                    gameCardsContainer.getChildren().add(errorLabel);
+                });
+            }
+        }).start();
+    }
+    
+    private void handlePreferenceFilter() {
+        // 切换按钮状态
+        isPreferenceFilterActive = !isPreferenceFilterActive;
+        
+        // 更新按钮样式
+        if (isPreferenceFilterActive) {
+            preferenceFilter.getStyleClass().add("filter-active");
+            preferenceFilter.setText("我的偏好 ✓");
+        } else {
+            preferenceFilter.getStyleClass().remove("filter-active");
+            preferenceFilter.setText("我的偏好");
+            // 如果取消偏好筛选，加载所有游戏数据
+            loadGameStoreData();
+            return;
+        }
+        
+        // 清空现有卡片
+        gameCardsContainer.getChildren().clear();
+        
+        // 显示加载状态
+        Label loadingLabel = new Label("正在按偏好搜索游戏...");
+        loadingLabel.getStyleClass().add("loading-label");
+        gameCardsContainer.getChildren().add(loadingLabel);
+        
+        // 异步调用API按偏好搜索游戏
+        new Thread(() -> {
+            try {
+                if (currentUser.getNickname() == null || currentUser.getNickname().trim().isEmpty()) {
+                    Platform.runLater(() -> {
+                        gameCardsContainer.getChildren().clear();
+                        Label errorLabel = new Label("用户昵称为空，无法进行偏好搜索");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                        
+                        // 出错时重置按钮状态
+                        isPreferenceFilterActive = false;
+                        preferenceFilter.getStyleClass().remove("filter-active");
+                        preferenceFilter.setText("我的偏好");
+                    });
+                    return;
+                }
+                
+                // 调用API按偏好搜索游戏，传递buyerNickname参数
+                String endpoint = "/buyers/games/search-by-preference?buyerNickname=" + 
+                    URLEncoder.encode(currentUser.getNickname(), StandardCharsets.UTF_8);
+                
+                // 调试信息：使用util包风格打印请求URL
+                System.err.println("DEBUG: API endpoint: " + endpoint);
+                
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 调试信息：使用util包风格打印响应类型
+                System.err.println("DEBUG: Response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    
+                    if (response == null) {
+                        Label errorLabel = new Label("你还未关注任何游戏, 无法进行偏好搜索");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                        
+                        // 出错时重置按钮状态
+                        isPreferenceFilterActive = false;
+                        preferenceFilter.getStyleClass().remove("filter-active");
+                        preferenceFilter.setText("我的偏好");
+                    } else if (response instanceof List) {
+                        List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
+                        
+                        if (!gameList.isEmpty()) {
+                            for (Map<String, Object> gameData : gameList) {
+                                // 解析游戏数据
+                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
+                                String category = gameData.getOrDefault("category", "未知类别").toString();
+                                String price = gameData.getOrDefault("price", "免费").toString();
+                                String score = gameData.getOrDefault("score", "0").toString();
+                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
+                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
+                                Object descriptionObj = gameData.get("description");
+                                String description = (descriptionObj != null) ? descriptionObj.toString() : "暂无简介";
+                                
+                                // 使用默认图片
+                                String image = "yuanshen.png";
+                                
+                                // 创建游戏对象（使用现有的Game类，包含description字段）
+                                Game game = new Game(gameName, category, price, image, 
+                                                   description, score, salesVolume, companyName);
+                                
+                                // 创建游戏卡片
+                                StackPane gameCard = createGameCard(game);
+                                gameCardsContainer.getChildren().add(gameCard);
+                            }
+                        } else {
+                            Label noDataLabel = new Label("暂无偏好推荐游戏");
+                            noDataLabel.getStyleClass().add("no-data-label");
+                            gameCardsContainer.getChildren().add(noDataLabel);
+                        }
+                    } else {
+                        Label errorLabel = new Label("按偏好搜索失败：返回数据格式错误");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                        
+                        // 出错时重置按钮状态
+                        isPreferenceFilterActive = false;
+                        preferenceFilter.getStyleClass().remove("filter-active");
+                        preferenceFilter.setText("我的偏好");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    Label errorLabel = new Label("按偏好搜索游戏失败: " + e.getMessage());
+                    errorLabel.getStyleClass().add("error-label");
+                    gameCardsContainer.getChildren().add(errorLabel);
+                    
+                    // 出错时重置按钮状态
+                    isPreferenceFilterActive = false;
+                    preferenceFilter.getStyleClass().remove("filter-active");
+                    preferenceFilter.setText("我的偏好");
+                });
+            }
+        }).start();
     }
     
     private void resetTabStyles() {
@@ -279,6 +592,9 @@ public class BuyerMainController {
         profileTab.getStyleClass().add("tab-active");
         profileContent.setVisible(true);
         profileContent.setManaged(true);
+        
+        // 从API加载个人信息
+        loadPersonalInfo();
     }
     
     // 游戏商店功能
@@ -291,42 +607,53 @@ public class BuyerMainController {
         loadingLabel.getStyleClass().add("loading-label");
         gameCardsContainer.getChildren().add(loadingLabel);
         
-        // 异步从API获取游戏数据
+        // 异步从API获取游戏数据（使用搜索API，gameName参数为空）
         new Thread(() -> {
             try {
-                // 调用API获取游戏数据
-                String endpoint = "/games/query-all-games";
+                // 调用搜索API获取所有游戏数据，gameName参数为空
+                String endpoint = "/buyers/games/search-by-name?gameName=";
                 Object response = apiClient.get(endpoint, Object.class);
                 
                 // 在主线程中更新UI
                 Platform.runLater(() -> {
                     gameCardsContainer.getChildren().clear();
                     
-                    List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
-                    
-                    if (gameList != null && !gameList.isEmpty()) {
-                        games.clear();
+                    if (response instanceof List) {
+                        List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
                         
-                        for (Map<String, Object> gameData : gameList) {
-                            String name = gameData.getOrDefault("gameName", "未知游戏").toString();
-                            String category = gameData.getOrDefault("category", "未知类别").toString();
-                            String price = gameData.getOrDefault("price", "免费").toString();
-                            String image = gameData.getOrDefault("image", "yuanshen.png").toString();
-                            String description = gameData.getOrDefault("description", "暂无简介").toString();
-                            String rating = gameData.getOrDefault("rating", "0").toString();
-                            String popularity = gameData.getOrDefault("popularity", "普通").toString();
+                        if (!gameList.isEmpty()) {
+                            games.clear();
                             
-                            Game game = new Game(name, category, price, image, description, rating, popularity);
-                            games.add(game);
-                            
-                            // 创建游戏卡片
-                            StackPane gameCard = createGameCard(game);
-                            gameCardsContainer.getChildren().add(gameCard);
+                            for (Map<String, Object> gameData : gameList) {
+                                // 解析游戏数据（使用搜索API返回的字段）
+                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
+                                String category = gameData.getOrDefault("category", "未知类别").toString();
+                                String price = gameData.getOrDefault("price", "免费").toString();
+                                String score = gameData.getOrDefault("score", "0").toString();
+                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
+                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
+                                String description = gameData.getOrDefault("description", "暂无简介").toString();
+                                
+                                // 使用默认图片
+                                String image = "yuanshen.png";
+                                
+                                // 创建游戏对象（使用现有的Game类，包含description字段）
+                                Game game = new Game(gameName, category, price, image, 
+                                                   description, score, salesVolume, companyName);
+                                
+                                // 创建游戏卡片
+                                StackPane gameCard = createGameCard(game);
+                                gameCardsContainer.getChildren().add(gameCard);
+                            }
+                        } else {
+                            Label noDataLabel = new Label("暂无游戏数据");
+                            noDataLabel.getStyleClass().add("no-data-label");
+                            gameCardsContainer.getChildren().add(noDataLabel);
                         }
                     } else {
-                        Label noDataLabel = new Label("暂无游戏数据");
-                        noDataLabel.getStyleClass().add("no-data-label");
-                        gameCardsContainer.getChildren().add(noDataLabel);
+                        Label errorLabel = new Label("加载游戏数据失败：返回数据格式错误");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
                     }
                 });
             } catch (Exception e) {
@@ -335,7 +662,6 @@ public class BuyerMainController {
                     Label errorLabel = new Label("加载游戏数据失败: " + e.getMessage());
                     errorLabel.getStyleClass().add("error-label");
                     gameCardsContainer.getChildren().add(errorLabel);
-                    ControllerUtils.showErrorAlert("加载游戏数据失败: " + e.getMessage());
                 });
             }
         }).start();
@@ -380,8 +706,28 @@ public class BuyerMainController {
         Label ratingLabel = new Label("评分: " + game.getRating() + "⭐");
         ratingLabel.getStyleClass().add("game-card-rating");
         
+        // 添加销量信息（如果popularity字段包含销量数据）
+        Label salesLabel = new Label("销量: " + game.getPopularity());
+        salesLabel.getStyleClass().add("game-card-sales");
+        
+        // 添加厂商名称
+        Label companyLabel = new Label("厂商: " + game.getCompanyName());
+        companyLabel.getStyleClass().add("game-card-company");
+        
+        // 添加游戏描述（最多显示50个字符，多余用...表示）
+        String description = game.getDescription();
+        if (description == null) {
+            description = "暂无简介";
+        } else if (description.length() > 50) {
+            description = description.substring(0, 50) + "...";
+        }
+        Label descriptionLabel = new Label(description);
+        descriptionLabel.getStyleClass().add("game-card-description");
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setMaxWidth(200);
+        
         // 添加到内容区域
-        content.getChildren().addAll(imageView, titleLabel, categoryLabel, priceLabel, ratingLabel);
+        content.getChildren().addAll(imageView, titleLabel, categoryLabel, priceLabel, ratingLabel, salesLabel, companyLabel, descriptionLabel);
         
         // 悬停覆盖层
         VBox overlay = new VBox();
@@ -402,16 +748,89 @@ public class BuyerMainController {
     @FXML
     private void handleSearch() {
         String searchText = searchField.getText().trim();
-        // 实现搜索逻辑
-        filterGames();
+        if (searchText.isEmpty()) {
+            // 如果搜索框为空，重新加载所有游戏数据
+            loadGameStoreData();
+            return;
+        }
+        
+        // 清空现有卡片
+        gameCardsContainer.getChildren().clear();
+        
+        // 显示加载状态
+        Label loadingLabel = new Label("正在搜索游戏...");
+        loadingLabel.getStyleClass().add("loading-label");
+        gameCardsContainer.getChildren().add(loadingLabel);
+        
+        // 异步调用API搜索游戏
+        new Thread(() -> {
+            try {
+                // 调用API搜索游戏，传递gameName参数
+                String endpoint = "/buyers/games/search-by-name?gameName=" + searchText;
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    
+                    if (response instanceof List) {
+                        List<Map<String, Object>> gameList = (List<Map<String, Object>>) response;
+                        
+                        if (!gameList.isEmpty()) {
+                            for (Map<String, Object> gameData : gameList) {
+                                // 解析游戏数据
+                                String gameName = gameData.getOrDefault("gameName", "未知游戏").toString();
+                                String category = gameData.getOrDefault("category", "未知类别").toString();
+                                String price = gameData.getOrDefault("price", "免费").toString();
+                                String score = gameData.getOrDefault("score", "0").toString();
+                                String salesVolume = gameData.getOrDefault("salesVolume", "0").toString();
+                                String companyName = gameData.getOrDefault("companyName", "未知厂商").toString();
+                                String description = gameData.getOrDefault("description", "暂无简介").toString();
+                                
+                                // 使用默认图片
+                                String image = "yuanshen.png";
+                                
+                                // 创建游戏对象（使用现有的Game类，包含description字段）
+                                Game game = new Game(gameName, category, price, image, 
+                                                   description, score, salesVolume, companyName);
+                                
+                                // 创建游戏卡片
+                                StackPane gameCard = createGameCard(game);
+                                gameCardsContainer.getChildren().add(gameCard);
+                            }
+                        } else {
+                            Label noDataLabel = new Label("未找到相关游戏");
+                            noDataLabel.getStyleClass().add("no-data-label");
+                            gameCardsContainer.getChildren().add(noDataLabel);
+                        }
+                    } else {
+                        Label errorLabel = new Label("搜索失败：返回数据格式错误");
+                        errorLabel.getStyleClass().add("error-label");
+                        gameCardsContainer.getChildren().add(errorLabel);
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    gameCardsContainer.getChildren().clear();
+                    Label errorLabel = new Label("搜索游戏失败: " + e.getMessage());
+                    errorLabel.getStyleClass().add("error-label");
+                    gameCardsContainer.getChildren().add(errorLabel);
+                });
+            }
+        }).start();
     }
     
     @FXML
     private void handleResetFilter() {
         searchField.clear();
-        categoryFilter.getSelectionModel().clearSelection();
-        popularityFilter.getSelectionModel().clearSelection();
-        preferenceFilter.getSelectionModel().clearSelection();
+        categoryFilter.getSelectionModel().select("全部");
+        popularityFilter.getSelectionModel().select("全部");
+        
+        // 重置偏好筛选器按钮状态
+        isPreferenceFilterActive = false;
+        preferenceFilter.getStyleClass().remove("filter-active");
+        preferenceFilter.setText("我的偏好");
+        
         loadGameStoreData();
     }
     
@@ -471,19 +890,94 @@ public class BuyerMainController {
     }
     
     // 个人信息功能
+    private void loadPersonalInfo() {
+        // 异步从API获取个人信息
+        new Thread(() -> {
+            try {
+                // 调用API获取个人信息，传递account参数
+                String endpoint = "/buyers/personal-info?account=" + currentUser.getAccount();
+                
+                // 调试信息：打印请求URL
+                System.err.println("DEBUG: Personal info API endpoint: " + endpoint);
+                
+                Object response = apiClient.get(endpoint, Object.class);
+                
+                // 在主线程中更新UI
+                Platform.runLater(() -> {
+                    if (response instanceof Map) {
+                        Map<String, Object> personalInfo = (Map<String, Object>) response;
+                        
+                        // 更新UI字段
+                        String nickname = personalInfo.getOrDefault("nickname", "").toString();
+                        String account = personalInfo.getOrDefault("account", "").toString();
+                        String gender = personalInfo.getOrDefault("gender", "").toString();
+                        String birthday = personalInfo.getOrDefault("birthday", "").toString();
+                        String contact = personalInfo.getOrDefault("contact", "").toString();
+                        
+                        nicknameLabel.setText(nickname);
+                        accountLabel.setText(account);
+                        
+                        // 更新UserSession中的用户昵称信息
+                        currentUser.setNickname(nickname);
+                        
+                        // 设置性别选择
+                        if ("男".equals(gender)) {
+                            maleRadioButton.setSelected(true);
+                        } else if ("女".equals(gender)) {
+                            femaleRadioButton.setSelected(true);
+                        }
+                        
+                        // 设置生日（需要解析日期格式）
+                        if (!birthday.isEmpty()) {
+                            try {
+                                java.time.LocalDate birthDate = java.time.LocalDate.parse(birthday);
+                                birthdayPicker.setValue(birthDate);
+                            } catch (Exception e) {
+                                // 如果日期格式解析失败，保持为空
+                            }
+                        }
+                        
+                        // 设置联系方式（只读）
+                        contactLabel.setText(contact);
+                        
+                    } else {
+                        ControllerUtils.showErrorAlert("获取个人信息失败：返回数据格式错误");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> ControllerUtils.showErrorAlert("获取个人信息失败: " + e.getMessage()));
+            }
+        }).start();
+    }
+    
     @FXML
     private void handleSaveProfile() {
         // 实现保存个人信息逻辑
-        String nickname = nicknameField.getText();
-        String email = emailField.getText();
-        String preferences = preferenceField.getText();
+        String gender = maleRadioButton.isSelected() ? "男" : (femaleRadioButton.isSelected() ? "女" : "");
+        String birthday = birthdayPicker.getValue() != null ? birthdayPicker.getValue().toString() : "";
         
-        // 更新用户信息
-        currentUser.setNickname(nickname);
-        currentUser.setEmail(email);
-        currentUser.setPreferences(preferences);
-        
-        ControllerUtils.showInfoAlert("个人信息保存成功");
+        // 异步保存个人信息到后端
+        new Thread(() -> {
+            try {
+                // 构建请求参数
+                String endpoint = "/buyers/personal-info?account=" + currentUser.getAccount();
+                
+                // 构建请求体（只包含可以修改的字段）
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("gender", gender);
+                requestBody.put("birthday", birthday);
+                
+                // 调用API保存个人信息
+                String response = apiClient.post(endpoint, requestBody, String.class);
+                
+                // 在主线程中显示结果
+                Platform.runLater(() -> ControllerUtils.showInfoAlert("个人信息保存成功: " + response));
+                
+            } catch (Exception e) {
+                // 在主线程中显示错误信息
+                Platform.runLater(() -> ControllerUtils.showErrorAlert("保存个人信息失败: " + e.getMessage()));
+            }
+        }).start();
     }
     
     // 游戏详情页面
